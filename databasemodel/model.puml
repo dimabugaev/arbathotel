@@ -1,0 +1,66 @@
+@startuml concept_model
+
+skinparam linetype ortho
+hide methods
+
+
+' Справочник Отели
+entity hotels{
+    id
+    name
+} 
+' Справочник источники
+entity sources{
+    id
+    name
+    type /' тип источника 1 - отчет подотчетника, 2 - клиент банка и тд '/
+    external_key /' информация для идентификации источника '/
+}
+' Статьи отчетов
+entity report_items{
+    id
+    name
+    hotel_id
+}
+
+' Сотрудники
+entity employees{
+    id
+    last_name
+    first_name
+    name_in_db
+}
+
+' Строки отчетов
+entity report_strings{
+    id
+    source_id
+    created /' Момент добавления строки в отчет'/
+    applyed /' Момент добавления в исторические строки '/
+    report_date /' Отчетный период дата без времени'/
+    report_item_id
+    hotel_id
+    sum_income /' Сумма приход '/
+    sum_dec /' Сумма расход '/
+    comment
+}
+' Настройка доступных статей
+entity report_items_setings{
+    id
+    source_id
+    report_item_id
+    view_permission  /' Boolean '/
+}
+
+
+hotels ||-u-|{ report_strings
+sources ||-u-|{ report_strings
+report_items ||-d-|{ report_strings
+
+hotels ||-d-|{ report_items
+employees ||-l-|{ report_items
+
+sources ||-|{ report_items_setings
+report_items ||-l-|{ report_items_setings
+
+@enduml

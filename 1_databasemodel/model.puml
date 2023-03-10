@@ -21,6 +21,7 @@ entity report_items{
     id
     name
     hotel_id
+    empl_id
 }
 
 ' Сотрудники

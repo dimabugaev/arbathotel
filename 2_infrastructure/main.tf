@@ -16,6 +16,8 @@ data "aws_availability_zones" "available" {
 locals {
   name    = "dev"
   region  = "eu-central-1"
+  lamdba_reports_name = "dev-reports-emploeeys-operations"
+  downloaded = "./build/existing_package.zip"
 
   azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 
@@ -56,7 +58,7 @@ module "vpc" {
 
 #SG for DB
 
-module "security_group" {
+module "rds_security_group" {
    source  = "terraform-aws-modules/security-group/aws"
    version = "~> 4.0"
 
@@ -106,7 +108,7 @@ module "db" {
 
   multi_az               = false
   db_subnet_group_name   = module.vpc.database_subnet_group
-  vpc_security_group_ids = [module.security_group.security_group_id]
+  vpc_security_group_ids = [module.rds_security_group.security_group_id]
   publicly_accessible = true
 
 #   maintenance_window              = "Mon:00:00-Mon:03:00"
@@ -138,4 +140,163 @@ module "db" {
   ]
 
   tags = local.tags
+}
+
+
+#lambda
+
+module "lambda_function" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name =  "${local.lamdba_reports_name}-lambda"
+  description   = "My awesome lambda function"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.downloaded
+
+  attach_network_policy  = true
+
+# example policy
+#   attach_policy_jsons = true
+#   policy_jsons = [
+#     <<-EOT
+#       {
+#           "Version": "2012-10-17",
+#           "Statement": [
+#               {
+#                   "Effect": "Allow",
+#                   "Action": [
+#                       "xray:*"
+#                   ],
+#                   "Resource": ["*"]
+#               }
+#           ]
+#       }
+#     EOT
+#   ]
+#   number_of_policy_jsons = 1
+
+#   attach_policy = true
+#   policy        = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+
+#   attach_policies    = true
+#   policies           = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
+#   number_of_policies = 1
+
+#   attach_policy_statements = true
+#   policy_statements = {
+#     dynamodb = {
+#       effect    = "Allow",
+#       actions   = ["dynamodb:BatchWriteItem"],
+#       resources = ["arn:aws:dynamodb:eu-west-1:052212379155:table/Test"]
+#     },
+#     s3_read = {
+#       effect    = "Deny",
+#       actions   = ["s3:HeadObject", "s3:GetObject"],
+#       resources = ["arn:aws:s3:::my-bucket/*"]
+#     }
+#   }
+
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_security_group.security_group_id]
+
+  allowed_triggers = {
+    AllowExecutionFromAPIGateway = {
+      service    = "apigateway"
+      source_arn = "${module.api_gateway.apigatewayv2_api_execution_arn}/*/*/*"
+    }
+  }
+}
+
+module "lambda_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.0"
+
+  name        = "lambda-sg-${local.lamdba_reports_name}"
+  description = "Lambda security group for example usage"
+  vpc_id      = module.vpc.vpc_id
+
+  computed_ingress_with_source_security_group_id = [
+    {
+      rule                     = "http-80-tcp"
+      source_security_group_id = module.api_gateway_security_group.security_group_id
+    }
+  ]
+  number_of_computed_ingress_with_source_security_group_id = 1
+
+  egress_rules = ["all-all"]
+}
+
+
+module "api_gateway" {
+  source = "terraform-aws-modules/apigateway-v2/aws"
+
+  name          = "${local.name}-api-gateway-http-vpc-links"
+  description   = "HTTP API Gateway with VPC links"
+  protocol_type = "HTTP"
+
+  cors_configuration = {
+    allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"]
+    allow_methods = ["*"]
+    allow_origins = ["*"]
+  }
+
+  create_api_domain_name = false
+
+  integrations = {
+    # "ANY /" = {
+    #   lambda_arn             = module.lambda_function.lambda_function_arn
+    #   payload_format_version = "2.0"
+    #   timeout_milliseconds   = 12000
+    # }
+
+    "GET /" = {
+      lambda_arn             = module.lambda_function.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
+    # "GET /alb-internal-route" = {
+    #   connection_type    = "VPC_LINK"
+    #   vpc_link           = "my-vpc"
+    #   integration_uri    = module.alb.http_tcp_listener_arns[0]
+    #   integration_type   = "HTTP_PROXY"
+    #   integration_method = "ANY"
+    # }
+
+    "$default" = {
+      lambda_arn = module.lambda_function.lambda_function_arn
+    }
+  }
+
+  vpc_links = {
+    my-vpc = {
+      name               = "example"
+      security_group_ids = [module.api_gateway_security_group.security_group_id]
+      subnet_ids         = module.vpc.public_subnets
+    }
+  }
+
+  tags = local.tags
+}
+
+module "api_gateway_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.0"
+
+  name        = "${local.name}-api-gateway-sg"
+  description = "API Gateway group for example usage"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["http-80-tcp"]
+
+  egress_rules = ["all-all"]
 }

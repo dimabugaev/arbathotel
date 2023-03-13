@@ -1,4 +1,5 @@
 .terraform
 *terraform.*
-
+test*
+__pycache__
 

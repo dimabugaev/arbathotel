@@ -15,8 +15,18 @@ INSERT INTO operate.hotels (hotel_name) VALUES('Склад');
 INSERT INTO operate.hotels (hotel_name) VALUES('Токмаков');
 
 
+INSERT INTO operate.report_items (item_name) VALUES('Зарплата');
+INSERT INTO operate.report_items (item_name) VALUES('Хозрасходы');
+INSERT INTO operate.report_items (item_name) VALUES('Прочее');
+
+
+
 select *
 from operate.hotels h;
 
 select *
 from operate.report_items ri;
+
+update operate.hotels 
+set hotel_name = 'PUTIN KHUILO'
+where id = 1;

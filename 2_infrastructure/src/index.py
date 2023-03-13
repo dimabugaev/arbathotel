@@ -51,7 +51,7 @@ def lambda_handler(event, context):
     #responseObj['body']['hotels'] = json.dumps(rows)
     responseObj['body'] = json.dumps(bodyDict)
 
-    #print(responseObj)
+    print(responseObj)
 
     return responseObj
 

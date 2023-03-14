@@ -53,5 +53,5 @@ jobs:
           terraform -version
           terraform init
           terraform validate
-          terraform plan
+#          terraform plan
 #          terraform apply -auto-approve 

@@ -17,7 +17,7 @@ locals {
   name    = "dev"
   region  = "eu-central-1"
   lamdba_reports_name = "dev-reports-emploeeys-operations"
-  downloaded = "./build/existing_package.zip"
+  employees_reports_zip = "./build/employees_reports_data.zip"
 
   azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 
@@ -145,19 +145,19 @@ module "db" {
 
 #lambda
 
-module "lambda_function" {
+module "lambda_function_employees_reports" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
   function_name =  "${local.lamdba_reports_name}-lambda"
-  description   = "My awesome lambda function"
-  handler       = "index.lambda_handler"
+  description   = "lambda function for support to work operations reports"
+  handler       = "employees_reports_data.lambda_handler"
   runtime       = "python3.8"
 
   publish = true
 
   create_package         = false
-  local_existing_package = local.downloaded
+  local_existing_package = local.employees_reports_zip
 
   attach_network_policy  = true
 
@@ -257,7 +257,7 @@ module "api_gateway" {
     # }
 
     "GET /" = {
-      lambda_arn             = module.lambda_function.lambda_function_arn
+      lambda_arn             = module.lambda_function_employees_reports.lambda_function_arn
       payload_format_version = "2.0"
       authorization_type     = "NONE"
       //integration_type   = "LAMBDA_PROXY"
@@ -272,13 +272,13 @@ module "api_gateway" {
     # }
 
     "$default" = {
-      lambda_arn = module.lambda_function.lambda_function_arn
+      lambda_arn = module.lambda_function_employees_reports.lambda_function_arn
     }
   }
 
   vpc_links = {
     my-vpc = {
-      name               = "example"
+      name               = "dev-vpc"
       security_group_ids = [module.api_gateway_security_group.security_group_id]
       subnet_ids         = module.vpc.public_subnets
     }
@@ -292,11 +292,13 @@ module "api_gateway_security_group" {
   version = "~> 4.0"
 
   name        = "${local.name}-api-gateway-sg"
-  description = "API Gateway group for example usage"
+  description = "API Gateway group"
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["http-80-tcp"]
 
   egress_rules = ["all-all"]
+
+  tags = local.tags
 }

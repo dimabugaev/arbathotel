@@ -266,7 +266,28 @@ module "api_gateway" {
     #   timeout_milliseconds   = 12000
     # }
 
-    "GET /" = {
+    "GET /dict" = {
+      lambda_arn             = module.lambda_function_employees_reports.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
+    "GET /string" = {
+      lambda_arn             = module.lambda_function_employees_reports.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
+    "POST /string" = {
+      lambda_arn             = module.lambda_function_employees_reports.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
+    "POST /close" = {
       lambda_arn             = module.lambda_function_employees_reports.lambda_function_arn
       payload_format_version = "2.0"
       authorization_type     = "NONE"

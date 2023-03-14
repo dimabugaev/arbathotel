@@ -32,7 +32,7 @@ jobs:
 
       - name: Build zip
         run: |
-          ls build/
+          ls
           cp src/employees_reports_data.py build/
           cd build
           zip -r employees_reports_data.zip psycopg2/ employees_reports_data.py 

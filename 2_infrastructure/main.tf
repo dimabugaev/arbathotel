@@ -161,6 +161,9 @@ module "lambda_function_employees_reports" {
 
   attach_network_policy  = true
 
+#  attach_policy = true
+#  policy        = "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess"
+
 # example policy
 #   attach_policy_jsons = true
 #   policy_jsons = [
@@ -182,7 +185,7 @@ module "lambda_function_employees_reports" {
 #   number_of_policy_jsons = 1
 
 #   attach_policy = true
-#   policy        = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+#   policy        = "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess"
 
 #   attach_policies    = true
 #   policies           = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]

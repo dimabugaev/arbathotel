@@ -6,6 +6,13 @@ terraform {
     }
   }
 
+  backend "s3" {
+    bucket = "arbat-hotel-terraform-state-dev"
+    key    = "network/terraform.tfstate"
+    region = "eu-central-1"
+    profile = "arbathotelserviceterraformuser"
+  }
+
   required_version = ">= 1.2.0"
 }
 

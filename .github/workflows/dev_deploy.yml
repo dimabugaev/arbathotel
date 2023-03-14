@@ -32,7 +32,8 @@ jobs:
 
       - name: Build zip
         run: |
-          ls
+          cd 2_infrastructure/
+          ls build/
           cp src/employees_reports_data.py build/
           cd build
           zip -r employees_reports_data.zip psycopg2/ employees_reports_data.py 
@@ -46,13 +47,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: test terraform
-        run: terraform -version
-
-      - name: test terraform init
-        run: terraform init
-
-      - name: test terraform validate
-        run: terraform validate
+        run: |
+          cd 2_infrastructure/
+          terraform -version
+          terraform init
+          terraform validate
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script

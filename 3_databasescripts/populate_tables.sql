@@ -35,7 +35,7 @@ with approve_items as (
 		operate.report_items_setings ris
 	where 
 		ris.source_id in 
-			(select id from operate.sources so where so.source_external_key = '1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAqpyd9jAz2KG8')
+			(select id from operate.sources so where so.source_external_key = '12345')
 		and ris.view_permission = TRUE
 )
 select 
@@ -44,6 +44,21 @@ select
 from 
 	operate.report_items ri inner join
 		approve_items ap on (ri.id = ap.id);
+	
+
+	
+with find_source as (
+	select 
+		so.id 
+	from operate.sources so 
+	where so.source_external_key = '1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAqpyd9jAz2KG8'
+	limit 1
+)
+select 
+     ho.id, 
+     ho.hotel_name 
+from 
+     operate.hotels ho inner join find_source so on (true); 
 	
 
 select *

@@ -50,11 +50,18 @@ def get_hotels_and_report_ivents() -> dict:
 
     cursor = connection.cursor()
     
-    cursor.execute("""SELECT 
-                        id, 
-                        hotel_name 
-                      FROM 
-                        operate.hotels""")
+    cursor.execute("""with find_source as (
+                        select 
+                          so.id 
+                        from operate.sources so 
+                        where so.source_external_key = %(source_key)s
+                        limit 1
+                      )
+                      select 
+                          ho.id, 
+                          ho.hotel_name 
+                      from 
+                          operate.hotels ho inner join find_source so on (true)""", {'source_key': source_id})
     
     #rows = cursor.fetchall()
     
@@ -87,4 +94,5 @@ def current_string_to_histirical():
     print(app.current_event.query_string_parameters)
 
 def lambda_handler(event, context):
+    print({'event': event, 'context': context})
     return app.resolve(event, context)

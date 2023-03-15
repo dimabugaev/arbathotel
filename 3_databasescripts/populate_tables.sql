@@ -76,7 +76,10 @@ from operate.report_items_setings ris;
 select *
 from operate.sources s;
 
-
+delete 
+	from operate.report_strings 
+where
+	applyed is null and source_id = 3;
 
 update operate.hotels 
 set hotel_name = 'PUTIN KHUILO'

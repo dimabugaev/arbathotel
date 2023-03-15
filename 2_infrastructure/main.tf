@@ -333,3 +333,31 @@ module "api_gateway_security_group" {
 
   tags = local.tags
 }
+
+
+#secrets
+
+variable "db_secrets" {
+  default = {
+    username = module.db.db_instance_username
+    password = module.db.db_instance_password
+    engine = module.db.db_instance_engine
+    host = module.db.db_instance_address
+    port = module.db.db_instance_port
+    dbname = module.db.db_instance_name
+    dbInstanceIdentifier = module.db.db_instance_id
+    dbarn = module.db.db_instance_arn
+  }
+
+  type = map(string)
+}
+
+resource "aws_secretsmanager_secret" "secretsRDS" {
+   name = "${local.name}-rds-instance"
+}
+
+resource "aws_secretsmanager_secret_version" "secretsRDS" {
+  secret_id     = aws_secretsmanager_secret.secretsRDS.id
+  secret_string = jsonencode(var.db_secrets)
+}
+

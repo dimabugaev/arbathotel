@@ -60,6 +60,11 @@ module "vpc" {
   create_database_subnet_route_table     = true
   create_database_internet_gateway_route = true
 
+  enable_secretsmanager_endpoint   = true
+  secretsmanager_endpoint_private_dns_enabled = true
+  secretsmanager_endpoint_security_group_ids  = [module.secrets_endpoints_security_group.security_group_id]
+  #secretsmanager_endpoint_subnet_ids = private_subnets
+
   tags = local.tags
 }
 
@@ -343,25 +348,6 @@ module "api_gateway_security_group" {
   tags = local.tags
 }
 
-
-
-module "endpoints" {
-  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-
-  vpc_id             = module.vpc.vpc_id
-
-  endpoints = {
-    secretsmanager = {
-      # interface endpoint
-      service             = "secretsmanager"
-      subnet_ids = module.vpc.private_subnets
-      security_group_ids = [module.secrets_endpoints_security_group.security_group_id]
-      tags                = { Name = "secretsmanager-vpc-endpoint" }
-    },
-  }
-
-  tags = local.tags
-}
 
 module "secrets_endpoints_security_group" {
   source  = "terraform-aws-modules/security-group/aws"

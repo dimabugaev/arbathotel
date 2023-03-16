@@ -349,13 +349,13 @@ module "endpoints" {
   source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
 
   vpc_id             = module.vpc.vpc_id
-  security_group_ids = [module.secrets_endpoints_security_group.security_group_id]
-  subnet_ids = module.vpc.private_subnets
 
   endpoints = {
     secretsmanager = {
       # interface endpoint
       service             = "secretsmanager"
+      subnet_ids = module.vpc.private_subnets
+      security_group_ids = [module.secrets_endpoints_security_group.security_group_id]
       tags                = { Name = "secretsmanager-vpc-endpoint" }
     },
   }

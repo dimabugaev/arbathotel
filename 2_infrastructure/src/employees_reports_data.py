@@ -16,6 +16,8 @@ session = boto3.session.Session()
 client = session.client(service_name='secretsmanager', region_name=region_name)
 secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
 
+print(secret_value_dict)
+
 endpoint = secret_value_dict['host']
 username = secret_value_dict['username']
 password = secret_value_dict['password']

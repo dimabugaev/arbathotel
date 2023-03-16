@@ -167,6 +167,15 @@ module "lambda_function_employees_reports" {
   local_existing_package = local.employees_reports_zip
 
   attach_network_policy  = true
+  
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  } 
 
 #  attach_policy = true
 #  policy        = "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess"
@@ -221,17 +230,6 @@ module "lambda_function_employees_reports" {
       service    = "apigateway"
       source_arn = "${module.api_gateway.apigatewayv2_api_execution_arn}/*/*/*"
     }
-  }
-
-  environment_variables = {
-    username = module.db.db_instance_username
-    password = module.db.db_instance_password
-    engine = module.db.db_instance_engine
-    host = module.db.db_instance_address
-    port = module.db.db_instance_port
-    dbname = module.db.db_instance_name
-    dbInstanceIdentifier = module.db.db_instance_id
-    dbarn = module.db.db_instance_arn
   }
 }
 
@@ -346,22 +344,48 @@ module "api_gateway_security_group" {
 }
 
 
+
+module "endpoints" {
+  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+
+  vpc_id             = module.vpc.vpc_id
+  security_group_ids = [module.secrets_endpoints_security_group.security_group_id]
+  subnet_ids = module.vpc.private_subnets
+
+  endpoints = {
+    secretsmanager = {
+      # interface endpoint
+      service             = "secretsmanager"
+      tags                = { Name = "secretsmanager-vpc-endpoint" }
+    },
+  }
+
+  tags = local.tags
+}
+
+module "secrets_endpoints_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.0"
+
+  name        = "endpoint-sg-to-secretsmanager"
+  description = "SG endpoints to secrets db"
+  vpc_id      = module.vpc.vpc_id
+
+  computed_ingress_with_source_security_group_id = [
+    {
+      rule                     = "all-tcp"
+      source_security_group_id = module.lambda_security_group.security_group_id
+    }
+  ]
+  number_of_computed_ingress_with_source_security_group_id = 1
+
+  egress_rules = ["all-all"]
+
+  tags = local.tags
+}
+
 #secrets
 
-# variable "db_secrets" {
-#   default = {
-#     username = module.db.db_instance_username
-#     password = module.db.db_instance_password
-#     engine = module.db.db_instance_engine
-#     host = module.db.db_instance_address
-#     port = module.db.db_instance_port
-#     dbname = module.db.db_instance_name
-#     dbInstanceIdentifier = module.db.db_instance_id
-#     dbarn = module.db.db_instance_arn
-#   }
-
-#   type = map(string)
-# }
 
 resource "aws_secretsmanager_secret" "secretsRDS" {
    name = "${local.name}-rds-instance"

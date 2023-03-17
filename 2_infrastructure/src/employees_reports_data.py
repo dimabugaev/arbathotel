@@ -63,14 +63,11 @@ def get_report_strings():
     date_end = app.current_event.get_query_string_value(name="date_end", default_value="")
     mode = app.current_event.get_query_string_value(name="mode", default_value='0')
     
-
     if not mode.isdigit(): 
         mode = 0
     else: 
         mode = int(mode)
 
-    print(mode)
-    print(type(mode))
 
     cursor = connection.cursor()
     cursor.execute("""select 
@@ -83,6 +80,8 @@ def get_report_strings():
         return get_response({'FormatError': source_id})
 
     found_source_id = cursor.fetchone()[0]
+
+    print(found_source_id)
 
     cursor.execute("""SELECT 
                         id,  
@@ -101,8 +100,10 @@ def get_report_strings():
                           (applyed is not null and %(mode)s = 1) or 
                           (%(mode)s = 2))""", {'source_id': found_source_id, 'mode': mode})
     
+
     bodyDict = {}
-    bodyDict["report_strings"] = cursor.fetchall()
+    bodyDict["report_strings"] = json.loads(json.dumps(cursor.fetchall(), indent=4, sort_keys=True, default=str))
+
     return get_response(bodyDict)
 
 @app.post("/string")

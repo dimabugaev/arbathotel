@@ -69,7 +69,7 @@ from
 SELECT 
 	id,  
 	report_item_id, 
-	created, 
+	to_char(created), 
 	applyed, 
 	report_date, 
 	hotel_id, 

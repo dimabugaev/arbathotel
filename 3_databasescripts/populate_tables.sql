@@ -31,6 +31,8 @@ INSERT INTO operate.sources (source_name, source_external_key, source_type)
 VALUES('Отчет Тест 2','1NgQ1grPIRnayr5gyu9wB1kgN5hNzFN40od33nfEJjNQ',1);
 
 
+
+
 with approve_items as (
 	select
 		ris.report_item_id as id 
@@ -96,6 +98,9 @@ from operate.report_items_setings ris;
 select *
 from operate.sources s;
 
+select *
+from operate.report_strings rs; 
+
 delete 
 	from operate.report_strings 
 where
@@ -104,3 +109,16 @@ where
 update operate.hotels 
 set hotel_name = 'PUTIN KHUILO'
 where id = 1;
+
+
+INSERT INTO operate.report_strings (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment) VALUES (4, 11, TO_DATE('2023-01-03','YYYY-mm-DD'), NULL, 30000, 0, 'Добавить столбец со ссылкой на приемку в Моем складе. Или в Ремарку?');
+  
+  
+  ,
+  ("1NgQ1grPIRnayr5gyu9wB1kgN5hNzFN40od33nfEJjNQ", 6, 2023-01-03, , 10000, , "Сделать подсветку расходных статей без Отеля"),
+  ("1NgQ1grPIRnayr5gyu9wB1kgN5hNzFN40od33nfEJjNQ", 24, 2023-01-03, , 5330, , "");
+                      
+                     
+                     
+                     
+                     

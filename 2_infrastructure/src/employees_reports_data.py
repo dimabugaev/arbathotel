@@ -37,10 +37,23 @@ def get_response(body: dict = {}) -> dict:
 
     return response_obj
 
-def get_date_from_int_excel(int_excel: int) -> date:
-    if int is None:
-        return None
-    return date.fromisoformat('1899-12-30') + + timedelta(days = int_excel)    
+def get_date_from_int_excel(int_excel: int) -> str:
+    result = "NULL"
+    if int is not None:
+        result = "TO_DATE('" + str(date.fromisoformat('1899-12-30') + + timedelta(days = int_excel)) + "','YYYY-mm-DD')"    
+    
+    return result
+
+def num_to_query_substr(id: any, result_if_null = "NULL") -> str: 
+    result = result_if_null
+    if id is not None:
+        if isinstance(id, str):
+            result = result_if_null    
+        else:
+          result = id
+    return result
+
+    
 
 @app.get("/string")
 def get_report_strings():
@@ -119,13 +132,24 @@ def put_operate_report_strings():
                         applyed is null and source_id = %(source_id)s""", {'source_id': found_source_id})          
 
     #args_str = ','.join(cursor.mogrify('%d, %s, %s, %s, %s, %s, %s', source_id, newrow) for newrow in newstrings)
-    args_str = ','.join(('{}, {}, {}, {}, {}, {}, {}'.format(source_id, newrow[7], get_date_from_int_excel(newrow[0]), newrow[8], newrow[1], newrow[2], newrow[6])) for newrow in newstrings)
+    args_str = ','.join(("({}, {}, {}, {}, {}, {}, '{}')"
+      .format(found_source_id, num_to_query_substr(newrow[7]), 
+              get_date_from_int_excel(newrow[0]), 
+              num_to_query_substr(newrow[8]), 
+              num_to_query_substr(newrow[1], 0), 
+              num_to_query_substr(newrow[2], 0), 
+              newrow[6])) for newrow in newstrings)
 
+
+
+    #print("""INSERT INTO operate.report_strings
+    #                    (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
+    #                  VALUES """ + args_str)
 
     cursor.execute("""INSERT INTO operate.report_strings
                         (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
                       VALUES """ + args_str)
-    
+
     connection.commit()
 
 
@@ -187,4 +211,11 @@ def current_string_to_histirical():
 
 def lambda_handler(event, context):
     print({'event': event, 'context': context})
-    return app.resolve(event, context)
+
+    result = {}
+    try:
+        result = app.resolve(event, context)
+    except Exception as er:
+        result["DataError"] = str(er)
+
+    return result

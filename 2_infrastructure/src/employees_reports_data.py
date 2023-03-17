@@ -186,5 +186,5 @@ def current_string_to_histirical():
     print(app.current_event.query_string_parameters)
 
 def lambda_handler(event, context):
-    #print({'event': event, 'context': context})
+    print({'event': event, 'context': context})
     return app.resolve(event, context)

@@ -27,6 +27,9 @@ INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Сал
 INSERT INTO operate.sources (source_name, source_external_key, source_type) 
 VALUES('Отчет Викулин Тест 1','1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAqpyd9jAz2KG8',1);
 
+INSERT INTO operate.sources (source_name, source_external_key, source_type) 
+VALUES('Отчет Тест 2','1NgQ1grPIRnayr5gyu9wB1kgN5hNzFN40od33nfEJjNQ',1);
+
 
 with approve_items as (
 	select
@@ -61,6 +64,23 @@ from
      operate.hotels ho inner join find_source so on (true); 
 	
 
+SELECT 
+	id,  
+	report_item_id, 
+	created, 
+	applyed, 
+	report_date, 
+	hotel_id, 
+	sum_income, 
+	sum_spend, 
+	string_comment
+FROM operate.report_strings
+where 
+	source_id = 3 and 
+	((applyed is null and 0=0) or 
+		(applyed is not null and 0=1) or (0=2));
+
+    
 select *
 from operate.hotels h;
 

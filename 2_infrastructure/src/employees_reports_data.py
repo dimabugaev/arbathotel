@@ -33,8 +33,7 @@ def get_response(body: dict = {}) -> dict:
     response_obj["statusCode"] = 200
     response_obj["headers"] = {}
     response_obj["headers"]["Content-Type"] = 'application/json'
-    #response_obj['body'] = json.dumps(body)
-    response_obj['body'] = body
+    response_obj['body'] = json.loads(json.dumps(body, indent=4, default=str))
 
     return response_obj
 
@@ -102,8 +101,7 @@ def get_report_strings():
     
 
     bodyDict = {}
-    bodyDict["report_strings"] = json.loads(json.dumps(cursor.fetchall(), indent=4, sort_keys=True, default=str))
-
+    bodyDict["report_strings"] = cursor.fetchall()
     return get_response(bodyDict)
 
 @app.post("/string")

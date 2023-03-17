@@ -110,9 +110,6 @@ def put_operate_report_strings():
 
     cursor = connection.cursor()
 
-    #args_str = ','.join(cursor.mogrify('%d, %s, %s, %s, %s, %s, %s', source_id, newrow) for newrow in newstrings)
-    
-    #print(args_str)
 
     cursor.execute("""select 
                           so.id as found_source_id
@@ -218,4 +215,6 @@ def lambda_handler(event, context):
     except Exception as er:
         result["DataError"] = str(er)
 
+        connection.rollback()
+        connection.close()
     return result

@@ -217,4 +217,6 @@ def lambda_handler(event, context):
 
         connection.rollback()
         connection.close()
+        connection = psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
+        
     return result

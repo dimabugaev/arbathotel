@@ -5,6 +5,7 @@ import re
 from aws_lambda_powertools.event_handler import APIGatewayHttpResolver
 
 import boto3
+from datetime import date, timedelta
 
 
 
@@ -15,8 +16,6 @@ region_name = "eu-central-1"
 session = boto3.session.Session()
 client = session.client(service_name='secretsmanager', region_name=region_name)
 secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
-
-print(secret_value_dict)
 
 endpoint = secret_value_dict['host']
 username = secret_value_dict['username']
@@ -38,15 +37,21 @@ def get_response(body: dict = {}) -> dict:
 
     return response_obj
 
+def get_date_from_int_excel(int_excel: int) -> date:
+    if int is None:
+        return None
+    return date.fromisoformat('1899-12-30') + + timedelta(days = int_excel)    
+
 @app.get("/string")
 def get_report_strings():
-    source_id = app.current_event.query_string_parameters.get("source_id")
-    date_start = app.current_event.query_string_parameters.get("date_start")
-    date_end = app.current_event.query_string_parameters.get("date_end")
+    source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
+    date_start = app.current_event.get_query_string_value(name="date_start", default_value="")
+    date_end = app.current_event.get_query_string_value(name="date_end", default_value="")
     mode = app.current_event.query_string_parameters.get("mode")
+    mode = app.current_event.get_query_string_value(name="mode", default_value='0')
     
 
-    if mode is None or not mode.isdigit(): 
+    if not mode.isdigit(): 
         mode = 0
     else: 
         mode = int(mode)
@@ -86,10 +91,15 @@ def get_report_strings():
 
 @app.post("/string")
 def put_operate_report_strings():
-    source_id = app.current_event.query_string_parameters.get("source_id")
-    newstrings = app.current_event.body
+    
+    source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
+    newstrings = app.current_event.json_body
 
     cursor = connection.cursor()
+
+    #args_str = ','.join(cursor.mogrify('%d, %s, %s, %s, %s, %s, %s', source_id, newrow) for newrow in newstrings)
+    
+    #print(args_str)
 
     cursor.execute("""select 
                           so.id as found_source_id
@@ -108,7 +118,9 @@ def put_operate_report_strings():
                       where
                         applyed is null and source_id = %(source_id)s""", {'source_id': found_source_id})          
 
-    args_str = ','.join(cursor.mogrify('%d, %s, %s, %s, %s, %s, %s', source_id, newrow) for newrow in newstrings)
+    #args_str = ','.join(cursor.mogrify('%d, %s, %s, %s, %s, %s, %s', source_id, newrow) for newrow in newstrings)
+    args_str = ','.join(('{}, {}, {}, {}, {}, {}, {}'.format(source_id, newrow[7], get_date_from_int_excel(newrow[0]), newrow[8], newrow[1], newrow[2], newrow[6])) for newrow in newstrings)
+
 
     cursor.execute("""INSERT INTO operate.report_strings
                         (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
@@ -120,7 +132,7 @@ def put_operate_report_strings():
 
 @app.get("/dict")
 def get_hotels_and_report_ivents() -> dict:
-    source_id = app.current_event.query_string_parameters.get("source_id")
+    source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
 
     if re.match('\S+', source_id) is None: # bad string
         return get_response({'FormatError': source_id})
@@ -173,5 +185,5 @@ def current_string_to_histirical():
     print(app.current_event.query_string_parameters)
 
 def lambda_handler(event, context):
-    print({'event': event, 'context': context})
+    #print({'event': event, 'context': context})
     return app.resolve(event, context)

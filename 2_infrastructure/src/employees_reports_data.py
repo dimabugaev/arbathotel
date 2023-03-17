@@ -12,8 +12,8 @@ from datetime import date, timedelta
 secret_name = "dev-rds-instance"
 region_name = "eu-central-1"
 
-#session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
-session = boto3.session.Session()
+session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
+#session = boto3.session.Session()
 client = session.client(service_name='secretsmanager', region_name=region_name)
 secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
 
@@ -83,20 +83,26 @@ def get_report_strings():
     print(found_source_id)
 
     cursor.execute("""SELECT 
-                        id,  
-                        report_item_id, 
-                        created, 
-                        applyed, 
-                        report_date, 
-                        hotel_id, 
-                        sum_income, 
-                        sum_spend, 
-                        string_comment
-                      FROM operate.report_strings
+                        --st.id,  
+                        --st.report_item_id, 
+                        st.report_date,
+                        st.sum_income,
+                        st.sum_spend,
+                        0 debt,
+                        ri.item_name,
+                        h.hotel_name,
+                        st.string_comment,
+                        st.report_item_id,
+                        st.hotel_id,
+                        st.created, 
+                        st.applyed
+                      FROM operate.report_strings st
+                        left join operate.report_items ri on st.report_item_id = ri.id
+                        left join operate.hotels h on st.hotel_id = h.id 
                       where 
-                        source_id = %(source_id)s and 
-                        ((applyed is null and %(mode)s = 0) or 
-                          (applyed is not null and %(mode)s = 1) or 
+                        st.source_id = %(source_id)s and 
+                        ((st.applyed is null and %(mode)s = 0) or 
+                          (st.applyed is not null and %(mode)s = 1) or 
                           (%(mode)s = 2))""", {'source_id': found_source_id, 'mode': mode})
     
 

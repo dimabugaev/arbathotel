@@ -67,18 +67,24 @@ from
 	
 
 SELECT 
-	id,  
-	report_item_id, 
-	created, 
-	applyed, 
-	report_date, 
-	hotel_id, 
-	sum_income, 
-	sum_spend, 
-	string_comment
-FROM operate.report_strings
+	--st.id,  
+	--st.report_item_id, 
+	st.report_date,
+	st.sum_income,
+	st.sum_spend,
+	0 debt,
+	ri.item_name,
+	h.hotel_name,
+	st.string_comment,
+	st.report_item_id,
+	st.hotel_id,
+	st.created, 
+	st.applyed
+FROM operate.report_strings st
+	left join operate.report_items ri on st.report_item_id = ri.id
+	left join operate.hotels h on st.hotel_id = h.id 
 where 
-	source_id = 3 and 
+	source_id = 4 and 
 	((applyed is null and 0=0) or 
 		(applyed is not null and 0=1) or (0=2));
 

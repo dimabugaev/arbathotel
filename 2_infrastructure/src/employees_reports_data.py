@@ -141,12 +141,16 @@ def put_operate_report_strings():
     #print("""INSERT INTO operate.report_strings
     #                    (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
     #                  VALUES """ + args_str)
+    try:
+      cursor.execute("""INSERT INTO operate.report_strings
+                          (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
+                        VALUES """ + args_str)
+      connection.commit()
+    except:
+      connection.rollback()
+      raise      
 
-    cursor.execute("""INSERT INTO operate.report_strings
-                        (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
-                      VALUES """ + args_str)
-
-    connection.commit()
+    
 
 
 
@@ -214,7 +218,6 @@ def lambda_handler(event, context):
     except Exception as er:
         result["DataError"] = str(er)
 
-        connection.rollback()
         connection.close()
         connection = psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
 

@@ -27,6 +27,7 @@ connection = psycopg2.connect(host=endpoint, database=database_name, user=userna
 #logger = Logger()
 app = APIGatewayHttpResolver()
 
+
 def get_response(body: dict = {}) -> dict:
     response_obj = {}
     response_obj["statusCode"] = 200
@@ -68,6 +69,9 @@ def get_report_strings():
     else: 
         mode = int(mode)
 
+    print(mode)
+    print(type(mode))
+
     cursor = connection.cursor()
     cursor.execute("""select 
                           so.id as found_source_id
@@ -93,9 +97,9 @@ def get_report_strings():
                       FROM operate.report_strings
                       where 
                         source_id = %(source_id)s and 
-                        ((applyed is null and %(mode)d = 0) or 
-                          (applyed is not null and %(mode)d = 1) or 
-                          (%(mode)d = 2))""", {'source_id': found_source_id, 'mode': mode})
+                        ((applyed is null and %(mode)s = 0) or 
+                          (applyed is not null and %(mode)s = 1) or 
+                          (%(mode)s = 2))""", {'source_id': found_source_id, 'mode': mode})
     
     bodyDict = {}
     bodyDict["report_strings"] = cursor.fetchall()

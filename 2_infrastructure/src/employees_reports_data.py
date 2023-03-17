@@ -137,6 +137,7 @@ def get_hotels_and_report_ivents() -> dict:
     if re.match('\S+', source_id) is None: # bad string
         return get_response({'FormatError': source_id})
 
+
     cursor = connection.cursor()
     
     bodyDict = {}

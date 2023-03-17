@@ -60,7 +60,6 @@ def get_report_strings():
     source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
     date_start = app.current_event.get_query_string_value(name="date_start", default_value="")
     date_end = app.current_event.get_query_string_value(name="date_end", default_value="")
-    mode = app.current_event.query_string_parameters.get("mode")
     mode = app.current_event.get_query_string_value(name="mode", default_value='0')
     
 
@@ -218,5 +217,5 @@ def lambda_handler(event, context):
         connection.rollback()
         connection.close()
         connection = psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
-        
+
     return result

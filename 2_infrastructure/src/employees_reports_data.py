@@ -86,9 +86,9 @@ def get_report_strings():
                         --st.id,  
                         --st.report_item_id, 
                         st.report_date,
-                        st.sum_income,
-                        st.sum_spend,
-                        0 debt,
+                        st.sum_income::FLOAT,
+                        st.sum_spend::FLOAT,
+                        0::FLOAT debt,
                         ri.item_name,
                         h.hotel_name,
                         st.string_comment,
@@ -108,6 +108,7 @@ def get_report_strings():
 
     bodyDict = {}
     bodyDict["report_strings"] = cursor.fetchall()
+    print(bodyDict["report_strings"])
     return get_response(bodyDict)
 
 @app.post("/string")
@@ -155,9 +156,9 @@ def put_operate_report_strings():
                           (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
                         VALUES """ + args_str)
       connection.commit()
-    except:
+    except Exception as ex:
       connection.rollback()
-      raise      
+      raise ex     
 
     
 

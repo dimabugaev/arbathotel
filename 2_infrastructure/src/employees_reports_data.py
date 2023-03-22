@@ -103,7 +103,10 @@ def get_report_strings():
                         st.source_id = %(source_id)s and 
                         ((st.applyed is null and %(mode)s = 0) or 
                           (st.applyed is not null and %(mode)s = 1) or 
-                          (%(mode)s = 2))""", {'source_id': found_source_id, 'mode': mode})
+                          (%(mode)s = 2))
+                      order by 
+                        st.applyed is null,
+                        st.id""", {'source_id': found_source_id, 'mode': mode})
     
 
     bodyDict = {}
@@ -215,9 +218,40 @@ def get_hotels_and_report_ivents() -> dict:
 
     return get_response(bodyDict)
 
-@app.post("/close")
+
+@app.get("/close")
 def current_string_to_histirical():
-    print(app.current_event.query_string_parameters)
+    source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
+
+    cursor = connection.cursor()
+
+
+    cursor.execute("""select 
+                          so.id as found_source_id
+                        from operate.sources so 
+                        where so.source_external_key = %(source_key)s
+                        limit 1""", {'source_key': source_id})
+    
+    if cursor.rowcount < 1:
+        return get_response({'FormatError': source_id})
+
+    found_source_id = cursor.fetchone()[0]
+
+    try:
+        cursor.execute("""update operate.report_strings
+                          set applyed = CURRENT_TIMESTAMP
+                          where 
+                            source_id = %(source_id)s
+                            and applyed is null 
+                            and report_item_id is not null
+                            and ((sum_income = 0 and sum_spend <> 0) 
+                              or (sum_income <> 0 and sum_spend = 0))""", {'source_id': found_source_id})
+        connection.commit()
+    except Exception as ex:
+        connection.rollback()
+        raise ex   
+
+
 
 def lambda_handler(event, context):
     print({'event': event, 'context': context})

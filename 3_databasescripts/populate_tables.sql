@@ -17,12 +17,30 @@ INSERT INTO operate.hotels (hotel_name) VALUES('Токмаков');
 
 INSERT INTO operate.report_items (item_name) VALUES('Зарплата');
 INSERT INTO operate.report_items (item_name) VALUES('Хозрасходы');
+INSERT INTO operate.report_items (item_name) VALUES('Бензин');
 INSERT INTO operate.report_items (item_name) VALUES('Прочее');
+
+
+INSERT INTO operate.report_items (item_name) VALUES('Альфа КНМ');
+INSERT INTO operate.report_items (item_name) VALUES('Корп карта ИП БАВ');
+
 
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Авдеева','Ольга','Авдеева');
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Быкова','Ирина','Быкова');
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Пульчев','Денис','Пульчев');
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Салдаев','Алексей','Салдаев');
+
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Неверова','Ирина','Неверова');
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Сазонов','Андрей','Сазонов');
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Новоженина','Диана','Новоженина');
+
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Бабаев','','Бабаев');
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Буланец','','Буланец');
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Клубиков','','Клубиков');
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Поляков','','Поляков');
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Парамонова','','Парамонова');
+
+
 
 INSERT INTO operate.sources (source_name, source_external_key, source_type) 
 VALUES('Отчет Викулин Тест 1','1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAqpyd9jAz2KG8',1);
@@ -67,7 +85,7 @@ from
 	
 
 SELECT 
-	--st.id,  
+	st.id,  
 	--st.report_item_id, 
 	st.report_date,
 	st.sum_income,
@@ -85,8 +103,12 @@ FROM operate.report_strings st
 	left join operate.hotels h on st.hotel_id = h.id 
 where 
 	source_id = 4 and 
-	((applyed is null and 0=0) or 
-		(applyed is not null and 0=1) or (0=2));
+	((applyed is null and 0=2) or 
+		(applyed is not null and 0=1) or (2=2))
+order by 
+	st.applyed is null,
+	st.id 
+	;
 
     
 select *
@@ -115,6 +137,22 @@ where
 update operate.hotels 
 set hotel_name = 'PUTIN KHUILO'
 where id = 1;
-                   
-                     
+
+update operate.report_strings
+set
+	applyed = null
+where 	
+	applyed is not null;
+
+update operate.report_strings
+set applyed = CURRENT_TIMESTAMP
+where 
+	applyed is null 
+	and report_item_id is not null
+	and ((sum_income = 0 and sum_spend <> 0) 
+		or (sum_income <> 0 and sum_spend = 0));
+
+
+
+
                      

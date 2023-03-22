@@ -301,7 +301,7 @@ module "api_gateway" {
       //integration_type   = "LAMBDA_PROXY"
     }
 
-    "POST /close" = {
+    "GET /close" = {
       lambda_arn             = module.lambda_function_employees_reports.lambda_function_arn
       payload_format_version = "2.0"
       authorization_type     = "NONE"
@@ -353,7 +353,7 @@ module "secrets_endpoints_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
 
-  name        = "endpoint-sg-to-secretsmanager"
+  name        = "${local.name}-endpoint-sg-to-secretsmanager"
   description = "SG endpoints to secrets db"
   vpc_id      = module.vpc.vpc_id
 

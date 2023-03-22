@@ -28,7 +28,7 @@
     /string
 
 4. Зафиксировать исторические данные
-    POST
+    GET
     source_id
 
     /close

@@ -49,7 +49,7 @@ def get_date_from_string_to_query(str_date: str) -> str:
 
     #2023-01-03T08:00:00.000Z
     format = '%Y-%m-%dT%H:%M:%S.%f%z'
-    if isinstance(str_date, str):
+    if isinstance(str_date, str) and len(str_date) > 0:
         result = "TO_DATE('" + str(str(datetime.strptime(str_date, format).date())) + "','YYYY-mm-DD')"
 
     return result

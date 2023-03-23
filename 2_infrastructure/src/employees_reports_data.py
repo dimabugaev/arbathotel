@@ -110,7 +110,7 @@ def get_report_strings():
     cursor.execute("""
                       with income_debt as (
                         select 
-                          coalesce(sum(hist_str.sum_income - hist_str.sum_spend),0) as value
+                          coalesce(sum(hist_str.sum_income) - sum(hist_str.sum_spend),0) as value
                         from
                           operate.report_strings hist_str
                         where 

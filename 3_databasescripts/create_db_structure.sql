@@ -183,7 +183,7 @@ CREATE OR REPLACE FUNCTION operate.employee_insert_trigger_fnc()
 $$
 BEGIN
  INSERT INTO operate.report_items ( item_name, empl_id )
-VALUES(NEW.last_name || ' ' || NEW.first_name, NEW.id);
+VALUES(new.name_in_db, NEW.id);
 RETURN NEW;
 END;
 $$
@@ -202,7 +202,7 @@ CREATE OR REPLACE FUNCTION operate.employee_update_trigger_fnc()
 $$
 BEGIN
  UPDATE operate.report_items 
- SET item_name = NEW.last_name || ' ' || NEW.first_name
+ SET item_name = NEW.name_in_db
  WHERE empl_id = NEW.id;
 RETURN NEW;
 END;

@@ -30,7 +30,7 @@ INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Бык
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Пульчев','Денис','Пульчев');
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Салдаев','Алексей','Салдаев');
 
-INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Неверова','Ирина','Неверова');
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Неверова','Инна','Неверова');
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Сазонов','Андрей','Сазонов');
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Новоженина','Диана','Новоженина');
 
@@ -152,6 +152,18 @@ where
 	and ((sum_income = 0 and sum_spend <> 0) 
 		or (sum_income <> 0 and sum_spend = 0));
 
+
+	
+update operate.report_items
+set item_name = e.name_in_db 
+from operate.employees e
+where 
+	empl_id = e.id and empl_id is not null;
+
+
+update operate.employees 
+set first_name = 'Инна'
+where id = 10;
 
 
 

@@ -5,7 +5,7 @@ import re
 from aws_lambda_powertools.event_handler import APIGatewayHttpResolver
 
 import boto3
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 
 
@@ -42,6 +42,16 @@ def get_date_from_int_excel(int_excel: int) -> str:
     if int is not None:
         result = "TO_DATE('" + str(date.fromisoformat('1899-12-30') + + timedelta(days = int_excel)) + "','YYYY-mm-DD')"    
     
+    return result
+
+def get_date_from_string_to_query(str_date: str) -> str:
+    result = "NULL"
+
+    #2023-01-03T08:00:00.000Z
+    format = '%Y-%m-%dT%H:%M:%S.%f%z'
+    if isinstance(str_date, str):
+        result = "TO_DATE('" + str(str(datetime.strptime(str_date, format).date())) + "','YYYY-mm-DD')"
+
     return result
 
 def num_to_query_substr(id: any, result_if_null = "NULL") -> str: 
@@ -140,21 +150,19 @@ def put_operate_report_strings():
                       where
                         applyed is null and source_id = %(source_id)s""", {'source_id': found_source_id})          
 
-    #args_str = ','.join(cursor.mogrify('%d, %s, %s, %s, %s, %s, %s', source_id, newrow) for newrow in newstrings)
-    args_str = ','.join(("({}, {}, {}, {}, {}, {}, '{}')"
+    try:
+      args_str = ','.join(("({}, {}, {}, {}, {}, {}, '{}')"
       .format(found_source_id, num_to_query_substr(newrow[7]), 
-              get_date_from_int_excel(newrow[0]), 
+              #get_date_from_int_excel(newrow[0]),
+              get_date_from_string_to_query(newrow[0]), 
               num_to_query_substr(newrow[8]), 
               num_to_query_substr(newrow[1], 0), 
               num_to_query_substr(newrow[2], 0), 
               newrow[6])) for newrow in newstrings)
 
-
-
-    #print("""INSERT INTO operate.report_strings
-    #                    (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
-    #                  VALUES """ + args_str)
-    try:
+      #print("""INSERT INTO operate.report_strings
+      #                    (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
+      #                  VALUES """ + args_str)
       cursor.execute("""INSERT INTO operate.report_strings
                           (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
                         VALUES """ + args_str)

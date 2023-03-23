@@ -97,7 +97,7 @@ SELECT
 	st.report_date,
 	nullif(st.sum_income, 0),
 	nullif(st.sum_spend, 0),
-	nullif(inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total, 0) as debt,
+	nullif((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
 	ri.item_name,
 	h.hotel_name,
 	st.string_comment,

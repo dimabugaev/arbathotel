@@ -111,7 +111,7 @@ def get_report_strings():
                         st.report_date,
                         NULLIF(st.sum_income::FLOAT, 0),
                         NULLIF(st.sum_spend::FLOAT, 0),
-                        NULLIF(inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total, 0) as debt,
+                        NULLIF((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
                         ri.item_name,
                         h.hotel_name,
                         st.string_comment,

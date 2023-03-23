@@ -58,6 +58,17 @@ def get_date_from_string_to_query(str_date: str) -> str:
 
     return result
 
+def get_date_from_iso_string_to_query_param(str_date: any) -> str:
+    result = None
+
+    if isinstance(str_date, str) and len(str_date) > 0:
+        try:  
+            result = date.fromisoformat(str_date)
+        except:
+            result = None
+
+    return result
+
 def num_to_query_substr(id: any, result_if_null = "0") -> str: 
     result = result_if_null
     if id is not None:
@@ -72,8 +83,8 @@ def num_to_query_substr(id: any, result_if_null = "0") -> str:
 @app.get("/string")
 def get_report_strings():
     source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
-    date_start = app.current_event.get_query_string_value(name="date_start", default_value="")
-    date_end = app.current_event.get_query_string_value(name="date_end", default_value="")
+    date_start = get_date_from_iso_string_to_query_param(app.current_event.get_query_string_value(name="date_start", default_value=""))
+    date_end = get_date_from_iso_string_to_query_param(app.current_event.get_query_string_value(name="date_end", default_value=""))
     mode = app.current_event.get_query_string_value(name="mode", default_value='0')
     
     if not mode.isdigit(): 
@@ -103,7 +114,7 @@ def get_report_strings():
                         from
                           operate.report_strings hist_str
                         where 
-                          false
+                          hist_str.applyed < %(date_start)s
                         )    
                       SELECT 
                         --st.id,  
@@ -125,13 +136,20 @@ def get_report_strings():
                         income_debt inc_dedt 
                       where 
                         st.source_id = %(source_id)s and 
-                        ((st.applyed is null and %(mode)s = 0) or 
-                          (st.applyed is not null and %(mode)s = 1) or 
-                          (%(mode)s = 2))
+                        (
+                          (st.applyed is null and %(mode)s = 0) or 
+                          (%(mode)s = 1 and (
+                            (%(date_start)s IS NULL or st.applyed >= %(date_start)s) and 
+                            (%(date_end)s IS NULL or st.applyed <= %(date_end)s) 
+                            and st.applyed is not NULL)) or 
+                          (%(mode)s = 2 and (
+                            (%(date_start)s IS NULL or st.applyed >= %(date_start)s) and 
+                            (%(date_end)s IS NULL or st.applyed <= %(date_end)s) 
+                            or st.applyed is NULL)))
                       window grow_total as (order by st.applyed is null, st.id)
                       order by 
                         st.applyed is null,
-                        st.id""", {'source_id': found_source_id, 'mode': mode})
+                        st.id""", {'source_id': found_source_id, 'mode': mode, 'date_start': date_start, 'date_end': date_end})
     
 
     bodyDict = {}

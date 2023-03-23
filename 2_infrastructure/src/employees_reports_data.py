@@ -96,13 +96,22 @@ def get_report_strings():
 
     print(found_source_id)
 
-    cursor.execute("""SELECT 
+    cursor.execute("""
+                      with income_debt as (
+                        select 
+                          coalesce(sum(hist_str.sum_income - hist_str.sum_spend),0) as value
+                        from
+                          operate.report_strings hist_str
+                        where 
+                          false
+                        )    
+                      SELECT 
                         --st.id,  
                         --st.report_item_id, 
                         st.report_date,
                         NULLIF(st.sum_income::FLOAT, 0),
                         NULLIF(st.sum_spend::FLOAT, 0),
-                        0::FLOAT debt,
+                        NULLIF(inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total, 0) as debt,
                         ri.item_name,
                         h.hotel_name,
                         st.string_comment,
@@ -112,12 +121,14 @@ def get_report_strings():
                         st.applyed
                       FROM operate.report_strings st
                         left join operate.report_items ri on st.report_item_id = ri.id
-                        left join operate.hotels h on st.hotel_id = h.id 
+                        left join operate.hotels h on st.hotel_id = h.id,
+                        income_debt inc_dedt 
                       where 
                         st.source_id = %(source_id)s and 
                         ((st.applyed is null and %(mode)s = 0) or 
                           (st.applyed is not null and %(mode)s = 1) or 
                           (%(mode)s = 2))
+                      window grow_total as (order by st.applyed is null, st.id)
                       order by 
                         st.applyed is null,
                         st.id""", {'source_id': found_source_id, 'mode': mode})

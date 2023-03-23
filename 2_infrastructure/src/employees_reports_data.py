@@ -49,12 +49,16 @@ def get_date_from_string_to_query(str_date: str) -> str:
 
     #2023-01-03T08:00:00.000Z
     format = '%Y-%m-%dT%H:%M:%S.%f%z'
-    if isinstance(str_date, str) and len(str_date) > 0:
-        result = "TO_DATE('" + str(str(datetime.strptime(str_date, format).date())) + "','YYYY-mm-DD')"
+    if isinstance(str_date, str):
+        try:
+            report_date = datetime.strptime(str_date, format).date()   
+            result = "TO_DATE('" + str(str(report_date)) + "','YYYY-mm-DD')"
+        except:
+            result = "NULL"
 
     return result
 
-def num_to_query_substr(id: any, result_if_null = "NULL") -> str: 
+def num_to_query_substr(id: any, result_if_null = "0") -> str: 
     result = result_if_null
     if id is not None:
         if isinstance(id, str):
@@ -96,8 +100,8 @@ def get_report_strings():
                         --st.id,  
                         --st.report_item_id, 
                         st.report_date,
-                        st.sum_income::FLOAT,
-                        st.sum_spend::FLOAT,
+                        NULLIF(st.sum_income::FLOAT, 0),
+                        NULLIF(st.sum_spend::FLOAT, 0),
                         0::FLOAT debt,
                         ri.item_name,
                         h.hotel_name,
@@ -150,26 +154,28 @@ def put_operate_report_strings():
                       where
                         applyed is null and source_id = %(source_id)s""", {'source_id': found_source_id})          
 
-    try:
-      args_str = ','.join(("({}, {}, {}, {}, {}, {}, '{}')"
-      .format(found_source_id, num_to_query_substr(newrow[7]), 
-              #get_date_from_int_excel(newrow[0]),
-              get_date_from_string_to_query(newrow[0]), 
-              num_to_query_substr(newrow[8]), 
-              num_to_query_substr(newrow[1], 0), 
-              num_to_query_substr(newrow[2], 0), 
-              newrow[6])) for newrow in newstrings)
 
-      #print("""INSERT INTO operate.report_strings
-      #                    (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
-      #                  VALUES """ + args_str)
-      cursor.execute("""INSERT INTO operate.report_strings
-                          (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
-                        VALUES """ + args_str)
-      connection.commit()
-    except Exception as ex:
-      connection.rollback()
-      raise ex     
+    if len(newstrings) > 0:
+        try:
+          args_str = ','.join(("({}, {}, {}, {}, {}, {}, '{}')"
+          .format(found_source_id, num_to_query_substr(newrow[7]), 
+                  #get_date_from_int_excel(newrow[0]),
+                  get_date_from_string_to_query(newrow[0]), 
+                  num_to_query_substr(newrow[8]), 
+                  num_to_query_substr(newrow[1], 0), 
+                  num_to_query_substr(newrow[2], 0), 
+                  newrow[6])) for newrow in newstrings)
+
+          #print("""INSERT INTO operate.report_strings
+          #                    (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
+          #                  VALUES """ + args_str)
+          cursor.execute("""INSERT INTO operate.report_strings
+                              (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
+                            VALUES """ + args_str)
+          connection.commit()
+        except Exception as ex:
+          connection.rollback()
+          raise ex     
 
     
 

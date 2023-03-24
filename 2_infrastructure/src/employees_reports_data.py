@@ -86,7 +86,7 @@ def get_report_strings():
     date_start = get_date_from_iso_string_to_query_param(app.current_event.get_query_string_value(name="date_start", default_value=""))
     date_end = get_date_from_iso_string_to_query_param(app.current_event.get_query_string_value(name="date_end", default_value=""))
     mode = app.current_event.get_query_string_value(name="mode", default_value='0')
-    
+
     if not mode.isdigit(): 
         mode = 0
     else: 
@@ -139,8 +139,8 @@ def get_report_strings():
                         (
                           (st.applyed is null and %(mode)s = 0) or 
                           (%(mode)s = 1 and (
-                            (%(date_start)s IS NULL or st.applyed >= %(date_start)s) and 
-                            (%(date_end)s IS NULL or st.applyed <= %(date_end)s) 
+                            (%(date_start)s IS NULL or st.report_date >= %(date_start)s) and 
+                            (%(date_end)s IS NULL or st.report_date <= %(date_end)s) 
                             and st.applyed is not NULL)) or 
                           (%(mode)s = 2 and (
                             (%(date_start)s IS NULL or st.applyed >= %(date_start)s) and 

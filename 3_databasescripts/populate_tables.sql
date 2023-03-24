@@ -97,7 +97,9 @@ SELECT
 	--st.report_item_id, 
 	st.report_date,
 	nullif(st.sum_income, 0),
+	st.sum_income,
 	nullif(st.sum_spend, 0),
+	st.sum_spend,
 	nullif((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
 	ri.item_name,
 	h.hotel_name,
@@ -105,18 +107,23 @@ SELECT
 	st.report_item_id,
 	st.hotel_id,
 	st.created, 
-	st.applyed
+	st.applyed,
+	st.parent_row_id 
 FROM operate.report_strings st
 	left join operate.report_items ri on st.report_item_id = ri.id
 	left join operate.hotels h on st.hotel_id = h.id, 
 	income_debt inc_dedt
 where 
-	source_id = 4 and 
+	st.source_id = 4 and 
 	((applyed is null and 0=2) or 
 		(applyed is not null and 0=1) or (2=2))
 window grow_total as (order by st.applyed is null, st.id)		
 order by 
-	st.applyed is null,
+	(case 
+		when st.parent_row_id is not null then 2
+		when st.applyed is null then 3
+		else 1
+	end),
 	st.id 
 	;
 
@@ -177,5 +184,17 @@ set first_name = 'Инна'
 where id = 10;
 
 
+ALTER TABLE operate.report_items 
+ADD source_id int,
+ADD CONSTRAINT fk_source_items FOREIGN KEY ( source_id ) REFERENCES operate.sources  ( id );
 
-                     
+
+
+ALTER TABLE operate.report_strings  
+ADD parent_row_id int;
+
+ALTER TABLE operate.report_strings
+add CONSTRAINT fk_parent_rows_reports FOREIGN KEY ( parent_row_id ) REFERENCES operate.report_strings ( id );
+
+
+

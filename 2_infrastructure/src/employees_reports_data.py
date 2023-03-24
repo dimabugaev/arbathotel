@@ -129,7 +129,8 @@ def get_report_strings():
                         st.report_item_id,
                         st.hotel_id,
                         st.created, 
-                        st.applyed
+                        st.applyed,
+                        st.parent_row_id
                       FROM operate.report_strings st
                         left join operate.report_items ri on st.report_item_id = ri.id
                         left join operate.hotels h on st.hotel_id = h.id,
@@ -148,7 +149,11 @@ def get_report_strings():
                             or st.applyed is NULL)))
                       window grow_total as (order by st.applyed is null, st.id)
                       order by 
-                        st.applyed is null,
+                        (case 
+                          when st.parent_row_id is not null then 2
+                          when st.applyed is null then 3
+                          else 1
+                        end),
                         st.id""", {'source_id': found_source_id, 'mode': mode, 'date_start': date_start, 'date_end': date_end})
     
 
@@ -285,7 +290,8 @@ def current_string_to_histirical():
                           set applyed = CURRENT_TIMESTAMP
                           where 
                             source_id = %(source_id)s
-                            and applyed is null 
+                            and applyed is null
+                            and parent_row_id is null 
                             and report_item_id is not null
                             and ((sum_income = 0 and sum_spend <> 0) 
                               or (sum_income <> 0 and sum_spend = 0))""", {'source_id': found_source_id})

@@ -85,11 +85,12 @@ from
 	
 with income_debt as (
 select 
-	coalesce(sum(hist_str.sum_income - hist_str.sum_spend),0) as value
+	coalesce(sum(hist_str.sum_income) - sum(hist_str.sum_spend),0) as value
 from
 	operate.report_strings hist_str
 where 
 	false
+	--hist_str.applyed < TO_DATE('2023-04-01','YYYY-mm-DD')
 )
 SELECT 
 	st.id,  
@@ -123,7 +124,8 @@ order by
 select *
 from operate.hotels h;
 
-select *
+select *,
+	'"' || ri.item_name || '"'
 from operate.report_items ri;
 
 select *

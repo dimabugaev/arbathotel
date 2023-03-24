@@ -69,7 +69,7 @@ def get_date_from_iso_string_to_query_param(str_date: any) -> str:
 
     return result
 
-def num_to_query_substr(id: any, result_if_null = "0") -> str: 
+def num_to_query_substr(id: any, result_if_null = "NULL") -> str: 
     result = result_if_null
     if id is not None:
         if isinstance(id, str):
@@ -191,8 +191,8 @@ def put_operate_report_strings():
                   #get_date_from_int_excel(newrow[0]),
                   get_date_from_string_to_query(newrow[0]), 
                   num_to_query_substr(newrow[8]), 
-                  num_to_query_substr(newrow[1], 0), 
-                  num_to_query_substr(newrow[2], 0), 
+                  num_to_query_substr(newrow[1], "0"), 
+                  num_to_query_substr(newrow[2], "0"), 
                   newrow[6])) for newrow in newstrings)
 
           #print("""INSERT INTO operate.report_strings

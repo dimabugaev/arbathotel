@@ -287,9 +287,12 @@ CREATE TRIGGER report_strings_update_trigger
  
 CREATE OR REPLACE FUNCTION operate.report_string_before_delete_trigger_fnc() RETURNS trigger AS
 $$BEGIN
-   delete from operate.report_string
+
+
+   delete from operate.report_strings
    where
 	parent_row_id = old.id;
+
    RETURN OLD;
 END;$$ LANGUAGE 'plpgsql';
 

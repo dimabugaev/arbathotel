@@ -159,7 +159,7 @@ def get_report_strings():
 
     bodyDict = {}
     bodyDict["report_strings"] = cursor.fetchall()
-    print(bodyDict["report_strings"])
+    #print(bodyDict["report_strings"])
     return get_response(bodyDict)
 
 @app.post("/string")

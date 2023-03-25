@@ -48,7 +48,8 @@ VALUES('Отчет Викулин Тест 1','1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAq
 INSERT INTO operate.sources (source_name, source_external_key, source_type) 
 VALUES('Отчет Тест 2','1NgQ1grPIRnayr5gyu9wB1kgN5hNzFN40od33nfEJjNQ',1);
 
-
+insert into operate.report_items (item_name, source_id)
+values('Отчет Тест 2', 4);
 
 
 with approve_items as (
@@ -117,7 +118,12 @@ where
 	st.source_id = 4 and 
 	((applyed is null and 0=2) or 
 		(applyed is not null and 0=1) or (2=2))
-window grow_total as (order by st.applyed is null, st.id)		
+window grow_total as (order by 
+	(case 
+		when st.parent_row_id is not null then 2
+		when st.applyed is null then 3
+		else 1
+	end), st.id)		
 order by 
 	(case 
 		when st.parent_row_id is not null then 2
@@ -128,6 +134,9 @@ order by
 	;
 
     
+delete from operate.report_strings 
+where id = 607;
+
 select *
 from operate.hotels h;
 
@@ -188,6 +197,7 @@ ALTER TABLE operate.report_items
 ADD source_id int,
 ADD CONSTRAINT fk_source_items FOREIGN KEY ( source_id ) REFERENCES operate.sources  ( id );
 
+delete 
 
 
 ALTER TABLE operate.report_strings  
@@ -195,6 +205,7 @@ ADD parent_row_id int;
 
 ALTER TABLE operate.report_strings
 add CONSTRAINT fk_parent_rows_reports FOREIGN KEY ( parent_row_id ) REFERENCES operate.report_strings ( id );
+
 
 
 

@@ -147,7 +147,12 @@ def get_report_strings():
                             (%(date_start)s IS NULL or st.applyed >= %(date_start)s) and 
                             (%(date_end)s IS NULL or st.applyed <= %(date_end)s) 
                             or st.applyed is NULL)))
-                      window grow_total as (order by st.applyed is null, st.id)
+                      window grow_total as (order by 
+                        (case 
+                          when st.parent_row_id is not null then 2
+                          when st.applyed is null then 3
+                          else 1
+                        end), st.id)
                       order by 
                         (case 
                           when st.parent_row_id is not null then 2
@@ -186,7 +191,9 @@ def put_operate_report_strings():
     cursor.execute("""delete 
                         from operate.report_strings 
                       where
-                        applyed is null and source_id = %(source_id)s""", {'source_id': found_source_id})          
+                        applyed is null
+                        and parent_row_id is null 
+                        and source_id = %(source_id)s""", {'source_id': found_source_id})          
 
 
     if len(newstrings) > 0:

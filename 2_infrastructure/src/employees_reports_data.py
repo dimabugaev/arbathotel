@@ -114,7 +114,10 @@ def get_report_strings():
                         from
                           operate.report_strings hist_str
                         where 
-                          hist_str.applyed < %(date_start)s
+                          (hist_str.applyed < %(date_start)s and %(mode)s = 2) 
+                          or
+                          (hist_str.report_date < %(date_start)s 
+                            and hist_str.applyed is not null and %(mode)s = 1)
                         )    
                       SELECT 
                         --st.id,  

@@ -219,8 +219,13 @@ def put_operate_report_strings():
           connection.commit()
         except Exception as ex:
           connection.rollback()
-          raise ex     
-
+          raise ex
+    else:
+        try:
+          connection.commit()
+        except Exception as ex:  
+          connection.rollback()
+          raise ex
     
 
 

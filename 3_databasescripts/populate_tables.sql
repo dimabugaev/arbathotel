@@ -39,6 +39,7 @@ INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Бул
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Клубиков','','Клубиков');
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Поляков','','Поляков');
 INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Парамонова','','Парамонова');
+INSERT INTO operate.employees (last_name, first_name, name_in_db) VALUES('Викулин','','Викулин');
 
 
 
@@ -48,8 +49,10 @@ VALUES('Отчет Викулин Тест 1','1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAq
 INSERT INTO operate.sources (source_name, source_external_key, source_type) 
 VALUES('Отчет Тест 2','1NgQ1grPIRnayr5gyu9wB1kgN5hNzFN40od33nfEJjNQ',1);
 
-insert into operate.report_items (item_name, source_id)
-values('Отчет Тест 2', 4);
+INSERT INTO operate.sources (source_name, source_external_key, source_type) 
+VALUES('Бабаев (отчет)','1AwOpsB7DHaRcNXS7fFp5x-NN69IhdS1y4jrDCWAaYIc',1);
+
+
 
 
 with approve_items as (
@@ -59,7 +62,7 @@ with approve_items as (
 		operate.report_items_setings ris
 	where 
 		ris.source_id in 
-			(select id from operate.sources so where so.source_external_key = '12345')
+			(select id from operate.sources so where so.source_external_key = '1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAqpyd9jAz2KG8')
 		and ris.view_permission = TRUE
 )
 select 
@@ -101,7 +104,7 @@ SELECT
 	st.sum_income,
 	nullif(st.sum_spend, 0),
 	st.sum_spend,
-	nullif((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
+	coalesce((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
 	ri.item_name,
 	h.hotel_name,
 	st.string_comment,
@@ -135,7 +138,25 @@ order by
 
     
 delete from operate.report_strings 
-where id = 607;
+where source_id = 5;
+
+delete from operate.report_strings 
+where report_item_id = 37;
+
+delete from operate.report_items  
+where id = 37;
+
+delete from operate.report_items_setings 
+where 
+source_id = 7;
+
+delete from operate.report_items_setings 
+where 
+report_item_id  = 37;
+
+delete from operate.sources
+where 
+	id = 7;
 
 select *
 from operate.hotels h;
@@ -152,6 +173,12 @@ from operate.report_items_setings ris;
 
 select *
 from operate.sources s;
+
+update operate.report_items  
+set 
+	item_name = 'Викулин (отчет)'
+where 
+	id = 34;
 
 select *
 from operate.report_strings rs; 
@@ -207,5 +234,15 @@ ALTER TABLE operate.report_strings
 add CONSTRAINT fk_parent_rows_reports FOREIGN KEY ( parent_row_id ) REFERENCES operate.report_strings ( id );
 
 
-
+select 
+	8 as source_id,
+	ri.id as report_item_id,
+	true as view_permission,
+	its.source_id 
+from 
+	operate.report_items ri
+	left join operate.report_items_setings its 
+		on 8 = its.source_id and ri.id = its.report_item_id 
+--where 
+--	its.source_id is null;
 

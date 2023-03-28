@@ -29,25 +29,6 @@ CREATE TABLE operate.sources
 	 source_type int NOT null,
 	 source_external_key varchar NOT null
 );
-
-
-CREATE OR REPLACE FUNCTION operate.source_insert_trigger_fnc()
-  RETURNS trigger AS
-$$
-BEGIN
- INSERT INTO operate.report_items ( item_name, source_id )
-	VALUES(NEW.source_name, NEW.id);
-RETURN NEW;
-END;
-$$
-LANGUAGE 'plpgsql';
-
-
-CREATE TRIGGER sources_insert_trigger
-  AFTER INSERT
-  ON operate.sources
-  FOR EACH ROW
-  EXECUTE PROCEDURE operate.source_insert_trigger_fnc();
  
  
 CREATE OR REPLACE FUNCTION operate.source_update_trigger_fnc()
@@ -112,14 +93,22 @@ CREATE TABLE operate.report_items_setings
 CREATE OR REPLACE FUNCTION operate.source_insert_trigger_fnc()
   RETURNS trigger AS
 $$
-BEGIN
- INSERT INTO operate.report_items_setings ( source_id, report_item_id, view_permission)
+begin
+	
+	INSERT INTO operate.report_items ( item_name, source_id )
+	VALUES(NEW.source_name, NEW.id);
+
+ 	INSERT INTO operate.report_items_setings ( source_id, report_item_id, view_permission)
 	select 
 		NEW.id as source_id,
 		ri.id as report_item_id,
 		true as view_permission
 	from 
-		operate.report_items ri;
+		operate.report_items ri
+		left join operate.report_items_setings its 
+			on NEW.id = its.source_id and ri.id = its.report_item_id 
+	where 
+		its.source_id is null;
 RETURN NEW;
 END;
 $$

@@ -308,6 +308,7 @@ def current_string_to_histirical():
                             and applyed is null
                             and parent_row_id is null 
                             and report_item_id is not null
+                            and report_date is not null
                             and ((sum_income = 0 and sum_spend <> 0) 
                               or (sum_income <> 0 and sum_spend = 0))""", {'source_id': found_source_id})
         connection.commit()

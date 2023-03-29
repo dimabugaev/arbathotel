@@ -167,7 +167,9 @@ from operate.hotels h;
 
 select *,
 	'"' || ri.item_name || '"'
-from operate.report_items ri;
+from operate.report_items ri
+order by
+	order_count;
 
 select *
 from operate.employees ri;
@@ -212,11 +214,43 @@ where
 
 
 	
-update operate.report_items
-set item_name = e.name_in_db 
-from operate.employees e
-where 
-	empl_id = e.id and empl_id is not null;
+update operate.report_items set order_count = 10 where item_name = 'Хозрасходы';
+update operate.report_items set order_count = 20 where item_name = 'Зарплата';
+update operate.report_items set order_count = 30 where item_name = 'Бензин';
+update operate.report_items set order_count = 40 where item_name = 'Прочее';
+
+update operate.report_items set order_count = 50 where item_name = 'Викулин (отчет)';
+update operate.report_items set order_count = 60 where item_name = 'Бабаев (отчет)';
+update operate.report_items set order_count = 70 where item_name = 'Буланец';
+update operate.report_items set order_count = 80 where item_name = 'Клубиков';
+update operate.report_items set order_count = 90 where item_name = 'Поляков';
+update operate.report_items set order_count = 100 where item_name = 'Академическая';
+update operate.report_items set order_count = 110 where item_name = 'Авиамоторная';
+update operate.report_items set order_count = 120 where item_name = 'Ботанический';
+update operate.report_items set order_count = 130 where item_name = 'Измайловский';
+update operate.report_items set order_count = 140 where item_name = 'Каширский';
+update operate.report_items set order_count = 150 where item_name = 'Нахимовский';
+update operate.report_items set order_count = 160 where item_name = 'Покровский';
+update operate.report_items set order_count = 170 where item_name = 'Семеновский';
+update operate.report_items set order_count = 180 where item_name = 'Соколиная Гора';
+update operate.report_items set order_count = 190 where item_name = 'Таганская';
+update operate.report_items set order_count = 200 where item_name = 'Хамовники';
+update operate.report_items set order_count = 210 where item_name = 'Чистопрудный';
+update operate.report_items set order_count = 220 where item_name = 'Альфа КНМ';
+update operate.report_items set order_count = 230 where item_name = 'Корп карта ИП БАВ';
+
+update operate.report_items set order_count = 250 where item_name = 'Авдеева';
+update operate.report_items set order_count = 260 where item_name = 'Быкова';
+update operate.report_items set order_count = 270 where item_name = 'Пульчев';
+update operate.report_items set order_count = 280 where item_name = 'Салдаев';
+update operate.report_items set order_count = 290 where item_name = 'Бабаев';
+update operate.report_items set order_count = 300 where item_name = 'Парамонова';
+update operate.report_items set order_count = 310 where item_name = 'Неверова';
+update operate.report_items set order_count = 320 where item_name = 'Сазонов';
+update operate.report_items set order_count = 330 where item_name = 'Новоженина';
+--update operate.report_items set order_count = 10 where item_name = 'Бабаев';
+--update operate.report_items set order_count = 10 where item_name = 'Бабаев';
+
 
 
 update operate.employees 

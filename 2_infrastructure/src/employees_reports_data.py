@@ -112,12 +112,15 @@ def get_report_strings():
                         select 
                           coalesce(sum(hist_str.sum_income) - sum(hist_str.sum_spend),0) as value
                         from
-                          operate.report_strings hist_str
-                        where 
-                          (hist_str.applyed < %(date_start)s and %(mode)s = 2) 
-                          or
-                          (hist_str.report_date < %(date_start)s 
-                            and hist_str.applyed is not null and %(mode)s = 1)
+                          operate.report_strings hist_str 
+                        where
+                          hist_str.source_id = %(source_id)s and 
+                          ( 
+                            (hist_str.applyed < %(date_start)s and %(mode)s = 2) 
+                            or
+                            (hist_str.report_date < %(date_start)s 
+                              and hist_str.applyed is not null and %(mode)s = 1)
+                          )
                         )    
                       SELECT 
                         --st.id,  
@@ -125,7 +128,7 @@ def get_report_strings():
                         st.report_date,
                         NULLIF(st.sum_income::FLOAT, 0),
                         NULLIF(st.sum_spend::FLOAT, 0),
-                        coalesce((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
+                        coalesce(s.source_income_debt, 0) + coalesce((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
                         ri.item_name,
                         h.hotel_name,
                         st.string_comment,
@@ -137,6 +140,7 @@ def get_report_strings():
                       FROM operate.report_strings st
                         left join operate.report_items ri on st.report_item_id = ri.id
                         left join operate.hotels h on st.hotel_id = h.id,
+                        left join operate.sources s on st.source_id = s.id,
                         income_debt inc_dedt 
                       where 
                         st.source_id = %(source_id)s and 
@@ -273,7 +277,9 @@ def get_hotels_and_report_ivents() -> dict:
                         ri.item_name 
                       from 
                         operate.report_items ri inner join
-                          approve_items ap on (ri.id = ap.id)""", {'source_key': source_id})
+                          approve_items ap on (ri.id = ap.id)
+                      order by
+                        ri.order_count""", {'source_key': source_id})
                         
     bodyDict["report_items"] = cursor.fetchall()
     

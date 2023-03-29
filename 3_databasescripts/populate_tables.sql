@@ -53,6 +53,7 @@ INSERT INTO operate.sources (source_name, source_external_key, source_type)
 VALUES('Бабаев (отчет)','1AwOpsB7DHaRcNXS7fFp5x-NN69IhdS1y4jrDCWAaYIc',1);
 
 
+INSERT INTO operate.report_items (item_name) VALUES('TEST4');
 
 
 with approve_items as (
@@ -70,7 +71,9 @@ select
 	ri.item_name 
 from 
 	operate.report_items ri inner join
-		approve_items ap on (ri.id = ap.id);
+		approve_items ap on (ri.id = ap.id)
+order by
+    ri.order_count;
 	
 
 	
@@ -93,7 +96,7 @@ select
 from
 	operate.report_strings hist_str
 where 
-	false
+	hist_str.source_id = 4 and false
 	--hist_str.applyed < TO_DATE('2023-04-01','YYYY-mm-DD')
 )
 SELECT 
@@ -104,7 +107,7 @@ SELECT
 	st.sum_income,
 	nullif(st.sum_spend, 0),
 	st.sum_spend,
-	coalesce((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
+	coalesce(s.source_income_debt, 0) + coalesce((inc_dedt.value + sum(st.sum_income) over grow_total - sum(st.sum_spend) over grow_total)::FLOAT, 0) as debt,
 	ri.item_name,
 	h.hotel_name,
 	st.string_comment,
@@ -115,7 +118,8 @@ SELECT
 	st.parent_row_id 
 FROM operate.report_strings st
 	left join operate.report_items ri on st.report_item_id = ri.id
-	left join operate.hotels h on st.hotel_id = h.id, 
+	left join operate.hotels h on st.hotel_id = h.id
+	left join operate.sources s on st.source_id = s.id, 
 	income_debt inc_dedt
 where 
 	st.source_id = 4 and 
@@ -144,7 +148,7 @@ delete from operate.report_strings
 where report_item_id = 37;
 
 delete from operate.report_items  
-where id = 37;
+where id in (39, 40, 41, 42);
 
 delete from operate.report_items_setings 
 where 
@@ -152,7 +156,7 @@ source_id = 7;
 
 delete from operate.report_items_setings 
 where 
-report_item_id  = 37;
+report_item_id  in (41,42);
 
 delete from operate.sources
 where 
@@ -219,6 +223,10 @@ update operate.employees
 set first_name = 'Инна'
 where id = 10;
 
+update operate.sources
+set source_income_debt = 0
+where id = 4;
+
 
 ALTER TABLE operate.report_items 
 ADD source_id int,
@@ -233,6 +241,12 @@ ADD parent_row_id int;
 ALTER TABLE operate.report_strings
 add CONSTRAINT fk_parent_rows_reports FOREIGN KEY ( parent_row_id ) REFERENCES operate.report_strings ( id );
 
+alter table operate.report_items 
+add order_count int; 
+
+alter table operate.sources 
+add
+	source_income_debt decimal(18,2);
 
 select 
 	8 as source_id,

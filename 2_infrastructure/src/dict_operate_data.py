@@ -37,6 +37,9 @@ def get_response(body: dict = {}) -> dict:
 
 @app.get("/dict_operate")
 def current_string_to_histirical():
+    source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
+    dict_name = app.current_event.get_query_string_value(name="dict_name", default_value="")
+
     result = {}
 
     result["test"] = "hello!!! it's work"

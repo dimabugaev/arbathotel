@@ -205,21 +205,39 @@ def put_operate_report_strings():
 
     if len(newstrings) > 0:
         try:
-          args_str = ','.join(("({}, {}, {}, {}, {}, {}, '{}')"
-          .format(found_source_id, num_to_query_substr(newrow[7]), 
+          # args_str = ','.join(("({}, {}, {}, {}, {}, {}, '{}')"
+          # .format(found_source_id, num_to_query_substr(newrow[7]), 
+          #         #get_date_from_int_excel(newrow[0]),
+          #         get_date_from_string_to_query(newrow[0]), 
+          #         num_to_query_substr(newrow[8]), 
+          #         num_to_query_substr(newrow[1], "0"), 
+          #         num_to_query_substr(newrow[2], "0"), 
+          #         newrow[6])) for newrow in newstrings)
+
+          list_of_args = []
+          for newrow in newstrings:
+              if len(str(newrow[7])) == 0 and len(str(newrow[0])) == 0 and len(str(newrow[8])) == 0 and len(str(newrow[1])) == 0 and len(str(newrow[2])) == 0:
+                  continue
+              
+              list_of_args.append("({}, {}, {}, {}, {}, {}, '{}')"
+                  .format(found_source_id, num_to_query_substr(newrow[7]), 
                   #get_date_from_int_excel(newrow[0]),
                   get_date_from_string_to_query(newrow[0]), 
                   num_to_query_substr(newrow[8]), 
                   num_to_query_substr(newrow[1], "0"), 
                   num_to_query_substr(newrow[2], "0"), 
-                  newrow[6])) for newrow in newstrings)
+                  newrow[6]))
 
           #print("""INSERT INTO operate.report_strings
           #                    (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
           #                  VALUES """ + args_str)
-          cursor.execute("""INSERT INTO operate.report_strings
-                              (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
-                            VALUES """ + args_str)
+
+          if len(list_of_args) > 0:
+            args_str = ','.join(list_of_args)
+            cursor.execute("""INSERT INTO operate.report_strings
+                                (source_id, report_item_id, report_date, hotel_id, sum_income, sum_spend, string_comment)
+                              VALUES """ + args_str)
+            
           connection.commit()
         except Exception as ex:
           connection.rollback()

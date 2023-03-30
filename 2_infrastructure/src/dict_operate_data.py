@@ -44,7 +44,7 @@ def num_to_query_substr(id: any, result_if_null = "NULL") -> str:
           result = id
     return result
 
-def get_sources() -> list(tuple):
+def get_sources() -> list[tuple]:
     cursor = connection.cursor()
     
     cursor.execute("""select 
@@ -58,7 +58,7 @@ def get_sources() -> list(tuple):
     
     return cursor.fetchall()
                             
-def get_hotels() -> list(tuple):
+def get_hotels() -> list[tuple]:
     cursor = connection.cursor()
     
     cursor.execute("""select 
@@ -69,7 +69,7 @@ def get_hotels() -> list(tuple):
     
     return cursor.fetchall()
 
-def get_employees() -> list(tuple):
+def get_employees() -> list[tuple]:
     cursor = connection.cursor()
     
     cursor.execute("""select 
@@ -82,7 +82,7 @@ def get_employees() -> list(tuple):
     
     return cursor.fetchall()
 
-def get_report_items() -> list(tuple):
+def get_report_items() -> list[tuple]:
     cursor = connection.cursor()
     
     cursor.execute("""select 
@@ -100,7 +100,7 @@ def get_report_items() -> list(tuple):
     
     return cursor.fetchall()
 
-def get_report_settings(source_id : str) -> list(tuple):
+def get_report_settings(source_id : str) -> list[tuple]:
     if re.match('\S+', source_id) is None: # bad string
         return get_response({'FormatError': source_id})
     
@@ -131,7 +131,7 @@ def check_sources_row(datastr : tuple) -> bool:
 
     return True
 
-def put_sources(datastrings: list(tuple)):
+def put_sources(datastrings: list[tuple]):
 
     if len(datastrings) > 0:
         cursor = connection.cursor()

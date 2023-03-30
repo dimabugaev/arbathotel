@@ -139,7 +139,7 @@ def get_report_strings():
                         st.parent_row_id
                       FROM operate.report_strings st
                         left join operate.report_items ri on st.report_item_id = ri.id
-                        left join operate.hotels h on st.hotel_id = h.id,
+                        left join operate.hotels h on st.hotel_id = h.id
                         left join operate.sources s on st.source_id = s.id,
                         income_debt inc_dedt 
                       where 

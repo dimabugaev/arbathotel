@@ -1,10 +1,10 @@
 create schema if not exists operate;
 
-drop trigger if exists hotels_insert_trigger ON operate.hotels;
-drop procedure if exists operate.hotel_insert_trigger_fnc;
+--drop trigger if exists hotels_insert_trigger ON operate.hotels;
+--drop procedure if exists operate.hotel_insert_trigger_fnc;
 
-drop trigger if exists hotels_update_trigger ON operate.hotels;
-drop procedure if exists operate.hotel_update_trigger_fnc;
+--drop trigger if exists hotels_update_trigger ON operate.hotels;
+--drop procedure if exists operate.hotel_update_trigger_fnc;
 
 
 drop table if exists operate.report_strings;
@@ -70,7 +70,7 @@ CREATE TABLE operate.report_items
 	 source_id int,
 	 order_count int,
 	 
-	 CONSTRAINT fk_hotels_items FOREIGN KEY ( hotel_id ) REFERENCES operate.hotels ( id ),
+--	 CONSTRAINT fk_hotels_items FOREIGN KEY ( hotel_id ) REFERENCES operate.hotels ( id ),
 	 CONSTRAINT fk_empl_items FOREIGN KEY ( empl_id ) REFERENCES operate.employees ( id ),
 	 CONSTRAINT fk_source_items FOREIGN KEY ( source_id ) REFERENCES operate.sources  ( id )
 );

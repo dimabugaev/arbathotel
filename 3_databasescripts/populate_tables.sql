@@ -192,7 +192,7 @@ from operate.report_strings rs;
 delete 
 	from operate.report_strings 
 where
-	applyed is null and source_id = 4;
+	applyed is not null and report_date is null and parent_row_id is null;
 
 update operate.hotels 
 set hotel_name = 'PUTIN KHUILO'
@@ -272,6 +272,8 @@ ADD CONSTRAINT fk_source_items FOREIGN KEY ( source_id ) REFERENCES operate.sour
 
 delete 
 
+alter table operate.report_items
+drop column hotel_id; 
 
 ALTER TABLE operate.report_strings  
 ADD parent_row_id int;
@@ -286,15 +288,36 @@ alter table operate.sources
 add
 	source_income_debt decimal(18,2);
 
+
 select 
-	8 as source_id,
-	ri.id as report_item_id,
-	true as view_permission,
-	its.source_id 
+	ri.id,
+	ri.item_name,
+	ri.order_count, 
+	ri.empl_id,
+	em.name_in_db,
+	ri.source_id,
+	so.source_name 
 from 
 	operate.report_items ri
-	left join operate.report_items_setings its 
-		on 8 = its.source_id and ri.id = its.report_item_id 
---where 
---	its.source_id is null;
+	left join operate.employees em on ri.empl_id = em.id
+	left join operate.sources so on ri.source_id = so.id 
+	
+
+with find_source as (
+	select 
+		so.id 
+	from operate.sources so 
+	where so.source_external_key = '1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAqpyd9jAz2KG8'
+	limit 1
+)
+select
+	so.id,
+    so.source_name,  
+	rs.report_item_id,
+	ri.item_name,
+    rs.view_permission  
+from 
+    operate.report_items_setings rs 
+    inner join find_source so on (rs.source_id = so.id)
+    left join operate.report_items ri on (rs.report_item_id = ri.id); 
 

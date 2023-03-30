@@ -26,6 +26,9 @@ locals {
   lamdba_reports_name = "dev-reports-emploeeys-operations"
   employees_reports_zip = "./build/employees_reports_data.zip"
 
+  lamdba_dict_name = "dev-dict-operations"
+  dict_operate_zip = "./build/dict_operate_data.zip"
+
   azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 
   tags = {
@@ -258,6 +261,45 @@ module "lambda_security_group" {
 }
 
 
+module "lambda_function_dict_operate" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name =  "${local.lamdba_dict_name}-lambda"
+  description   = "lambda function for support to operations with dictionary"
+  handler       = "dict_operate_data.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.dict_operate_zip
+
+  attach_network_policy  = true
+  
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  } 
+
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_security_group.security_group_id]
+
+  allowed_triggers = {
+    AllowExecutionFromAPIGateway = {
+      service    = "apigateway"
+      source_arn = "${module.api_gateway.apigatewayv2_api_execution_arn}/*/*/*"
+    }
+  }
+}
+
+
+
 module "api_gateway" {
   source = "terraform-aws-modules/apigateway-v2/aws"
 
@@ -303,6 +345,13 @@ module "api_gateway" {
 
     "GET /close" = {
       lambda_arn             = module.lambda_function_employees_reports.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
+    "GET /dict_operate" = {
+      lambda_arn             = module.lambda_function_dict_operate.lambda_function_arn
       payload_format_version = "2.0"
       authorization_type     = "NONE"
       //integration_type   = "LAMBDA_PROXY"

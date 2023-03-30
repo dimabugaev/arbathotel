@@ -28,8 +28,10 @@ jobs:
           cd 2_infrastructure/
           ls build/
           cp src/employees_reports_data.py build/
+          cp src/dict_operate_data.py build/
           cd build
           zip -r employees_reports_data.zip psycopg2/ aws_lambda_powertools/ typing_extensions.py employees_reports_data.py 
+          zip -r dict_operate_data.zip psycopg2/ aws_lambda_powertools/ typing_extensions.py dict_operate_data.py 
           cd ../
           ls build/
 

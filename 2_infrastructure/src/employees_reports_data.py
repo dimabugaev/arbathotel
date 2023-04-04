@@ -156,13 +156,13 @@ def get_report_strings():
                             or st.applyed is NULL)))
                       window grow_total as (order by 
                         (case 
-                          when st.parent_row_id is not null then 2
+                          when st.parent_row_id is not null and st.applyed is null then 2
                           when st.applyed is null then 3
                           else 1
                         end), st.id)
                       order by 
                         (case 
-                          when st.parent_row_id is not null then 2
+                          when st.parent_row_id is not null and st.applyed is null then 2
                           when st.applyed is null then 3
                           else 1
                         end),

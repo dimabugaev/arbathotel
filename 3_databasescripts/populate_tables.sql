@@ -122,18 +122,18 @@ FROM operate.report_strings st
 	left join operate.sources s on st.source_id = s.id, 
 	income_debt inc_dedt
 where 
-	st.source_id = 4 and 
+	st.source_id = 8 and 
 	((applyed is null and 0=2) or 
 		(applyed is not null and 0=1) or (2=2))
 window grow_total as (order by 
 	(case 
-		when st.parent_row_id is not null then 2
+		when st.parent_row_id is not null and st.applyed is null then 2
 		when st.applyed is null then 3
 		else 1
 	end), st.id)		
 order by 
 	(case 
-		when st.parent_row_id is not null then 2
+		when st.parent_row_id is not null and st.applyed is null then 2
 		when st.applyed is null then 3
 		else 1
 	end),
@@ -305,7 +305,8 @@ from
 
 with find_source as (
 	select 
-		so.id 
+		so.id,
+		so.source_name 
 	from operate.sources so 
 	where so.source_external_key = '1VSOfTBULFm2L2AgZ9-HLRO5QPivhpSAqpyd9jAz2KG8'
 	limit 1

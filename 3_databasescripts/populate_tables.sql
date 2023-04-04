@@ -122,7 +122,7 @@ FROM operate.report_strings st
 	left join operate.sources s on st.source_id = s.id, 
 	income_debt inc_dedt
 where 
-	st.source_id = 8 and 
+	st.source_id = 4 and 
 	((applyed is null and 0=2) or 
 		(applyed is not null and 0=1) or (2=2))
 window grow_total as (order by 

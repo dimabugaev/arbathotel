@@ -137,35 +137,59 @@ def put_sources(datastrings: list):
     if len(datastrings) > 0:
         cursor = connection.cursor()
 
-        for datastr in datastrings:
+        try:
+          
+          list_of_args = []
+          for newrow in datastrings:
+              if (len(str(newrow[0])) == 0 
+                  and len(str(newrow[1])) == 0 
+                  and len(str(newrow[2])) == 0 
+                  and len(str(newrow[3])) == 0 
+                  and len(str(newrow[4])) == 0):
+                  continue
+              
+              list_of_args.append("({}, '{}', {}, '{}', {})"
+                  .format(num_to_query_substr(newrow[0]), #id
+                  newrow[1],                              #source_name
+                  num_to_query_substr(newrow[2]),         #source_type
+                  newrow[3],                              #source_external_key
+                  num_to_query_substr(newrow[4])))        #source_income_debt
 
-            if not check_sources_row(datastr):
-                continue
+          if len(list_of_args) > 0:
+            cursor.execute("""DROP TABLE IF EXISTS temp_source_table_update""")
+            cursor.execute("""CREATE TEMP TABLE temp_source_table AS SELECT * FROM operate.sources WHERE false""")
 
-            if str(datastr[0]).isnumeric() and int(datastr[0]) > 0:
-                cursor.execute("""
-                    update operate.sources
-                    set
-                        source_name = %(source_name)s,
-                        source_type = %(source_type)s,
-                        source_external_key = %(source_external_key)s,
-                        source_income_debt = %(source_income_debt)s
-                    where
-                        id = %(source_id)s        
-                """,{'source_id': datastr[0], 
-                     'source_name': datastr[1], 
-                     'source_type': int(datastr[2]), 
-                     'source_external_key': datastr[3],
-                     'source_income_debt': float(datastr[4])});
-            else:     
-                cursor.execute("""
-                    insert into operate.sources (source_name, source_type, source_external_key, source_income_debt)
-                    values
-                        (%(source_name)s, %(source_type)s, %(source_external_key)s, %(source_income_debt)s)       
-                """,{'source_name': datastr[1], 
-                     'source_type': int(datastr[2]), 
-                     'source_external_key': datastr[3],
-                     'source_income_debt': float(datastr[4])});
+            args_str = ','.join(list_of_args)
+            cursor.execute("""INSERT INTO temp_source_table
+                                (id, source_name, source_type, source_external_key, source_income_debt)
+                              VALUES """ + args_str)
+            
+            cursor.execute("""
+                MERGE INTO operate.sources s
+                    USING temp_source_table_update u ON u.id = s.id
+                    WHEN MATCHED AND EXISTS (
+                                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt
+                                        EXCEPT
+                                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt
+                                    )
+                    THEN
+                        UPDATE SET  s.source_name = u.source_name,
+                                    s.source_type = u.source_type,
+                                    s.source_external_key = u.source_external_key,
+                                    s.source_income_debt = u.source_income_debt
+                    WHEN NOT MATCHED BY TARGET AND u.id is NULL
+                    THEN
+                        INSERT (source_name, source_type, source_external_key, source_income_debt)
+                        VALUES (u.source_name, u.source_type, u.source_external_key, u.source_income_debt)
+                                
+            """)
+
+            connection.commit()
+        except Exception as ex:
+          connection.rollback()
+          raise ex
+
+        
 
 @app.get("/dict_operate")
 def get_dict() -> dict:

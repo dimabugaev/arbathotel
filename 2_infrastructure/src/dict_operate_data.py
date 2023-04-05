@@ -199,19 +199,19 @@ def get_dict() -> dict:
     result = {}
 
     if dict_name == 'sources':
-        result["sources"] = get_sources()
+        result["data"] = get_sources()
 
     if dict_name == 'hotels':
-        result["hotels"] = get_hotels()
+        result["data"] = get_hotels()
 
     if dict_name == 'employees':
-        result["employees"] = get_employees()
+        result["data"] = get_employees()
 
     if dict_name == 'report_items':
-        result["report_items"] = get_report_items()
+        result["data"] = get_report_items()
 
     if dict_name == 'report_items_setings':
-        result["report_items_setings"] = get_report_settings(source_id)
+        result["data"] = get_report_settings(source_id)
 
     return get_response(result)  
 

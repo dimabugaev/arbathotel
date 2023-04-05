@@ -211,6 +211,9 @@ def put_operate_report_strings():
               if len(str(newrow[7])) == 0 and len(str(newrow[0])) == 0 and len(str(newrow[8])) == 0 and len(str(newrow[1])) == 0 and len(str(newrow[2])) == 0:
                   continue
               
+              if len(str(newrow[11])) != 0:  #child string miss
+                  continue
+
               list_of_args.append("({}, {}, {}, {}, {}, {}, '{}')"
                   .format(found_source_id, num_to_query_substr(newrow[7]), 
                   #get_date_from_int_excel(newrow[0]),

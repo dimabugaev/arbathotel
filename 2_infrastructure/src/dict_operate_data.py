@@ -11,8 +11,8 @@ from datetime import date, timedelta, datetime
 secret_name = "dev-rds-instance"
 region_name = "eu-central-1"
 
-#session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
-session = boto3.session.Session()
+session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
+#session = boto3.session.Session()
 client = session.client(service_name='secretsmanager', region_name=region_name)
 secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
 
@@ -55,7 +55,9 @@ def get_sources() -> list:
                         s.source_external_key,
                         s.source_income_debt::FLOAT 
                       from 
-                        operate.sources s""")
+                        operate.sources s
+                      order by
+                        s.id""")
     
     return cursor.fetchall()
                             
@@ -66,7 +68,9 @@ def get_hotels() -> list:
                         h.id,
                         h.hotel_name 
                       from 
-                        operate.hotels h""")
+                        operate.hotels h
+                      order by
+                        h.id""")
     
     return cursor.fetchall()
 
@@ -79,7 +83,9 @@ def get_employees() -> list:
                         e.first_name, 
                         e.name_in_db 
                       from 
-                        operate.employees e""")
+                        operate.employees e
+                      order by
+                        e.id""")
     
     return cursor.fetchall()
 
@@ -126,7 +132,9 @@ def get_report_settings(source_id : str) -> list:
                         from 
                             operate.report_items_setings rs 
                             inner join find_source so on (rs.source_id = so.id)
-                            left join operate.report_items ri on (rs.report_item_id = ri.id)""", {'source_key': source_id})
+                            left join operate.report_items ri on (rs.report_item_id = ri.id)
+                        order by
+                            ri.order_count""", {'source_key': source_id})
     
     return cursor.fetchall()
 
@@ -191,17 +199,6 @@ def put_sources(datastrings: list):
                         id is NULL;
                     """)
 
-            # cursor.execute("""
-            #         INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt)
-            #         SELECT     
-            #             source_name, 
-            #             source_type, 
-            #             source_external_key, 
-            #             source_income_debt
-            #         FROM temp_source_table_update
-            #         WHERE
-            #             id is NULL
-            #         """)
 
             connection.commit()
         except Exception as ex:
@@ -402,7 +399,7 @@ def put_report_items(datastrings: list):
           raise ex
 
 
-def put_report_items_setings(datastrings: list, source_id: str):
+def put_report_items_setings(datastrings: list):
 
     if len(datastrings) > 0:
         cursor = connection.cursor()
@@ -423,10 +420,10 @@ def put_report_items_setings(datastrings: list, source_id: str):
                   and len(str(newrow[4])) == 0):
                   continue
               
-              list_of_args.append("({}, '{}', {}, {}, {})"
+              list_of_args.append("({}, {}, {})"
                   .format(num_to_query_substr(newrow[0]), #source_id
-                  newrow[2],                              #report_item_id
-                  num_to_query_substr(newrow[4])))        #view_permission
+                  num_to_query_substr(newrow[2]),         #report_item_id
+                  newrow[4]))                             #view_permission
                   
 
           if len(list_of_args) > 0:
@@ -449,7 +446,7 @@ def put_report_items_setings(datastrings: list, source_id: str):
                         SELECT s.view_permission
                         EXCEPT
                         SELECT u.view_permission
-                        ) and t.id = s.id;
+                        ) and t.source_id = s.source_id AND t.report_item_id = s.report_item_id;
                     """)
 
             connection.commit()
@@ -503,7 +500,7 @@ def put_dict() -> dict:
         put_report_items(datastrings)
 
     if dict_name == 'report_items_setings':
-        put_report_items_setings(datastrings, source_id)
+        put_report_items_setings(datastrings)
 
 def lambda_handler(event, context):
     print({'event': event, 'context': context})

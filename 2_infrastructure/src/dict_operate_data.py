@@ -53,7 +53,7 @@ def get_sources() -> list:
                         s.source_name,
                         s.source_type, 
                         s.source_external_key,
-                        s.source_income_debt 
+                        s.source_income_debt::FLOAT 
                       from 
                         operate.sources s""")
     

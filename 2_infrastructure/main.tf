@@ -487,12 +487,12 @@ module "lambda_function_bnovo_extract" {
   vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
 
 
-  #allowed_triggers = {
-  #  OneRule = {
-  #    principal  = "events.amazonaws.com"
-  #    source_arn = "${module.cloudwatch_event_rule.arn}/*"
-  #  }
-  #}
+  allowed_triggers = {
+    HourlyCronInvoke = {
+      principal  = "events.amazonaws.com"
+      source_arn = aws_cloudwatch_event_rule.every_hour.arn
+    }
+  }
 
   tags = local.tags
 }
@@ -513,22 +513,14 @@ module "lambda_cron_security_group" {
 }
 
 
-# module "cloudwatch_event_rule" {
-#   source = "clouddrove/cloudwatch-event-rule/aws"
+// Create the "cron" schedule
+resource "aws_cloudwatch_event_rule" "every_hour" {
+  name = "hourly"
+  schedule_expression = "cron(0 * * * *)"
+}
 
-#   name        = "cloudwatch-rule-extract-bnovo-invoke"
-#   description = "Hourly updated bnovo data"
-#   schedule_expression = "cron(0 0 * ? * *)" # Schedule expression for running every hour
-
-#   environment = "dev"
-#   label_order = ["environment", "name"]
-
-#   target_id      = "lambda_function_bnovo_extract"
-#   arn            = module.lambda_function_bnovo_extract.lambda_function_arn
-#   #input_template = "\"<instance> is in state <status>\""
-#   #input_paths = {
-#   #  instance = "$.detail.instance",
-#   #  status   = "$.detail.status",
-#   #}
-
-# }
+// Set the action to perform when the event is triggered
+resource "aws_cloudwatch_event_target" "invoke_lambda" {
+  rule = aws_cloudwatch_event_rule.every_hour.name
+  arn = module.lambda_function_bnovo_extract.lambda_function_arn
+}

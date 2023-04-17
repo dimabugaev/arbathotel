@@ -122,7 +122,7 @@ FROM operate.report_strings st
 	left join operate.sources s on st.source_id = s.id, 
 	income_debt inc_dedt
 where 
-	st.source_id = 4 and 
+	st.source_id = 8 and 
 	((applyed is null and 0=2) or 
 		(applyed is not null and 0=1) or (2=2))
 window grow_total as (order by 
@@ -142,13 +142,13 @@ order by
 
     
 delete from operate.report_strings 
-where source_id = 5;
+where source_id = 8;
 
 delete from operate.report_strings 
-where report_item_id = 37;
+where report_item_id <= 15;
 
 delete from operate.report_items  
-where id in (39, 40, 41, 42);
+where id <=15;
 
 delete from operate.report_items_setings 
 where 
@@ -156,7 +156,7 @@ source_id = 7;
 
 delete from operate.report_items_setings 
 where 
-report_item_id  in (41,42);
+report_item_id  <= 15;
 
 delete from operate.sources
 where 
@@ -270,7 +270,7 @@ ALTER TABLE operate.report_items
 ADD source_id int,
 ADD CONSTRAINT fk_source_items FOREIGN KEY ( source_id ) REFERENCES operate.sources  ( id );
 
-delete 
+ 
 
 alter table operate.report_items
 drop column hotel_id; 

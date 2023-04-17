@@ -53,7 +53,9 @@ def get_sources() -> list:
                         s.source_name,
                         s.source_type, 
                         s.source_external_key,
-                        s.source_income_debt::FLOAT 
+                        s.source_income_debt::FLOAT,
+                        s.source_username,
+                        s.source_password 
                       from 
                         operate.sources s
                       order by
@@ -153,15 +155,19 @@ def put_sources(datastrings: list):
                   and len(str(newrow[1])) == 0 
                   and len(str(newrow[2])) == 0 
                   and len(str(newrow[3])) == 0 
-                  and len(str(newrow[4])) == 0):
+                  and len(str(newrow[4])) == 0
+                  and len(str(newrow[5])) == 0
+                  and len(str(newrow[6])) == 0):
                   continue
               
-              list_of_args.append("({}, '{}', {}, '{}', {})"
+              list_of_args.append("({}, '{}', {}, '{}', {}, '{}', '{}')"
                   .format(num_to_query_substr(newrow[0]), #id
                   newrow[1],                              #source_name
                   num_to_query_substr(newrow[2]),         #source_type
                   newrow[3],                              #source_external_key
-                  num_to_query_substr(newrow[4])))        #source_income_debt
+                  num_to_query_substr(newrow[4],          #source_income_debt
+                  newrow[5],                              #source_username
+                  newrow[6])))                            #source_password
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_source_table_update""")
@@ -169,7 +175,7 @@ def put_sources(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_source_table_update
-                                (id, source_name, source_type, source_external_key, source_income_debt)
+                                (id, source_name, source_type, source_external_key, source_income_debt, source_username, source_password)
                               VALUES """ + args_str)
             
 
@@ -179,7 +185,9 @@ def put_sources(datastrings: list):
                         SET source_name = u.source_name,
                             source_type = u.source_type,
                             source_external_key = u.source_external_key,
-                            source_income_debt = u.source_income_debt
+                            source_income_debt = u.source_income_debt,
+                            source_username = u.source_username,
+                            source_password = u.source_password
                     FROM operate.sources s
                         INNER JOIN temp_source_table_update u ON u.id = s.id
                     WHERE EXISTS (

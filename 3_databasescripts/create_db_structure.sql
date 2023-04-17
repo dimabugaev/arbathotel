@@ -28,7 +28,9 @@ CREATE TABLE operate.sources
 	 source_name varchar NOT null,
 	 source_type int NOT null,
 	 source_external_key varchar NOT null,
-	 source_income_debt decimal(18,2)
+	 source_income_debt decimal(18,2),
+	 username varchar,
+	 password varchar
 );
  
  

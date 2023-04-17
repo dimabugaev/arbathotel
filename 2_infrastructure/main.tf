@@ -29,6 +29,8 @@ locals {
   lamdba_dict_name = "dev-dict-operations"
   dict_operate_zip = "./build/dict_operate_data.zip"
 
+  extract_bnovo_zip = "./build/extract_bnovo_data.zip"
+
   azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 
   tags = {
@@ -450,3 +452,79 @@ resource "aws_secretsmanager_secret_version" "secretsRDS" {
   #secret_string = jsonencode(var.db_secrets)
 }
 
+
+
+module "lambda_function_bnovo_extract" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "bnovo-extract-lambda"
+  description   = "lambda function for extract data from open API Bnovo"
+  handler       = "extract_bnovo_data.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.extract_bnovo_zip
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
+
+
+  allowed_triggers = {
+    OneRule = {
+      principal  = "events.amazonaws.com"
+      source_arn = "${module.cloudwatch_event_rule.arn}/*"
+    }
+  }
+
+  tags = local.tags
+}
+
+
+module "lambda_cron_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.0"
+
+  name        = "lambda-sg-cron-execute"
+  description = "Lambda security group for functions invoking by cloudwath schedule cron"
+  vpc_id      = module.vpc.vpc_id
+
+  
+  egress_rules = ["all-all"]
+
+  tags = local.tags
+}
+
+
+module "cloudwatch_event_rule" {
+  source = "clouddrove/cloudwatch-event-rule/aws"
+
+  name        = "cloudwatch-rule-extract-bnovo-invoke"
+  description = "Hourly updated bnovo data"
+  schedule_expression = "cron(0 0 * ? * *)" # Schedule expression for running every hour
+
+  environment = "dev"
+  label_order = ["environment", "name"]
+
+  target_id      = "lambda_function_bnovo_extract"
+  arn            = module.lambda_function_bnovo_extract.lambda_function_arn
+  #input_template = "\"<instance> is in state <status>\""
+  #input_paths = {
+  #  instance = "$.detail.instance",
+  #  status   = "$.detail.status",
+  #}
+
+}

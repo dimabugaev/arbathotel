@@ -420,6 +420,10 @@ module "secrets_endpoints_security_group" {
       rule                     = "all-tcp"
       source_security_group_id = module.lambda_security_group.security_group_id
     },
+    {
+      rule                     = "all-tcp"
+      source_security_group_id = module.lambda_cron_security_group.security_group_id
+    },
   ]
   number_of_computed_ingress_with_source_security_group_id = 1
 
@@ -509,22 +513,22 @@ module "lambda_cron_security_group" {
 }
 
 
-module "cloudwatch_event_rule" {
-  source = "clouddrove/cloudwatch-event-rule/aws"
+# module "cloudwatch_event_rule" {
+#   source = "clouddrove/cloudwatch-event-rule/aws"
 
-  name        = "cloudwatch-rule-extract-bnovo-invoke"
-  description = "Hourly updated bnovo data"
-  schedule_expression = "cron(0 0 * ? * *)" # Schedule expression for running every hour
+#   name        = "cloudwatch-rule-extract-bnovo-invoke"
+#   description = "Hourly updated bnovo data"
+#   schedule_expression = "cron(0 0 * ? * *)" # Schedule expression for running every hour
 
-  environment = "dev"
-  label_order = ["environment", "name"]
+#   environment = "dev"
+#   label_order = ["environment", "name"]
 
-  target_id      = "lambda_function_bnovo_extract"
-  arn            = module.lambda_function_bnovo_extract.lambda_function_arn
-  #input_template = "\"<instance> is in state <status>\""
-  #input_paths = {
-  #  instance = "$.detail.instance",
-  #  status   = "$.detail.status",
-  #}
+#   target_id      = "lambda_function_bnovo_extract"
+#   arn            = module.lambda_function_bnovo_extract.lambda_function_arn
+#   #input_template = "\"<instance> is in state <status>\""
+#   #input_paths = {
+#   #  instance = "$.detail.instance",
+#   #  status   = "$.detail.status",
+#   #}
 
-}
+# }

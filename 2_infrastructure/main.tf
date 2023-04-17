@@ -516,7 +516,7 @@ module "lambda_cron_security_group" {
 // Create the "cron" schedule
 resource "aws_cloudwatch_event_rule" "every_hour" {
   name = "hourly"
-  schedule_expression = "cron(0 * * * *)"
+  schedule_expression = "cron(0 0 * * ? *)"
 }
 
 // Set the action to perform when the event is triggered

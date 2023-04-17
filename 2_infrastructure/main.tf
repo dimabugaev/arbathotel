@@ -483,12 +483,12 @@ module "lambda_function_bnovo_extract" {
   vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
 
 
-  allowed_triggers = {
-    OneRule = {
-      principal  = "events.amazonaws.com"
-      source_arn = "${module.cloudwatch_event_rule.arn}/*"
-    }
-  }
+  #allowed_triggers = {
+  #  OneRule = {
+  #    principal  = "events.amazonaws.com"
+  #    source_arn = "${module.cloudwatch_event_rule.arn}/*"
+  #  }
+  #}
 
   tags = local.tags
 }

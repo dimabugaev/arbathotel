@@ -433,7 +433,7 @@ module "secrets_endpoints_security_group" {
     #  source_security_group_id = module.lambda_cron_security_group.security_group_id
     #},
     {
-      from_port                = 0
+      from_port                = 1
       to_port                  = 65535
       protocol                 = "tcp"
       description              = "Allow access from CRON lambda"

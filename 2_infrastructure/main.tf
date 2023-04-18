@@ -431,7 +431,7 @@ module "secrets_endpoints_security_group" {
       source_security_group_id = module.lambda_cron_security_group.security_group_id
     },
   ]
-  number_of_computed_ingress_with_source_security_group_id = 1
+  number_of_computed_ingress_with_source_security_group_id = 2
 
   egress_rules = ["all-all"]
 

@@ -437,8 +437,8 @@ module "secrets_endpoints_security_group" {
       to_port                  = 65535
       protocol                 = "tcp"
       description              = "Allow access from CRON lambda"
-      source_security_group_id = data.aws_security_group.default.id
-    }
+      source_security_group_id = module.lambda_cron_security_group.security_group_id
+    },
   ]
   number_of_computed_ingress_with_source_security_group_id = 2
 

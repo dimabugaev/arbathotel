@@ -52,6 +52,9 @@ VALUES('Отчет Тест 2','1NgQ1grPIRnayr5gyu9wB1kgN5hNzFN40od33nfEJjNQ',1)
 INSERT INTO operate.sources (source_name, source_external_key, source_type) 
 VALUES('Бабаев (отчет)','1AwOpsB7DHaRcNXS7fFp5x-NN69IhdS1y4jrDCWAaYIc',1);
 
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('BNOVO Учебный','BNOVO',2, '6390974362099+2177@customapp.bnovo.ru', '80bfbddc852cda96');
+
 
 INSERT INTO operate.report_items (item_name) VALUES('TEST4');
 
@@ -285,8 +288,8 @@ alter table operate.report_items
 add order_count int; 
 
 alter table operate.sources 
-add
-	source_income_debt decimal(18,2);
+add source_username varchar,
+add	source_password varchar;
 
 
 select 

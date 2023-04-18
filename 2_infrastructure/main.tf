@@ -462,7 +462,7 @@ module "lambda_function_bnovo_extract" {
   source = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
-  function_name = "bnovo-extract-lambda"
+  function_name = "${local.name}-bnovo-extract-lambda"
   description   = "lambda function for extract data from open API Bnovo"
   handler       = "extract_bnovo_data.lambda_handler"
   runtime       = "python3.8"
@@ -502,7 +502,7 @@ module "lambda_cron_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
 
-  name        = "lambda-sg-cron-execute"
+  name        = "${local.name}-lambda-sg-cron-execute"
   description = "Lambda security group for functions invoking by cloudwath schedule cron"
   vpc_id      = module.vpc.vpc_id
 
@@ -515,8 +515,8 @@ module "lambda_cron_security_group" {
 
 // Create the "cron" schedule
 resource "aws_cloudwatch_event_rule" "every_hour" {
-  name = "hourly"
-  schedule_expression = "cron(0 0 * * ? *)"
+  name = "${local.name}-hourly"
+  schedule_expression = "cron(0/10 * * * ? *)"
 }
 
 // Set the action to perform when the event is triggered

@@ -165,9 +165,9 @@ def put_sources(datastrings: list):
                   newrow[1],                              #source_name
                   num_to_query_substr(newrow[2]),         #source_type
                   newrow[3],                              #source_external_key
-                  num_to_query_substr(newrow[4],          #source_income_debt
+                  num_to_query_substr(newrow[4]),         #source_income_debt
                   newrow[5],                              #source_username
-                  newrow[6])))                            #source_password
+                  newrow[6]))                            #source_password
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_source_table_update""")

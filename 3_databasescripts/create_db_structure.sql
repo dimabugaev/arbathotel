@@ -390,3 +390,10 @@ CREATE TRIGGER hotels_update_trigger
   FOR EACH row
   WHEN (OLD.* IS DISTINCT FROM NEW.*)
   EXECUTE PROCEDURE operate.employee_update_trigger_fnc();
+ 
+ 
+ 
+create schema if not exists bnovo_raw;
+ 
+ 
+

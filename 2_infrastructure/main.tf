@@ -427,11 +427,18 @@ module "secrets_endpoints_security_group" {
       description              = "Allow access from API call"
       source_security_group_id = module.lambda_security_group.security_group_id
     },
+    #{
+    #  rule                     = "all-all"
+    #  description              = "Allow access from CRON lambda"
+    #  source_security_group_id = module.lambda_cron_security_group.security_group_id
+    #},
     {
-      rule                     = "all-all"
+      from_port                = 0
+      to_port                  = 65535
+      protocol                 = "tcp"
       description              = "Allow access from CRON lambda"
-      source_security_group_id = module.lambda_cron_security_group.security_group_id
-    },
+      source_security_group_id = data.aws_security_group.default.id
+    }
   ]
   number_of_computed_ingress_with_source_security_group_id = 2
 

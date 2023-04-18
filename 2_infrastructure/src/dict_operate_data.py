@@ -191,17 +191,19 @@ def put_sources(datastrings: list):
                     FROM operate.sources s
                         INNER JOIN temp_source_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt
+                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt, s.source_username, s.source_password
                         EXCEPT
-                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt
+                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt, u.source_username, u.source_password
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt)
+                    INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt, source_username, source_password)
                     SELECT     
                         source_name, 
                         source_type, 
                         source_external_key, 
-                        source_income_debt
+                        source_income_debt,
+                        source_username,
+                        source_password
                     FROM temp_source_table_update
                     WHERE
                         id is NULL;

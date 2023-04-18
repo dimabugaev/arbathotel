@@ -428,7 +428,7 @@ module "secrets_endpoints_security_group" {
       source_security_group_id = module.lambda_security_group.security_group_id
     },
     {
-      rule                     = "all-tcp"
+      rule                     = "all-all"
       description              = "Allow access from CRON lambda"
       source_security_group_id = module.lambda_cron_security_group.security_group_id
     },

@@ -421,17 +421,19 @@ module "secrets_endpoints_security_group" {
   description = "SG endpoints to secrets db"
   vpc_id      = module.vpc.vpc_id
 
-  computed_ingress_with_source_security_group_id = [
+  ingress_with_source_security_group_id = [
     {
       rule                     = "all-tcp"
+      description              = "Allow access from API call"
       source_security_group_id = module.lambda_security_group.security_group_id
     },
     {
       rule                     = "all-tcp"
+      description              = "Allow access from CRON lambda"
       source_security_group_id = module.lambda_cron_security_group.security_group_id
     },
   ]
-  number_of_computed_ingress_with_source_security_group_id = 2
+  #number_of_computed_ingress_with_source_security_group_id = 2
 
   egress_rules = ["all-all"]
 

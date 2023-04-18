@@ -58,8 +58,8 @@ module "vpc" {
   private_subnets       = ["192.168.11.0/24", "192.168.12.0/24"] 
   database_subnets       = ["192.168.21.0/24", "192.168.22.0/24"]
 
-  private_subnet_names = ["DEV Private Subnet One", "DEV Private Subnet Two"]
-  database_subnet_names = ["DEV Database Subnet One", "DEV Database Subnet Two"]
+  #private_subnet_names = ["DEV Private Subnet One", "DEV Private Subnet Two"] error unsupported arg
+  #database_subnet_names = ["DEV Database Subnet One", "DEV Database Subnet Two"]
 
   enable_dns_hostnames = true
   enable_dns_support   = true

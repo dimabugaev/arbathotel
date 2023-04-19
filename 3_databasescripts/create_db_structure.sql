@@ -398,6 +398,9 @@ create schema if not exists bnovo_raw;
 drop table if exists bnovo_raw.items;
 drop table if exists bnovo_raw.hotels;
 drop table if exists bnovo_raw.suppliers;
+drop table if exists bnovo_raw.total_balance;
+drop table if exists bnovo_raw.payments;
+drop table if exists bnovo_raw.payment_records;
 
 
 CREATE TABLE bnovo_raw.items
@@ -453,10 +456,98 @@ CREATE TABLE bnovo_raw.suppliers
 	bank varchar,
 	ogrn varchar,
 	ceo varchar,
+	finance_supplier_id varchar,
 	date_update timestamp not null default current_timestamp,
 
 	 
 	CONSTRAINT fk_sources_suppliers FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
 );
- 
 
+CREATE TABLE bnovo_raw.total_balance
+(
+	source_id int,
+	finance_supplier_id varchar not null,
+	last_payment_balance decimal(18,2) not null default 0,
+	date_update timestamp not null default current_timestamp,
+	
+	CONSTRAINT fk_sources_total_balance FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
+CREATE TABLE bnovo_raw.balance_by_period
+(
+	source_id int,
+	period_month date not null,
+	finance_supplier_id varchar not null,
+	debet decimal(18,2) not null default 0,
+	credit decimal(18,2) not null default 0,
+	date_update timestamp not null default current_timestamp,
+	
+	CONSTRAINT fk_sources_total_balance_by_period FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
+CREATE TABLE bnovo_raw.payments
+(
+	source_id int,
+	period_month date not null,
+	id varchar,
+	supplier_id varchar,
+	contractor_id varchar,
+	external_hotel_id varchar,
+	external_booking_id varchar,
+	external_user_id varchar,
+	external_user_name varchar,
+	external_payment_id varchar,
+	external_supplier_id varchar,
+	passport varchar,
+	name varchar,
+	type_id varchar,
+	item_id varchar,
+	amount varchar,
+	balance varchar,
+	paid_date varchar,
+	reason varchar,
+	create_date varchar,
+	fiscal_status varchar,
+	sub_amount varchar,
+	id_command varchar,
+	date_update timestamp not null default current_timestamp,
+ 
+	CONSTRAINT fk_sources_payments FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
+CREATE TABLE bnovo_raw.payment_records
+(
+	source_id int,
+	period_month date not null,
+	id varchar,
+	payment_id varchar,
+	booking_id varchar,
+	booking_number varchar,
+	item_id varchar,
+	method_id varchar,
+	subject_id varchar,
+	service_id varchar,
+	service_name varchar,
+	origin_country varchar,
+	customs_doc_number varchar,
+	excise_sum varchar,
+	amount decimal(18,2),
+	sub_amount varchar,
+	nds_value varchar,
+	tax_system varchar,
+	is_for_booking varchar,
+	hotel_supplier_id varchar,
+	supplier_id varchar,
+	type_id varchar,
+	name varchar,
+	reason varchar,
+	paid_date varchar,
+	transferred_refund_id varchar,
+	transferred_to_booking_number varchar,
+	passport varchar,
+	finance_goal varchar,
+	date_update timestamp not null default current_timestamp,
+ 
+	CONSTRAINT fk_sources_payment_records FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+	

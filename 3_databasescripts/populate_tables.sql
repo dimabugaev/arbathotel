@@ -335,3 +335,18 @@ select
 	*
 from 
 	bnovo_raw.hotels;
+
+select
+	*
+from 
+	bnovo_raw.suppliers;
+
+select
+	*
+from 
+	bnovo_raw.total_balance;
+
+select
+	*
+from 
+	bnovo_raw.balance_by_period;

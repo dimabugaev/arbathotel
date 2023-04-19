@@ -88,13 +88,18 @@ def export_data_from_bnovo_to_rds():
 	        "bik": "bik",
 	        "bank": "bank",
 	        "ogrn": "ogrn",
-	        "ceo": "ceo"
+	        "ceo": "ceo",
+            "finance_supplier_id": "finance_supplier_id"
         }
 
     for row in rows:
         http_session = my_utility.get_autorized_http_session_bnovo(row[0], row[1])
-        #my_utility.update_dim_raw(conn, get_items(http_session)["items"], "items", "bnovo_raw.items", items_map, row[2])
-        #my_utility.update_dim_raw(conn, [get_account_details(http_session)["hotel"]], "hotel", "bnovo_raw.hotels", hotels_map, row[2])
+        print(http_session.cookies.get_dict())
+        
+        #print(http_session.cookies)
+
+        my_utility.update_dim_raw(conn, get_items(http_session)["items"], "items", "bnovo_raw.items", items_map, row[2])
+        my_utility.update_dim_raw(conn, [get_account_details(http_session)["hotel"]], "hotel", "bnovo_raw.hotels", hotels_map, row[2])
         my_utility.update_dim_raw(conn, get_suppliers(http_session)["suppliers"], "suppliers", "bnovo_raw.suppliers", suppliers_map, row[2])
 
 

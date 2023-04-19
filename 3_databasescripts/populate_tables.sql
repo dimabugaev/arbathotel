@@ -326,17 +326,12 @@ from
     left join operate.report_items ri on (rs.report_item_id = ri.id); 
    
    
-merge INTO operate.sources s 
-USING temp_source_table_update u ON u.id = s.id 
-WHEN MATCHED AND TRUE
-THEN
-    UPDATE SET  s.source_name = u.source_name,
-                s.source_type = u.source_type,
-                s.source_external_key = u.source_external_key,
-                s.source_income_debt = u.source_income_debt
-WHEN NOT MATCHED BY TARGET AND u.id is NULL
-THEN
-    INSERT (source_name, source_type, source_external_key, source_income_debt)
-    VALUES (u.source_name, u.source_type, u.source_external_key, u.source_income_debt);
-                
+select
+	*
+from 
+	bnovo_raw.items;	
 
+select
+	*
+from 
+	bnovo_raw.hotels;

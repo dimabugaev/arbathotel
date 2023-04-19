@@ -27,13 +27,14 @@ jobs:
         run: |
           cd 2_infrastructure/
           ls build/
+          cp src/my_utility.py build/
           cp src/employees_reports_data.py build/
           cp src/dict_operate_data.py build/
           cp src/extract_bnovo_data.py build/
           cd build
-          zip -r employees_reports_data.zip psycopg2/ aws_lambda_powertools/ typing_extensions.py employees_reports_data.py 
-          zip -r dict_operate_data.zip psycopg2/ aws_lambda_powertools/ typing_extensions.py dict_operate_data.py 
-          zip -r extract_bnovo_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py extract_bnovo_data.py 
+          zip -r employees_reports_data.zip psycopg2/ aws_lambda_powertools/ typing_extensions.py my_utility.py employees_reports_data.py 
+          zip -r dict_operate_data.zip psycopg2/ aws_lambda_powertools/ typing_extensions.py my_utility.py dict_operate_data.py 
+          zip -r extract_bnovo_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_data.py 
           cd ../
           ls build/
 

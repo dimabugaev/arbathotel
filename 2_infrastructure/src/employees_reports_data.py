@@ -1,41 +1,16 @@
-import psycopg2
-import json
+import my_utility
 import re
-#from aws_lambda_powertools import Logger, Tracer
+
 from aws_lambda_powertools.event_handler import APIGatewayHttpResolver
 
-import boto3
 from datetime import date, timedelta, datetime
 
 
 
-secret_name = "dev-rds-instance"
-region_name = "eu-central-1"
+connection = my_utility.get_db_connection()
 
-#session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
-session = boto3.session.Session()
-client = session.client(service_name='secretsmanager', region_name=region_name)
-secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
-
-endpoint = secret_value_dict['host']
-username = secret_value_dict['username']
-password = secret_value_dict['password']
-database_name = secret_value_dict['dbname']
-
-connection = psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
-#tracer = Tracer()
-#logger = Logger()
 app = APIGatewayHttpResolver()
 
-
-def get_response(body: dict = {}) -> dict:
-    response_obj = {}
-    response_obj["statusCode"] = 200
-    response_obj["headers"] = {}
-    response_obj["headers"]["Content-Type"] = 'application/json'
-    response_obj['body'] = json.loads(json.dumps(body, indent=4, default=str))
-
-    return response_obj
 
 def get_date_from_int_excel(int_excel: int) -> str:
     result = "NULL"
@@ -68,16 +43,6 @@ def get_date_from_iso_string_to_query_param(str_date: any) -> str:
             result = None
 
     return result
-
-def num_to_query_substr(id: any, result_if_null = "NULL") -> str: 
-    result = result_if_null
-    if id is not None:
-        if isinstance(id, str):
-            result = result_if_null    
-        else:
-          result = id
-    return result
-
     
 
 @app.get("/string")
@@ -101,7 +66,7 @@ def get_report_strings():
                         limit 1""", {'source_key': source_id})
     
     if cursor.rowcount < 1:
-        return get_response({'FormatError': source_id})
+        return my_utility.get_response({'FormatError': source_id})
 
     found_source_id = cursor.fetchone()[0]
 
@@ -172,7 +137,7 @@ def get_report_strings():
     bodyDict = {}
     bodyDict["report_strings"] = cursor.fetchall()
     #print(bodyDict["report_strings"])
-    return get_response(bodyDict)
+    return my_utility.get_response(bodyDict)
 
 @app.post("/string")
 def put_operate_report_strings():
@@ -190,7 +155,7 @@ def put_operate_report_strings():
                         limit 1""", {'source_key': source_id})
     
     if cursor.rowcount < 1:
-        return get_response({'FormatError': source_id})
+        return my_utility.get_response({'FormatError': source_id})
 
     found_source_id = cursor.fetchone()[0]
 
@@ -215,12 +180,12 @@ def put_operate_report_strings():
                   continue
 
               list_of_args.append("({}, {}, {}, {}, {}, {}, '{}')"
-                  .format(found_source_id, num_to_query_substr(newrow[7]), 
+                  .format(found_source_id, my_utility.num_to_query_substr(newrow[7]), 
                   #get_date_from_int_excel(newrow[0]),
                   get_date_from_string_to_query(newrow[0]), 
-                  num_to_query_substr(newrow[8]), 
-                  num_to_query_substr(newrow[1], "0"), 
-                  num_to_query_substr(newrow[2], "0"), 
+                  my_utility.num_to_query_substr(newrow[8]), 
+                  my_utility.num_to_query_substr(newrow[1], "0"), 
+                  my_utility.num_to_query_substr(newrow[2], "0"), 
                   newrow[6]))
 
           #print("""INSERT INTO operate.report_strings
@@ -252,7 +217,7 @@ def get_hotels_and_report_ivents() -> dict:
     source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
 
     if re.match('\S+', source_id) is None: # bad string
-        return get_response({'FormatError': source_id})
+        return my_utility.get_response({'FormatError': source_id})
 
 
     cursor = connection.cursor()
@@ -298,7 +263,7 @@ def get_hotels_and_report_ivents() -> dict:
     
     cursor.close()
 
-    return get_response(bodyDict)
+    return my_utility.get_response(bodyDict)
 
 
 @app.get("/close")
@@ -315,7 +280,7 @@ def current_string_to_histirical():
                         limit 1""", {'source_key': source_id})
     
     if cursor.rowcount < 1:
-        return get_response({'FormatError': source_id})
+        return my_utility.get_response({'FormatError': source_id})
 
     found_source_id = cursor.fetchone()[0]
 
@@ -347,6 +312,6 @@ def lambda_handler(event, context):
         result["DataError"] = str(er)
 
         connection.close()
-        connection = psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
+        connection = my_utility.get_db_connection()
 
     return result

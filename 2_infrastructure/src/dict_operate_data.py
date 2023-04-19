@@ -1,49 +1,15 @@
-import psycopg2
-import json
+import my_utility
 import re
-#from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.event_handler import APIGatewayHttpResolver
 from typing import Any
 
-import boto3
-from datetime import date, timedelta, datetime
+#from datetime import date, timedelta, datetime
 
-secret_name = "dev-rds-instance"
-region_name = "eu-central-1"
 
-#session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
-session = boto3.session.Session()
-client = session.client(service_name='secretsmanager', region_name=region_name)
-secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
 
-endpoint = secret_value_dict['host']
-username = secret_value_dict['username']
-password = secret_value_dict['password']
-database_name = secret_value_dict['dbname']
+connection = my_utility.get_db_connection()
 
-connection = psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
-#tracer = Tracer()
-#logger = Logger()
 app = APIGatewayHttpResolver()
-
-
-def get_response(body: dict = {}) -> dict:
-    response_obj = {}
-    response_obj["statusCode"] = 200
-    response_obj["headers"] = {}
-    response_obj["headers"]["Content-Type"] = 'application/json'
-    response_obj['body'] = json.loads(json.dumps(body, indent=4, default=str))
-
-    return response_obj
-
-def num_to_query_substr(id: any, result_if_null = "NULL") -> str: 
-    result = result_if_null
-    if id is not None:
-        if isinstance(id, str):
-            result = result_if_null    
-        else:
-          result = id
-    return result
 
 def get_sources() -> list:
     cursor = connection.cursor()
@@ -113,7 +79,7 @@ def get_report_items() -> list:
 
 def get_report_settings(source_id : str) -> list:
     if re.match('\S+', source_id) is None: # bad string
-        return get_response({'FormatError': source_id})
+        return my_utility.get_response({'FormatError': source_id})
     
     cursor = connection.cursor()
     
@@ -161,13 +127,13 @@ def put_sources(datastrings: list):
                   continue
               
               list_of_args.append("({}, '{}', {}, '{}', {}, '{}', '{}')"
-                  .format(num_to_query_substr(newrow[0]), #id
-                  newrow[1],                              #source_name
-                  num_to_query_substr(newrow[2]),         #source_type
-                  newrow[3],                              #source_external_key
-                  num_to_query_substr(newrow[4]),         #source_income_debt
-                  newrow[5],                              #source_username
-                  newrow[6]))                            #source_password
+                  .format(my_utility.num_to_query_substr(newrow[0]), #id
+                  newrow[1],                                         #source_name
+                  my_utility.num_to_query_substr(newrow[2]),         #source_type
+                  newrow[3],                                         #source_external_key
+                  my_utility.num_to_query_substr(newrow[4]),         #source_income_debt
+                  newrow[5],                                         #source_username
+                  newrow[6]))                                        #source_password
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_source_table_update""")
@@ -232,8 +198,8 @@ def put_hotels(datastrings: list):
               
 
               list_of_args.append("({}, '{}')"
-                  .format(num_to_query_substr(newrow[0]), #id
-                  newrow[1]))                             #hotel_name
+                  .format(my_utility.num_to_query_substr(newrow[0]), #id
+                  newrow[1]))                                        #hotel_name
                   
 
           if len(list_of_args) > 0:
@@ -289,10 +255,10 @@ def put_employees(datastrings: list):
                   continue
               
               list_of_args.append("({}, '{}', '{}', '{}')"
-                  .format(num_to_query_substr(newrow[0]), #id
-                  newrow[1],                              #last_name
-                  newrow[2],                              #first_name
-                  newrow[3]))                             #name_in_db
+                  .format(my_utility.num_to_query_substr(newrow[0]), #id
+                  newrow[1],                                         #last_name
+                  newrow[2],                                         #first_name
+                  newrow[3]))                                        #name_in_db
                   
 
           if len(list_of_args) > 0:
@@ -361,11 +327,11 @@ def put_report_items(datastrings: list):
                   continue
               
               list_of_args.append("({}, '{}', {}, {}, {})"
-                  .format(num_to_query_substr(newrow[0]), #id
-                  newrow[1],                              #item_name
-                  num_to_query_substr(newrow[2]),         #order_count
-                  num_to_query_substr(newrow[3]),         #empl_id
-                  num_to_query_substr(newrow[5])))        #source_id
+                  .format(my_utility.num_to_query_substr(newrow[0]), #id
+                  newrow[1],                                         #item_name
+                  my_utility.num_to_query_substr(newrow[2]),         #order_count
+                  my_utility.num_to_query_substr(newrow[3]),         #empl_id
+                  my_utility.num_to_query_substr(newrow[5])))        #source_id
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_items_table_update""")
@@ -431,9 +397,9 @@ def put_report_items_setings(datastrings: list):
                   continue
               
               list_of_args.append("({}, {}, {})"
-                  .format(num_to_query_substr(newrow[0]), #source_id
-                  num_to_query_substr(newrow[2]),         #report_item_id
-                  newrow[4]))                             #view_permission
+                  .format(my_utility.num_to_query_substr(newrow[0]), #source_id
+                  my_utility.num_to_query_substr(newrow[2]),         #report_item_id
+                  newrow[4]))                                        #view_permission
                   
 
           if len(list_of_args) > 0:
@@ -487,7 +453,7 @@ def get_dict() -> dict:
     if dict_name == 'report_items_setings':
         result["data"] = get_report_settings(source_id)
 
-    return get_response(result)  
+    return my_utility.get_response(result)  
 
 
 @app.post("/dict_operate")
@@ -522,6 +488,6 @@ def lambda_handler(event, context):
         result["DataError"] = str(er)
 
         connection.close()
-        connection = psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
+        connection = my_utility.get_db_connection()
 
     return result

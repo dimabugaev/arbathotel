@@ -1,67 +1,103 @@
-import psycopg2
-import boto3
+import my_utility
 import json
-import requests
 
-def get_db_connection():
-    secret_name = "dev-rds-instance"
-    region_name = "eu-central-1"
+def get_items(session):
 
-    #session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
-    session = boto3.session.Session()
-    client = session.client(service_name='secretsmanager', region_name=region_name)
-    secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
+    items = {}
+    url = "https://online.bnovo.ru/finance/items"
 
-    endpoint = secret_value_dict['host']
-    username = secret_value_dict['username']
-    password = secret_value_dict['password']
-    database_name = secret_value_dict['dbname']
+    with session.get(url) as response:
+        items = json.loads(response.text) 
 
-    return psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
+    return items
 
+def get_account_details(session):
 
-def get_autorized_http_session_bnovo(username, password):
-    session = requests.Session()
-    url = "https://online.bnovo.ru"
+    account_details = {}
 
-    # Set the request body
-    body = {
-        "username": username,
-        "password": password
-    }
+    url = "https://online.bnovo.ru/account/current"
 
-    session.headers.update({
-        "Content-Type": "application/json"
-    })
-
-    # Make the POST request using the session
-    with session.post(url, data=json.dumps(body)) as response:
-        # Check if the request was successful
-        if response.status_code == 200:
-            print("Authorization SID for {}: {}".format(username, session.cookies.get('SID')))
-        else:
-            print("Failed to get authorization token for {}. Status code: {}".format(username, response.status_code))
+    with session.get(url) as response:
+        account_details = json.loads(response.text)
     
-    return session
+    return account_details
+
+def get_suppliers(session):
+
+    suppliers = {}
+
+    url = "https://online.bnovo.ru/finance/details"
+
+    with session.get(url) as response:
+        suppliers = json.loads(response.text)
+    
+    return suppliers
 
 
 def export_data_from_bnovo_to_rds():
-    conn = get_db_connection()
+    conn = my_utility.get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""SELECT 
                         so.source_username, 
-                        so.source_password 
+                        so.source_password,
+                        so.id 
                       FROM operate.sources so
                       WHERE 
                         so.source_type = 2
-                        AND so.source_username is not NULL
-                        AND so.source_password is not NULL""")
+                        AND coalesce(so.source_username, '') <> ''
+                        AND coalesce(so.source_password, '') <> '' """)
     
     rows = cursor.fetchall()
 
+    items_map = {
+            "id": "id",
+            "type_id": "type_id",
+            "name": "name",
+            "read_only": "read_only",
+            "create_date": "create_date"
+        }
+    
+    hotels_map = {
+            "id": "id",
+	        "name": "name",
+	        "country": "country",
+	        "city": "city",
+	        "address": "address",
+	        "postcode": "postcode",
+	        "phone": "phone",
+	        "email": "email",
+	        "create_date": "create_date"
+        }
+    
+    suppliers_map = {
+            "id": "id",
+	        "hotel_id": "hotel_id",
+	        "name": "name",
+	        "law_name": "law_name",
+	        "email": "email",
+	        "phone": "phone",
+	        "site": "site",
+	        "city": "city",
+	        "address": "address",
+	        "law_address": "law_address",
+	        "inn": "inn",
+	        "kpp": "kpp",
+	        "account": "account",
+	        "correspondent_account": "correspondent_account",
+	        "bik": "bik",
+	        "bank": "bank",
+	        "ogrn": "ogrn",
+	        "ceo": "ceo"
+        }
+
     for row in rows:
-        get_autorized_http_session_bnovo(row[0], row[1])
+        http_session = my_utility.get_autorized_http_session_bnovo(row[0], row[1])
+        #my_utility.update_dim_raw(conn, get_items(http_session)["items"], "items", "bnovo_raw.items", items_map, row[2])
+        #my_utility.update_dim_raw(conn, [get_account_details(http_session)["hotel"]], "hotel", "bnovo_raw.hotels", hotels_map, row[2])
+        my_utility.update_dim_raw(conn, get_suppliers(http_session)["suppliers"], "suppliers", "bnovo_raw.suppliers", suppliers_map, row[2])
+
+
 
     cursor.close()
     conn.close()   

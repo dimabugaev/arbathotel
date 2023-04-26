@@ -350,3 +350,57 @@ select
 	*
 from 
 	bnovo_raw.balance_by_period;
+
+select
+	*
+from 
+	bnovo_raw.payments;
+
+select
+	*
+from 
+	bnovo_raw.payment_records;
+
+
+
+select
+	source_id,
+	period_month,
+	hotel_supplier_id,
+	sum(case
+		when amount > 0 then
+			amount
+		else
+			0
+	end) as debet,
+	sum(case
+		when amount < 0 then
+			amount
+		else
+			0
+	end) as credit
+from 
+	bnovo_raw.payment_records
+group by
+	source_id,
+	period_month,
+	hotel_supplier_id;
+
+select
+	coalesce(sum(case
+		when pr.amount > 0 then
+			pr.amount
+		else
+			0
+	end),0) as debet,
+	coalesce(sum(case
+		when pr.amount < 0 then
+			pr.amount
+		else
+			0
+	end),0) as credit
+from 
+	bnovo_raw.payment_records pr
+	inner join bnovo_raw.suppliers s on pr.hotel_supplier_id = s.id and s.finance_supplier_id = '2084' 
+where 
+	pr.type_id = '2';

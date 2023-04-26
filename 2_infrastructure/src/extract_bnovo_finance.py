@@ -1,6 +1,6 @@
 import my_utility
 import json
-from datetime import date
+from datetime import date, datetime
 
 def get_finance_data(session, period: date, supplier_id: str, page: int = 1):
 
@@ -21,6 +21,26 @@ def get_finance_data(session, period: date, supplier_id: str, page: int = 1):
         items = json.loads(response.text) 
 
     return items
+
+def get_total_cash_data(session, last_pay_date: date, supplier_id: str):
+
+    date_begin = date(2000, 1, 1)
+    date_end = my_utility.get_end_month_by_date(last_pay_date)
+
+
+    items = {}
+    url = "https://online.bnovo.ru/finance?finance_supplier_id={}&dfrom={}&dto={}&tto=23%3A59&types%5B%5D=2".format(
+        supplier_id,
+        date_begin.strftime('%d-%m-%Y'),
+        date_end.strftime('%d-%m-%Y')
+    ) 
+
+    print(url)
+    with session.get(url) as response:
+        items = json.loads(response.text) 
+
+    return items
+
 
 def get_binovo_cred(connection, source_id):
     cursor = connection.cursor()
@@ -47,26 +67,57 @@ def get_binovo_cred(connection, source_id):
 
     return res
 
-def update_balance(connection, source_id: int, period: date, supplier_id: str, first_page_data: dict):
+def update_balance(connection, source_id: int, period: date, supplier_id: str, first_page_data: dict, total_cash_page: dict):
     cursor = connection.cursor()
+    cursor.execute("""
+        select
+            coalesce(sum(case
+                when pr.amount > 0 then
+                    pr.amount
+                else
+                    0
+            end), 0) as debet,
+            coalesce(sum(case
+                when pr.amount < 0 then
+                    pr.amount
+                else
+                    0
+            end), 0) as credit
+        from 
+            bnovo_raw.payment_records pr
+            inner join bnovo_raw.suppliers s on 
+                (pr.hotel_supplier_id = s.id and s.finance_supplier_id = %(supplier_id)s and 
+                    pr.type_id = '2' AND pr.period_month = %(period)s AND pr.source_id = %(source_id)s);   
+    """, {'source_id': source_id, 'period': my_utility.get_begin_month_by_date(period), 
+            'supplier_id': supplier_id})
+
+    total_cash_debet = 0
+    total_cash_credit = 0
+
+    if cursor.rowcount > 0:
+        period_cash = cursor.fetchone()
+        total_cash_debet = period_cash[0]
+        total_cash_credit = period_cash[1]    
 
     cursor.execute("""
         DELETE FROM bnovo_raw.balance_by_period
         WHERE source_id = %(source_id)s AND period_month = %(period)s AND finance_supplier_id = %(supplier_id)s;
 
-        INSERT INTO bnovo_raw.balance_by_period (source_id, period_month, finance_supplier_id, debet, credit)
-        VALUES (%(source_id)s, %(period)s, %(supplier_id)s, %(debet)s, %(credit)s);
+        INSERT INTO bnovo_raw.balance_by_period (source_id, period_month, finance_supplier_id, debet, credit, debet_cash, credit_cash)
+        VALUES (%(source_id)s, %(period)s, %(supplier_id)s, %(debet)s, %(credit)s, %(debet_cash)s, %(credit_cash)s);
     """, {'source_id': source_id, 'period': my_utility.get_begin_month_by_date(period), 
-            'supplier_id': supplier_id, 'debet': float(first_page_data['debet']), 'credit': float(first_page_data['credit'])})
+            'supplier_id': supplier_id, 'debet': float(first_page_data['debet']), 
+            'credit': float(first_page_data['credit']), 'debet_cash': total_cash_debet, 'credit_cash': total_cash_credit})
     
     cursor.execute("""
         DELETE FROM bnovo_raw.total_balance
         WHERE source_id = %(source_id)s AND finance_supplier_id = %(supplier_id)s;
 
-        INSERT INTO bnovo_raw.total_balance (source_id, finance_supplier_id, last_payment_balance)
-        VALUES (%(source_id)s, %(supplier_id)s, %(last_payment_balance)s);
+        INSERT INTO bnovo_raw.total_balance (source_id, finance_supplier_id, last_payment_balance, last_payment_cash_balance)
+        VALUES (%(source_id)s, %(supplier_id)s, %(last_payment_balance)s, %(last_payment_cash_balance)s);
     """, {'source_id': source_id, 
-            'supplier_id': supplier_id, 'last_payment_balance': float(first_page_data['last_payment']['balance'])})
+            'supplier_id': supplier_id, 'last_payment_balance': float(first_page_data['last_payment']['balance']),
+            'last_payment_cash_balance': float(total_cash_page['debet']) + float(total_cash_page['credit'])})
     
     connection.commit()
     cursor.close()
@@ -176,26 +227,28 @@ def update_finance(connection, session, source_id: int, period: date, supplier_i
 
         data_page = get_data_pages_for_update(get_finance_data(session, period, supplier_id, current_page), period)
 
-    cursor = connection.cursor()
-    cursor.execute("""
-        DELETE FROM bnovo_raw.payments
-        WHERE 
-            source_id = %(source_id)s 
-            AND period_month = %(period)s 
-            AND supplier_id = %(supplier_id)s
-            AND id not in %(payments_ids)s;
+    if (len(payment_record_ids) > 0):
 
-        DELETE FROM bnovo_raw.payment_records
-        WHERE 
-            source_id = %(source_id)s 
-            AND period_month = %(period)s 
-            AND supplier_id = %(supplier_id)s
-            AND id not in %(payment_records_ids)s;
-    """, {'source_id': source_id, 'period': period,'supplier_id': supplier_id, 
-          'payments_ids': tuple(payment_ids), 'payment_records_ids': tuple(payment_record_ids)})
-    
-    connection.commit()
-    cursor.close()
+        cursor = connection.cursor()
+        cursor.execute("""
+            DELETE FROM bnovo_raw.payments
+            WHERE 
+                source_id = %(source_id)s 
+                AND period_month = %(period)s 
+                AND supplier_id = %(supplier_id)s
+                AND id not in %(payments_ids)s;
+
+            DELETE FROM bnovo_raw.payment_records
+            WHERE 
+                source_id = %(source_id)s 
+                AND period_month = %(period)s 
+                AND supplier_id = %(supplier_id)s
+                AND id not in %(payment_records_ids)s;
+        """, {'source_id': source_id, 'period': period,'supplier_id': supplier_id, 
+            'payments_ids': tuple(payment_ids), 'payment_records_ids': tuple(payment_record_ids)})
+        
+        connection.commit()
+        cursor.close()
 
    
 
@@ -228,8 +281,12 @@ def export_finance_from_bnovo_to_rds(source_id: int, period: date, sid: str = ""
         for supp_id in supp_ids:
             
             first_page_data = get_finance_data(http_session, period, supp_id[0])
-            update_balance(conn, source_id, period, supp_id[0], first_page_data)
+            
+            last_pay_date = datetime.strptime(first_page_data["last_payment"]["paid_date"], '%Y-%m-%d %H:%M:%S')
+            total_cash_page = get_total_cash_data(http_session, last_pay_date, supp_id[0])
+
             update_finance(conn, http_session, source_id, period, supp_id[0], first_page_data)
+            update_balance(conn, source_id, period, supp_id[0], first_page_data, total_cash_page)
             #print(first_page_data['last_payment'])
 
         cursor.close()
@@ -240,9 +297,11 @@ def lambda_handler(event, context):
     sid = event['sid']
     source_id = event['source_id']
     period = date(event['year'], event['month'], 1)
-
+    export_finance_from_bnovo_to_rds(source_id, period, sid)
 
 
 
 #https://online.bnovo.ru/finance?finance_supplier_id=2078&dfrom=10-04-2016&tfrom=00%3A00&dto=18-04-2023&tto=00%3A00&page=2
  #https://online.bnovo.ru/finance/items?finance_supplier_id=18141&dfrom=01-04-2023&dto=30-04-2023&tto=23%3A59&page=1
+
+ #https://online.bnovo.ru/finance?grouping_hidden=0&receipts_hidden=1&expenses_hidden=1&by_booking_hidden=1&without_booking_hidden=1&fin_id_hidden=0&finance_supplier_id=2065&dfrom=01-04-2023&tfrom=00%3A00&dto=21-04-2023&tto=00%3A00&types%5B%5D=2

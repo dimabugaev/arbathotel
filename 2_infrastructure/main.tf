@@ -30,6 +30,7 @@ locals {
   dict_operate_zip = "./build/dict_operate_data.zip"
 
   extract_bnovo_zip = "./build/extract_bnovo_data.zip"
+  extract_bnovo_finance_zip = "./build/extract_bnovo_finance.zip"
 
   azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 
@@ -512,6 +513,45 @@ module "lambda_function_bnovo_extract" {
   tags = local.tags
 }
 
+
+module "lambda_function_bnovo_finance_extract" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-bnovo-finance-extract-lambda"
+  description   = "lambda function for extract FINANCE data from open API Bnovo"
+  handler       = "extract_bnovo_finance.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.extract_bnovo_finance_zip
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
+
+
+  #allowed_triggers = {
+  #  HourlyCronInvoke = {
+  #    principal  = "events.amazonaws.com"
+  #    source_arn = aws_cloudwatch_event_rule.every_hour.arn
+  #  }
+  #}
+
+  tags = local.tags
+}
 
 module "lambda_cron_security_group" {
   source  = "terraform-aws-modules/security-group/aws"

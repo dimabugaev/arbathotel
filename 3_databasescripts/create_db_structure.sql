@@ -399,6 +399,7 @@ drop table if exists bnovo_raw.items;
 drop table if exists bnovo_raw.hotels;
 drop table if exists bnovo_raw.suppliers;
 drop table if exists bnovo_raw.total_balance;
+drop table if exists bnovo_raw.balance_by_period;
 drop table if exists bnovo_raw.payments;
 drop table if exists bnovo_raw.payment_records;
 
@@ -468,6 +469,7 @@ CREATE TABLE bnovo_raw.total_balance
 	source_id int,
 	finance_supplier_id varchar not null,
 	last_payment_balance decimal(18,2) not null default 0,
+	last_payment_cash_balance decimal(18,2) not null default 0,
 	date_update timestamp not null default current_timestamp,
 	
 	CONSTRAINT fk_sources_total_balance FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
@@ -480,6 +482,8 @@ CREATE TABLE bnovo_raw.balance_by_period
 	finance_supplier_id varchar not null,
 	debet decimal(18,2) not null default 0,
 	credit decimal(18,2) not null default 0,
+	debet_cash decimal(18,2) not null default 0,
+	credit_cash decimal(18,2) not null default 0,
 	date_update timestamp not null default current_timestamp,
 	
 	CONSTRAINT fk_sources_total_balance_by_period FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )

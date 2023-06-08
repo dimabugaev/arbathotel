@@ -32,11 +32,13 @@ jobs:
           cp src/dict_operate_data.py build/
           cp src/extract_bnovo_data.py build/
           cp src/extract_bnovo_finance.py build/
+          cp src/extract_tinkoff_account.py build/
           cd build
           zip -r employees_reports_data.zip psycopg2/ aws_lambda_powertools/ typing_extensions.py my_utility.py employees_reports_data.py 
           zip -r dict_operate_data.zip psycopg2/ aws_lambda_powertools/ typing_extensions.py my_utility.py dict_operate_data.py 
           zip -r extract_bnovo_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_data.py
-          zip -r extract_bnovo_finance.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_finance.py  
+          zip -r extract_bnovo_finance.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_finance.py
+          zip -r extract_tinkoff_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_tinkoff_account.py  
           cd ../
           ls build/
 

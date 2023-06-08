@@ -1,0 +1,53 @@
+@startuml concept_model
+
+skinparam linetype ortho
+hide methods
+
+
+' Справочник источники /accounts
+entity sources{
+    id
+    name
+    type /' тип источника  3 - счета псб '/
+    external_key /' Номер счета!! информация для идентификации источника '/
+    income_debt
+    username   /' имя сертификата '/
+    password   /' пароль сертификата'/
+}
+
+
+' Документы
+entity docs{
+    id /'long'/
+    source_id
+    bank_work_id /'long'/
+    date
+    first_signed /'bool'/
+    number_doc /'string'/
+    reciever /'string'/
+    second_signed /'bool'/
+    summa
+    third_signed /'bool'/
+}
+
+
+' Строки документов
+entity docs_rows{
+    id   /' ?? '/
+    source_id
+    doc_id /'long'/
+    kb /' varchar'/
+    po /' varchar '/
+    account /' varchar '/
+    contragent /' varchar '/
+    contragent_inn /' varchar '/
+    conversion /' деньги'/
+    debit /' bool '/
+    description /' varchar '/
+    outer_account /' varchar '/
+    summa_rur
+}
+
+docs ||-u-|{ docs_rows
+sources ||-d-|{ docs
+sources ||-r-|{ docs_rows

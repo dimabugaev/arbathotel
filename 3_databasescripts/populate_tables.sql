@@ -55,6 +55,9 @@ VALUES('Бабаев (отчет)','1AwOpsB7DHaRcNXS7fFp5x-NN69IhdS1y4jrDCWAaYIc
 INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
 VALUES('BNOVO Учебный','BNOVO',2, '6390974362099+2177@customapp.bnovo.ru', '80bfbddc852cda96');
 
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Bulanec 40802810900000081132','40802810900000081132',3, 'certificateBav.pfx', 'jhv098utDgTYT654IbW');
+
 
 INSERT INTO operate.report_items (item_name) VALUES('TEST4');
 
@@ -404,3 +407,13 @@ from
 	inner join bnovo_raw.suppliers s on pr.hotel_supplier_id = s.id and s.finance_supplier_id = '2084' 
 where 
 	pr.type_id = '2';
+
+select *
+from psb_bank_raw.docs dr;
+
+
+
+
+
+
+

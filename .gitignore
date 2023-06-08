@@ -2,4 +2,5 @@
 *terraform.*
 test*
 __pycache__
+*.jar
 

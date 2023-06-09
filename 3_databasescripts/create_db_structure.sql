@@ -556,15 +556,18 @@ CREATE TABLE bnovo_raw.payment_records
 );
 
 
-create schema if not exists psb_bank_raw;
 
-drop table if exists psb_bank_raw.docs_rows;
-drop table if exists psb_bank_raw.docs;
-drop table if exists psb_bank_raw.loaded_data_by_period;
+create schema if not exists banks_raw;
+
+drop table if exists banks_raw.psb_docs_rows;
+drop table if exists banks_raw.psb_docs;
+drop table if exists banks_raw.loaded_data_by_period;
+
+drop table if exists banks_raw.tinkoff_payments;
 
 
 
-CREATE TABLE psb_bank_raw.docs
+CREATE TABLE banks_raw.psb_docs
 (
 	id bigint,
     source_id int,
@@ -578,10 +581,10 @@ CREATE TABLE psb_bank_raw.docs
     third_signed boolean,
     date_update timestamp not null default current_timestamp,
     
-    CONSTRAINT fk_sources_docs FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+    CONSTRAINT fk_sources_psb_docs FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
 );
 
-CREATE TABLE psb_bank_raw.docs_rows
+CREATE TABLE banks_raw.psb_docs_rows
 (
     source_id int,
     doc_id bigint,
@@ -598,10 +601,10 @@ CREATE TABLE psb_bank_raw.docs_rows
     summa_rur decimal(18,2),
     date_update timestamp not null default current_timestamp,
     
-    CONSTRAINT fk_sources_docs_rows FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+    CONSTRAINT fk_sources_psb_docs_rows FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
 );
 
-CREATE TABLE psb_bank_raw.loaded_data_by_period
+CREATE TABLE banks_raw.loaded_data_by_period
 (
     source_id int,
     period_month date,
@@ -614,3 +617,33 @@ CREATE TABLE psb_bank_raw.loaded_data_by_period
 );
 
 
+CREATE TABLE banks_raw.tinkoff_payments
+(
+    source_id int,
+    period_month date,
+    id varchar,
+    date varchar,
+    amount varchar,
+    draw_date varchar,
+    payer_name varchar,
+    payer_inn varchar,
+    payer_account varchar,
+    payer_corr_account varchar,
+    payer_bic varchar,
+    payer_bank varchar,
+    charge_date varchar,
+    recipient varchar,
+    recipient_inn varchar,
+    recipient_account varchar,
+    recipient_corr_account varchar,
+    recipient_bic varchar,
+    recipient_bank varchar,
+    operation_type varchar,
+    payment_purpose varchar,
+    creator_status varchar,
+    recipient_kpp varchar,
+    execution_order varchar,
+    date_update timestamp not null default current_timestamp,
+    
+    CONSTRAINT fk_sources_tinkoff_payments FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);

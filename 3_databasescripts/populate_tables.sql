@@ -58,6 +58,10 @@ VALUES('BNOVO Учебный','BNOVO',2, '6390974362099+2177@customapp.bnovo.ru'
 INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
 VALUES('PSB Bulanec 40802810900000081132','40802810900000081132',3, 'certificateBav.pfx', 'jhv098utDgTYT654IbW');
 
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('Tinkoff Bulanec 40802810200000734551','40802810200000734551',4, Null, 't.bdr9ZePnL4k3fbqwPW-q6jPqdRO4kWsUruFzcLiVqVBWioppSjJSTp-c-APNew6Y8Lx6TK4CCV2XCHbL_4waTg');
+
+
 
 INSERT INTO operate.report_items (item_name) VALUES('TEST4');
 
@@ -411,9 +415,14 @@ where
 select *
 from psb_bank_raw.docs dr;
 
+select sum(dr.summa_rur)
+from psb_bank_raw.docs_rows dr
+group by
+	dr.debit;
 
 
 
+select * from psb_bank_raw.loaded_data_by_period; 
 
-
+select * from banks_raw.tinkoff_payments;
 

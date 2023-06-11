@@ -8,7 +8,8 @@ def get_data_from_email():
 
     imap = 'imap.'+ email[email.find('@'):]
 
-    print(imap)    
+    print(imap) 
+    print(tagret_bucket)   
 
 def lambda_handler(event, context):
     get_data_from_email()

@@ -9,8 +9,8 @@ def get_email_and_storage_data():
     secret_name = "dev-reports-email-cred"
     region_name = "eu-central-1"    
 
-    #session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
-    session = boto3.session.Session()
+    session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
+    #session = boto3.session.Session()
     client = session.client(service_name='secretsmanager', region_name=region_name)
     secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
 

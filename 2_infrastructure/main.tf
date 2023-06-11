@@ -483,7 +483,7 @@ resource "aws_secretsmanager_secret_version" "reports_email" {
   secret_string = <<EOF
    {
     "email_address": "${var.reports_email}",
-    "password": "${var.reports_email_password}"
+    "password": "${var.reports_email_password}",
     "s3_bucket_for_attachments": "${module.s3_bucket_for_data_processing.s3_bucket_id}"
    }
   EOF

@@ -57,6 +57,8 @@ jobs:
       - name: test terraform
         env:
           TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+          TF_VAR_reports_email: ${{ secrets.REPORTS_EMAIL_ADDRESS }}
+          TF_VAR_reports_email_password: ${{ secrets.REPORTS_EMAIL_PASSWORD }}
         run: |
           cd 2_infrastructure/
           terraform -version

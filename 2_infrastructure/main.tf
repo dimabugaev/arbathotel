@@ -474,6 +474,22 @@ resource "aws_secretsmanager_secret_version" "secretsRDS" {
   #secret_string = jsonencode(var.db_secrets)
 }
 
+resource "aws_secretsmanager_secret" "reports_email" {
+   name = "${local.name}-reports-email-cred"
+}
+
+resource "aws_secretsmanager_secret_version" "reports_email" {
+  secret_id     = aws_secretsmanager_secret.reports_email.id
+  secret_string = <<EOF
+   {
+    "email_address": "${var.reports_email}",
+    "password": "${var.reports_email_password}"
+    "s3_bucket_for_attachments": "${module.s3_bucket_for_data_processing.s3_bucket_id}"
+   }
+  EOF
+  #secret_string = jsonencode(var.db_secrets)
+}
+
 
 
 module "lambda_function_bnovo_extract" {
@@ -624,7 +640,7 @@ resource "aws_cloudwatch_event_target" "invoke_lambda" {
 }
 
 //s3 for mail data store for processing
-module "s3_bucket" {
+module "s3_bucket_for_data_processing" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
   bucket = "${local.name}-arbat-hotels-mail-income-data"

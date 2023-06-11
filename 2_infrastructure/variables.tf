@@ -15,3 +15,15 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "reports_email" {
+  description = "email address for income reports data"
+  type        = string
+  sensitive   = true
+}
+
+variable "reports_email_password" {
+  description = "email password for income reports email"
+  type        = string
+  sensitive   = true
+}

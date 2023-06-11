@@ -569,6 +569,8 @@ module "lambda_function_tinkoff_extract" {
   create_package         = false
   local_existing_package = local.extract_tinkoff_account_zip
 
+  timeout = 10
+
   attach_network_policy  = true
 
   attach_policy_statements = true
@@ -619,4 +621,12 @@ resource "aws_cloudwatch_event_rule" "every_hour" {
 resource "aws_cloudwatch_event_target" "invoke_lambda" {
   rule = aws_cloudwatch_event_rule.every_hour.name
   arn = module.lambda_function_bnovo_extract.lambda_function_arn
+}
+
+//s3 for mail data store for processing
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket = "${local.name}-arbat-hotels-mail-income-data"
+  force_destroy = true
 }

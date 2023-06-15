@@ -672,7 +672,8 @@ module "lambda_function_psb_extract_java" {
     key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
   }
 
-  timeout = 10
+  timeout = 180
+  memory_size = 512
 
   attach_network_policy  = true
 
@@ -718,7 +719,7 @@ module "lambda_function_extract_email_reports" {
   create_package         = false
   local_existing_package = local.extract_email_reports_data_zip
 
-  timeout = 10
+  timeout = 60
 
   attach_network_policy  = true
 
@@ -764,7 +765,7 @@ module "lambda_function_upload_psb_acquiring" {
   create_package         = false
   local_existing_package = local.upload_psb_acquiring_zip
 
-  timeout = 10
+  timeout = 60
 
   attach_network_policy  = true
 
@@ -782,7 +783,7 @@ module "lambda_function_upload_psb_acquiring" {
     },
     s3_read = {
       effect    = "Allow",
-      actions   = ["s3:GetObject", "s3:PutObject", "s3:CopyObject", "s3:DeleteObject"],
+      actions   = ["s3:ListObjects", "s3:GetObject", "s3:PutObject", "s3:CopyObject", "s3:DeleteObject"],
       resources = ["${module.s3_bucket_for_data_processing.s3_bucket_arn}/*"]
     }
   } 
@@ -815,7 +816,7 @@ module "lambda_function_upload_ucb_account" {
   create_package         = false
   local_existing_package = local.upload_ucb_account_zip
 
-  timeout = 10
+  timeout = 60
 
   attach_network_policy  = true
 
@@ -833,7 +834,7 @@ module "lambda_function_upload_ucb_account" {
     },
     s3_read = {
       effect    = "Allow",
-      actions   = ["s3:GetObject", "s3:PutObject", "s3:CopyObject", "s3:DeleteObject"],
+      actions   = ["s3:ListObjects", "s3:GetObject", "s3:PutObject", "s3:CopyObject", "s3:DeleteObject"],
       resources = ["${module.s3_bucket_for_data_processing.s3_bucket_arn}/*"]
     }
   } 

@@ -93,8 +93,8 @@ def get_data_from_email():
                     )
                     print(filename)
 
-            #temporary turn off mail cleaning for test lambdas
-            #imap.store(mail_id, '+FLAGS', '\\Deleted')    
+            ###temporary turn off mail cleaning for test lambdas
+            imap.store(mail_id, '+FLAGS', '\\Deleted')    
             
         
 

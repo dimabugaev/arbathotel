@@ -30,7 +30,8 @@ CREATE TABLE operate.sources
 	 source_external_key varchar NOT null,
 	 source_income_debt decimal(18,2),
 	 source_username varchar,
-	 source_password varchar
+	 source_password varchar,
+	 source_data_begin date
 );
  
  

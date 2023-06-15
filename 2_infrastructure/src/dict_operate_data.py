@@ -2,6 +2,7 @@ import my_utility
 import re
 from aws_lambda_powertools.event_handler import APIGatewayHttpResolver
 from typing import Any
+from datetime import datetime
 
 #from datetime import date, timedelta, datetime
 
@@ -10,6 +11,20 @@ from typing import Any
 connection = my_utility.get_db_connection()
 
 app = APIGatewayHttpResolver()
+
+def get_date_from_string_to_query(str_date: str) -> str:
+    result = "NULL"
+
+    #2023-01-03T08:00:00.000Z
+    format = '%Y-%m-%dT%H:%M:%S.%f%z'
+    if isinstance(str_date, str):
+        try:
+            report_date = my_utility.get_begin_month_by_date(datetime.strptime(str_date, format).date())   
+            result = "TO_DATE('" + str(str(report_date)) + "','YYYY-mm-DD')"
+        except:
+            result = "NULL"
+
+    return result
 
 def get_sources() -> list:
     cursor = connection.cursor()
@@ -21,7 +36,8 @@ def get_sources() -> list:
                         s.source_external_key,
                         s.source_income_debt::FLOAT,
                         s.source_username,
-                        s.source_password 
+                        s.source_password,
+                        s.source_data_begin 
                       from 
                         operate.sources s
                       order by
@@ -123,17 +139,19 @@ def put_sources(datastrings: list):
                   and len(str(newrow[3])) == 0 
                   and len(str(newrow[4])) == 0
                   and len(str(newrow[5])) == 0
-                  and len(str(newrow[6])) == 0):
+                  and len(str(newrow[6])) == 0
+                  and len(str(newrow[7])) == 0):
                   continue
               
-              list_of_args.append("({}, '{}', {}, '{}', {}, '{}', '{}')"
+              list_of_args.append("({}, '{}', {}, '{}', {}, '{}', '{}', {})"
                   .format(my_utility.num_to_query_substr(newrow[0]), #id
                   newrow[1],                                         #source_name
                   my_utility.num_to_query_substr(newrow[2]),         #source_type
                   newrow[3],                                         #source_external_key
                   my_utility.num_to_query_substr(newrow[4]),         #source_income_debt
                   newrow[5],                                         #source_username
-                  newrow[6]))                                        #source_password
+                  newrow[6],                                         #source_password
+                  get_date_from_string_to_query(newrow[7])))         #source_data_begin                               
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_source_table_update""")
@@ -153,23 +171,25 @@ def put_sources(datastrings: list):
                             source_external_key = u.source_external_key,
                             source_income_debt = u.source_income_debt,
                             source_username = u.source_username,
-                            source_password = u.source_password
+                            source_password = u.source_password,
+                            source_data_begin = u.source_data_begin
                     FROM operate.sources s
                         INNER JOIN temp_source_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt, s.source_username, s.source_password
+                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt, s.source_username, s.source_password, s.source_data_begin
                         EXCEPT
-                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt, u.source_username, u.source_password
+                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt, u.source_username, u.source_password, u.source_data_begin
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt, source_username, source_password)
+                    INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin)
                     SELECT     
                         source_name, 
                         source_type, 
                         source_external_key, 
                         source_income_debt,
                         source_username,
-                        source_password
+                        source_password,
+                        source_data_begin
                     FROM temp_source_table_update
                     WHERE
                         id is NULL;

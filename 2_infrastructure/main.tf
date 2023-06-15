@@ -732,7 +732,7 @@ module "lambda_function_extract_email_reports" {
     s3_read = {
       effect    = "Allow",
       actions   = ["s3:PutObject"],
-      resources = ["${s3_bucket_for_data_processing.s3_bucket_arn}/*"]
+      resources = ["${module.s3_bucket_for_data_processing.s3_bucket_arn}/*"]
     }
   } 
 
@@ -783,7 +783,7 @@ module "lambda_function_upload_psb_acquiring" {
     s3_read = {
       effect    = "Allow",
       actions   = ["s3:GetObject", "s3:PutObject", "s3:CopyObject", "s3:DeleteObject"],
-      resources = ["${s3_bucket_for_data_processing.s3_bucket_arn}/*"]
+      resources = ["${module.s3_bucket_for_data_processing.s3_bucket_arn}/*"]
     }
   } 
 
@@ -834,7 +834,7 @@ module "lambda_function_upload_ucb_account" {
     s3_read = {
       effect    = "Allow",
       actions   = ["s3:GetObject", "s3:PutObject", "s3:CopyObject", "s3:DeleteObject"],
-      resources = ["${s3_bucket_for_data_processing.s3_bucket_arn}/*"]
+      resources = ["${module.s3_bucket_for_data_processing.s3_bucket_arn}/*"]
     }
   } 
 

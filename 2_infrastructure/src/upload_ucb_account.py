@@ -59,6 +59,8 @@ def upload_data_to_rds():
             insert_query = insert_query.rstrip(',') + ") VALUES ({placeholders});".format(placeholders=','.join(['%s'] * len(column_mapping)))
             cursor.execute(insert_query, values)
 
+        print(s3_object['Key'])
+
     
     delete_query = """
         DELETE FROM {permanent_table}

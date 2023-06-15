@@ -43,7 +43,7 @@ jobs:
           zip -r extract_bnovo_finance.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_finance.py
           zip -r extract_tinkoff_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_tinkoff_account.py
           zip -r extract_email_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_email_reports_data.py 
-          zip -r upload_psb_acquiring.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py upload_psb_acquiring.py  
+          zip -r upload_psb_acquiring.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ xlrd/ openpyxl/ typing_extensions.py my_utility.py upload_psb_acquiring.py  
           zip -r upload_ucb_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py upload_ucb_account.py   
           cd ../
           ls build/

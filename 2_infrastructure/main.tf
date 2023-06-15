@@ -34,6 +34,12 @@ locals {
 
   extract_tinkoff_account_zip = "./build/extract_tinkoff_account.zip"
 
+  extract_email_reports_data_zip = "./build/extract_email_reports_data.zip"
+
+  upload_psb_acquiring_zip = "./build/upload_psb_acquiring.zip"
+
+  upload_ucb_account_zip = "./build/upload_ucb_account.zip"
+
   azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 
   tags = {
@@ -645,4 +651,203 @@ module "s3_bucket_for_data_processing" {
 
   bucket = "${local.name}-arbat-hotels-mail-income-data"
   force_destroy = true
+}
+
+
+module "lambda_function_psb_extract_java" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-psb-extract-lambda"
+  description   = "lambda function for extract Payment data from open API PSB"
+  handler       = "MySoapClient::handleRequest"
+  runtime       = "java8"
+
+  publish = true
+
+  create_package         = false
+  
+  s3_existing_package = {
+    bucket = "arbat-hotel-additional-data"
+    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
+  }
+
+  timeout = 10
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    },
+    s3_read = {
+      effect    = "Allow",
+      actions   = ["s3:GetObject"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
+
+
+  #allowed_triggers = {
+  #  HourlyCronInvoke = {
+  #    principal  = "events.amazonaws.com"
+  #    source_arn = aws_cloudwatch_event_rule.every_hour.arn
+  #  }
+  #}
+
+  tags = local.tags
+}
+
+module "lambda_function_extract_email_reports" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-extract-email-reports-lambda"
+  description   = "lambda function for extract EMAIL reports and put them into S3"
+  handler       = "extract_email_reports_data.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.extract_email_reports_data_zip
+
+  timeout = 10
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.reports_email.arn]
+    },
+    s3_read = {
+      effect    = "Allow",
+      actions   = ["s3:PutObject"],
+      resources = ["${s3_bucket_for_data_processing.arn}/*"]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
+
+
+  #allowed_triggers = {
+  #  HourlyCronInvoke = {
+  #    principal  = "events.amazonaws.com"
+  #    source_arn = aws_cloudwatch_event_rule.every_hour.arn
+  #  }
+  #}
+
+  tags = local.tags
+}
+
+module "lambda_function_upload_psb_acquiring" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-upload-psb-acquiring-lambda"
+  description   = "lambda function for upload acquiring PSB data from xls S3 to RDS"
+  handler       = "upload_psb_acquiring.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.upload_psb_acquiring_zip
+
+  timeout = 10
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager_rds = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    },
+    secretsmanager_s3 = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.reports_email.arn]
+    },
+    s3_read = {
+      effect    = "Allow",
+      actions   = ["s3:GetObject", "s3:PutObject", "s3:CopyObject", "s3:DeleteObject"],
+      resources = ["${s3_bucket_for_data_processing.arn}/*"]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
+
+
+  #allowed_triggers = {
+  #  HourlyCronInvoke = {
+  #    principal  = "events.amazonaws.com"
+  #    source_arn = aws_cloudwatch_event_rule.every_hour.arn
+  #  }
+  #}
+
+  tags = local.tags
+}
+
+module "lambda_function_upload_ucb_account" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-upload-ucs-account-lambda"
+  description   = "lambda function for upload UCP payment data from csv S3 to RDS"
+  handler       = "upload_ucb_account.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.upload_ucb_account_zip
+
+  timeout = 10
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager_rds = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    },
+    secretsmanager_s3 = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.reports_email.arn]
+    },
+    s3_read = {
+      effect    = "Allow",
+      actions   = ["s3:GetObject", "s3:PutObject", "s3:CopyObject", "s3:DeleteObject"],
+      resources = ["${s3_bucket_for_data_processing.arn}/*"]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
+
+
+  #allowed_triggers = {
+  #  HourlyCronInvoke = {
+  #    principal  = "events.amazonaws.com"
+  #    source_arn = aws_cloudwatch_event_rule.every_hour.arn
+  #  }
+  #}
+
+  tags = local.tags
 }

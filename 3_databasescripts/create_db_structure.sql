@@ -564,6 +564,11 @@ drop table if exists banks_raw.psb_docs;
 drop table if exists banks_raw.loaded_data_by_period;
 
 drop table if exists banks_raw.tinkoff_payments;
+drop table if exists banks_raw.ucb_payments;
+
+drop table if exists banks_raw.psb_acquiring_term;
+drop table if exists banks_raw.psb_acquiring_qr;
+drop table if exists banks_raw.psb_acquiring_qr_refund;
 
 
 
@@ -646,4 +651,99 @@ CREATE TABLE banks_raw.tinkoff_payments
     date_update timestamp not null default current_timestamp,
     
     CONSTRAINT fk_sources_tinkoff_payments FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
+CREATE TABLE banks_raw.ucb_payments
+(
+    account varchar,
+    draw_date varchar,
+    operation_date varchar,
+    operation_code varchar,
+    bank_corr_bic varchar,
+    bank_corr_account varchar,
+    bank_corr_name varchar,
+    corr_account varchar,
+    correspondent varchar,
+    doc_number varchar,
+    doc_data varchar,
+    debet varchar,
+    credit varchar,
+    rub_cover varchar,
+    code varchar,
+    description varchar,
+    corr_inn varchar,
+    paiment_order varchar,
+    date_update timestamp not null default current_timestamp
+    
+);
+
+CREATE TABLE banks_raw.psb_acquiring_term
+(
+    contract_name varchar,
+    device_name varchar,
+    device_number varchar,
+    device_addr varchar,
+    currency varchar,
+    payment_system varchar,
+    card_number varchar,
+    operation_data varchar,
+    processing_data varchar,
+    operation_sum varchar,
+    commission varchar,
+    to_transaction varchar,
+    rpn varchar UNIQUE,
+    operation_type varchar,
+    original_sum varchar,
+    original_currency varchar,
+    order_number varchar,
+    description varchar,
+    date_update timestamp not null default current_timestamp
+    
+);
+
+CREATE TABLE banks_raw.psb_acquiring_qr
+(
+    date_time varchar,
+    id_payment varchar UNIQUE,
+    id_qr varchar,
+    payer_bank varchar,
+    payer_name varchar,
+    payer_account varchar,
+    recipient_inn varchar,
+    recipient_name varchar,
+    terminal_number varchar,
+    tsp_name varchar,
+    tsp_addr varchar,
+    recipient_account varchar,
+    mss varchar,
+    operation_sum varchar,
+    operation_com varchar,
+    to_tramsaction varchar,
+    currency varchar,
+    about_payment varchar,
+    description varchar,
+    date_update timestamp not null default current_timestamp
+    
+);
+
+CREATE TABLE banks_raw.psb_acquiring_qr_refund
+(
+    date_time_original varchar,
+	date_time_refund varchar,
+    id_payment_refund varchar UNIQUE,
+    id_payment_original varchar,
+    terminal_number varchar,
+    tsp_addr varchar,
+    recipient_name varchar,
+    recipient_refund_account varchar,
+    payer_account varchar,
+    payer_tsp_name varchar,
+    tsp_id varchar,
+    refund_sum varchar,
+    original_sum varchar,
+    about_refund_payment varchar,
+    about_original_payment varchar,
+    payer_bank varchar,
+    date_update timestamp not null default current_timestamp
+    
 );

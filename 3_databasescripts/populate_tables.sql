@@ -426,3 +426,9 @@ select * from psb_bank_raw.loaded_data_by_period;
 
 select * from banks_raw.tinkoff_payments;
 
+select * from banks_raw.ucb_payments;
+
+select * from banks_raw.psb_acquiring_term;
+
+select * from banks_raw.psb_acquiring_qr paq;
+

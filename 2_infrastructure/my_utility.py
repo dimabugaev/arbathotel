@@ -13,7 +13,8 @@ def get_email_and_storage_data():
     #session = boto3.session.Session()
     client = session.client(service_name='secretsmanager', region_name=region_name)
     secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
-
+    s3client = session.client(service_name='s3')
+    secret_value_dict['s3client'] = s3client
     return secret_value_dict
 
 #DB

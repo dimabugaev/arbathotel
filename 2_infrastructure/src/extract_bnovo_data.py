@@ -92,6 +92,7 @@ def export_data_from_bnovo_to_rds():
             "finance_supplier_id": "finance_supplier_id"
         }
 
+    sid_map = {}
     for row in rows:
         http_session = my_utility.get_autorized_http_session_bnovo(row[0], row[1])
         print(http_session.cookies.get_dict())
@@ -102,11 +103,15 @@ def export_data_from_bnovo_to_rds():
         my_utility.update_dim_raw(conn, [get_account_details(http_session)["hotel"]], "hotel", "bnovo_raw.hotels", hotels_map, row[2])
         my_utility.update_dim_raw(conn, get_suppliers(http_session)["suppliers"], "suppliers", "bnovo_raw.suppliers", suppliers_map, row[2])
 
+        sid_map[row[2]] = http_session.cookies.get('SID')
 
 
     cursor.close()
     conn.close()   
 
+    return sid_map
+
 
 def lambda_handler(event, context):
-    export_data_from_bnovo_to_rds()
+    sid_map = export_data_from_bnovo_to_rds()
+    return sid_map

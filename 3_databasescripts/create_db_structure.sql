@@ -748,3 +748,31 @@ CREATE TABLE banks_raw.psb_acquiring_qr_refund
     date_update timestamp not null default current_timestamp
     
 );
+
+CREATE OR REPLACE FUNCTION operate.get_date_period_table_fnc(start_date DATE, end_date DATE)
+  RETURNS table (period_month DATE) AS
+$$
+BEGIN
+  return query
+  with recursive dates as (
+	
+	select 
+		start_date date_val
+		
+	union all
+	
+	select
+		(date_val + interval '1 month')::Date date_val
+	from
+		dates
+	where 
+		date_val < date_trunc('month', end_date)::Date
+	
+	)
+	select 
+		date_val
+	from 
+		dates;	
+END;
+$$
+LANGUAGE 'plpgsql';

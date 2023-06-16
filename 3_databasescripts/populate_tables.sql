@@ -187,7 +187,8 @@ from operate.employees ri;
 select *
 from operate.report_items_setings ris; 
 
-select *
+select *,
+	extract(MONTH from s.source_data_begin) 
 from operate.sources s;
 
 update operate.report_items  
@@ -297,6 +298,10 @@ add order_count int;
 alter table operate.sources 
 add source_username varchar,
 add	source_password varchar;
+
+alter table operate.sources 
+add source_data_begin date;
+
 
 
 select 
@@ -413,7 +418,7 @@ where
 	pr.type_id = '2';
 
 select *
-from psb_bank_raw.docs dr;
+from banks_raw.psb_docs dr;
 
 select sum(dr.summa_rur)
 from psb_bank_raw.docs_rows dr
@@ -422,7 +427,7 @@ group by
 
 
 
-select * from psb_bank_raw.loaded_data_by_period; 
+select * from banks_raw.loaded_data_by_period; 
 
 select * from banks_raw.tinkoff_payments;
 
@@ -430,5 +435,7 @@ select * from banks_raw.ucb_payments;
 
 select * from banks_raw.psb_acquiring_term;
 
-select * from banks_raw.psb_acquiring_qr paq;
+select * 
+	
+from banks_raw.psb_acquiring_qr paq;
 

@@ -273,7 +273,8 @@ def export_finance_from_bnovo_to_rds(source_id: int, period: date, sid: str = ""
         if len(sid) == 0:
             session_cred = get_binovo_cred(conn, source_id)
             if session_cred['username'] is None:
-                return
+                print('Credentions is absent!!')
+                return False
             http_session = my_utility.get_autorized_http_session_bnovo(session_cred['username'], session_cred['password'])
         else:
             http_session = my_utility.get_http_session_bnovo_by_sid(sid)
@@ -290,6 +291,7 @@ def export_finance_from_bnovo_to_rds(source_id: int, period: date, sid: str = ""
             #print(first_page_data['last_payment'])
 
         cursor.close()
+        return True
     
 
 def lambda_handler(event, context):

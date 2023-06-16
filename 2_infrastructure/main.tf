@@ -40,6 +40,9 @@ locals {
 
   upload_ucb_account_zip = "./build/upload_ucb_account.zip"
 
+  to_plan_extract_bnovo_fin = "./build/to_plan_extract_bnovo_fin.zip"
+
+
   azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 
   tags = {
@@ -551,6 +554,46 @@ module "lambda_function_bnovo_finance_extract" {
 
   create_package         = false
   local_existing_package = local.extract_bnovo_finance_zip
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
+
+
+  #allowed_triggers = {
+  #  HourlyCronInvoke = {
+  #    principal  = "events.amazonaws.com"
+  #    source_arn = aws_cloudwatch_event_rule.every_hour.arn
+  #  }
+  #}
+
+  tags = local.tags
+}
+
+
+module "lambda_function_plan_to_extract_bnovo_fin" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-plan-to-extract-bnovo-fin"
+  description   = "lambda function for planing to launch extract FINANCE data from open API Bnovo"
+  handler       = "to_plan_extract.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.to_plan_extract_bnovo_fin
 
   attach_network_policy  = true
 

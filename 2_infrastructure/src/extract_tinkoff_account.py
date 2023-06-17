@@ -90,9 +90,31 @@ def update_payments(connection, source_id:int, data_for_update:dict):
     return next_cursor
 
 
+def set_export_status(conn, source_id:int, datefrom: date, dateto: date):
+    cursor = conn.cursor()
+    
+    cursor.execute("""insert into 
+                            banks_raw.loaded_data_by_period (source_id, period_month, loaded_date)
+                        select 
+                            %(source_id)s source_id,
+                            period_plan.period_month,
+                            case 
+                                when period_plan.period_month = date_trunc('month', (%(dateto)s - interval '1 day'))::Date then
+                                    (%(dateto)s - interval '1 day')::Date
+                                else
+                                    operate.end_of_month(period_plan.period_month)
+                            end	 as loaded_date
+                    
+                        from operate.get_date_period_table_fnc(%(datefrom)s, (%(dateto)s - interval '1 day')::Date) period_plan
+                        on conflict (source_id, period_month) do 
+                        update
+                        SET loaded_date = EXCLUDED.loaded_date""", {"source_id": source_id, "datefrom": datefrom, "dateto":dateto})
+
+    conn.commit()
+    cursor.close()
+
 def export_account_data_from_tinkoff_to_rds(source_id:int, account:str, token:str, datefrom: date, dateto: date):
     with my_utility.get_db_connection() as conn:
-        cursor = conn.cursor()
 
         next_cursor = ''
         while True:
@@ -103,9 +125,10 @@ def export_account_data_from_tinkoff_to_rds(source_id:int, account:str, token:st
             #payment_ids.extend(payments['operationId'])
             #print(payments)
             if next_cursor == '':
-                break    
+                break
 
-        cursor.close()
+        set_export_status(conn, source_id, datefrom, dateto)
+
 
 def lambda_handler(event, context):
 

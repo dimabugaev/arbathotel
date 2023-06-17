@@ -776,3 +776,10 @@ BEGIN
 END;
 $$
 LANGUAGE 'plpgsql';
+
+create function operate.end_of_month(date)
+returns date as
+$$
+select (date_trunc('month', $1) + interval '1 month' - interval '1 day')::date;
+$$ language 'sql'
+immutable strict;

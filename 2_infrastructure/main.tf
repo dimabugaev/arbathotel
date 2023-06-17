@@ -42,6 +42,10 @@ locals {
 
   to_plan_extract_bnovo_fin = "./build/to_plan_extract_bnovo_fin.zip"
 
+  to_plan_extract_psb = "./build/to_plan_extract_psb.zip"
+
+  to_plan_extract_tinkoff = "./build/to_plan_extract_tinkoff.zip"
+
 
   azs      = slice(data.aws_availability_zones.available.names, 0, 2)
 
@@ -577,6 +581,68 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
   #    source_arn = aws_cloudwatch_event_rule.every_hour.arn
   #  }
   #}
+
+  tags = local.tags
+}
+
+module "lambda_function_plan_to_extract_psb" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-plan-to-extract-psb"
+  description   = "lambda function for planing to launch extract PAYMENTS data from open API PSB"
+  handler       = "to_plan_extract_psb.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.to_plan_extract_psb
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
+
+  tags = local.tags
+}
+
+module "lambda_function_plan_to_extract_tinkoff" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-plan-to-extract-tinkoff"
+  description   = "lambda function for planing to launch extract PAYMENTS data from open API TIMKOFF"
+  handler       = "to_plan_extract_tinkoff.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.to_plan_extract_tinkoff
+
+  attach_network_policy  = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
 
   tags = local.tags
 }

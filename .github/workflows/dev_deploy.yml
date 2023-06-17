@@ -37,6 +37,8 @@ jobs:
           cp src/upload_psb_acquiring.py build/
           cp src/upload_ucb_account.py build/
           cp src/to_plan_extract_bnovo_fin.py build/
+          cp src/to_plan_extract_psb.py build/
+          cp src/to_plan_extract_tinkoff.py build/
           cd build
           zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ typing_extensions.py my_utility.py employees_reports_data.py 
           zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ typing_extensions.py my_utility.py dict_operate_data.py 
@@ -46,7 +48,9 @@ jobs:
           zip -r extract_email_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_email_reports_data.py 
           zip -r upload_psb_acquiring.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ xlrd/ openpyxl/ et_xmlfile/ typing_extensions.py my_utility.py upload_psb_acquiring.py  
           zip -r upload_ucb_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py upload_ucb_account.py
-          zip -r to_plan_extract_bnovo_fin.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_bnovo_fin.py   
+          zip -r to_plan_extract_bnovo_fin.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_bnovo_fin.py
+          zip -r to_plan_extract_psb.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_psb.py
+          zip -r to_plan_extract_tinkoff.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_tinkoff.py   
           cd ../
           ls build/
 

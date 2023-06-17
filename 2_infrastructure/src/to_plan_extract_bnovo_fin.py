@@ -35,9 +35,10 @@ def lambda_handler(event, context):
     result_list = []
     columns = [desc[0] for desc in cursor.description]
     for row in my_plan:
+        dict_element = dict(zip(columns, row))
         if isinstance(event, dict):
-            row[0] = event.get(row[1], '')
-        result_list.append(dict(zip(columns, row)))
+            dict_element['sid'] = event.get(str(row[1]), '')
+        result_list.append(dict_element)
 
     cursor.close()
     conn.close()

@@ -112,7 +112,8 @@ def set_export_status(conn, source_id:int, datefrom: date, dateto: date):
 
                         on conflict (source_id, period_month) 
                         do update
-                        SET loaded_date = EXCLUDED.loaded_date;""", {"source_id": source_id, "datefrom": datefrom, "dateto":dateto})
+                        SET loaded_date = EXCLUDED.loaded_date,
+                            date_update = current_timestamp;""", {"source_id": source_id, "datefrom": datefrom, "dateto":dateto})
 
     conn.commit()
     cursor.close()

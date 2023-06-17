@@ -190,7 +190,7 @@ def upload_data_to_rds():
         destination_key = destination_prefix + s3_object['Key'].split('/')[-1]
         s3client.copy_object(Bucket=source_bucket, Key=destination_key, CopySource={'Bucket': source_bucket, 'Key': s3_object['Key']})
         
-        #s3client.delete_object(Bucket=source_bucket, Key=s3_object['Key'])
+        s3client.delete_object(Bucket=source_bucket, Key=s3_object['Key'])
 
     print('Данные успешно обработаны и записаны в постоянную таблицу, файлы перемещены.')
 

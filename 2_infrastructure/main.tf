@@ -548,7 +548,7 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
 
   function_name = "${local.name}-plan-to-extract-bnovo-fin"
   description   = "lambda function for planing to launch extract FINANCE data from open API Bnovo"
-  handler       = "to_plan_extract.lambda_handler"
+  handler       = "to_plan_extract_bnovo_fin.lambda_handler"
   runtime       = "python3.8"
 
   publish = true

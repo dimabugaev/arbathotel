@@ -162,41 +162,46 @@ def upload_data_to_rds():
     source_prefix = 'dev/psb-acquiring/income/'
     destination_prefix = 'dev/psb-acquiring/done/'
 
-    conn = my_utility.get_db_connection()
-    cursor = conn.cursor()
+    s3_objects = s3client.list_objects_v2(Bucket=source_bucket, Prefix=source_prefix).get('Contents')
 
-    s3_objects = s3client.list_objects_v2(Bucket=source_bucket, Prefix=source_prefix)['Contents']
-    for s3_object in s3_objects:
-        s3_response = s3client.get_object(Bucket=source_bucket, Key=s3_object['Key'])
-        print(s3_object['Key'])
-        xls_data = s3_response['Body'].read()
+    if s3_objects is not None:
 
-        if s3_object['Key'].lower().endswith('_e.xls'):
-            workbook = xlrd.open_workbook(file_contents=xls_data)
-            sheet = workbook.sheet_by_index(0)
-            do_normal_acquiring(cursor, sheet)   
-        elif s3_object['Key'].lower().endswith('.xlsx'):
+        conn = my_utility.get_db_connection()
+        cursor = conn.cursor()
+
+        for s3_object in s3_objects:
+            s3_response = s3client.get_object(Bucket=source_bucket, Key=s3_object['Key'])
+            print(s3_object['Key'])
+            xls_data = s3_response['Body'].read()
+
+            if s3_object['Key'].lower().endswith('_e.xls'):
+                workbook = xlrd.open_workbook(file_contents=xls_data)
+                sheet = workbook.sheet_by_index(0)
+                do_normal_acquiring(cursor, sheet)   
+            elif s3_object['Key'].lower().endswith('.xlsx'):
+                
+                workbook = load_workbook(filename=io.BytesIO(xls_data))
+                if len(workbook.sheetnames) > 1:
+                    do_qr_original(cursor, workbook.get_sheet_by_name(workbook.sheetnames[0]))
+                    do_qr_refund(cursor, workbook.get_sheet_by_name(workbook.sheetnames[1]))
+            else:
+                print(s3_object['Key'] + ' - bad format')
+                continue
+
+
+            conn.commit()
+            destination_key = destination_prefix + s3_object['Key'].split('/')[-1]
+            s3client.copy_object(Bucket=source_bucket, Key=destination_key, CopySource={'Bucket': source_bucket, 'Key': s3_object['Key']})
             
-            workbook = load_workbook(filename=io.BytesIO(xls_data))
-            if len(workbook.sheetnames) > 1:
-                do_qr_original(cursor, workbook.get_sheet_by_name(workbook.sheetnames[0]))
-                do_qr_refund(cursor, workbook.get_sheet_by_name(workbook.sheetnames[1]))
-        else:
-            print(s3_object['Key'] + ' - bad format')
-            continue
+            s3client.delete_object(Bucket=source_bucket, Key=s3_object['Key'])
 
+        print('Данные успешно обработаны и записаны в постоянную таблицу, файлы перемещены.')
 
-        conn.commit()
-        destination_key = destination_prefix + s3_object['Key'].split('/')[-1]
-        s3client.copy_object(Bucket=source_bucket, Key=destination_key, CopySource={'Bucket': source_bucket, 'Key': s3_object['Key']})
-        
-        s3client.delete_object(Bucket=source_bucket, Key=s3_object['Key'])
-
-    print('Данные успешно обработаны и записаны в постоянную таблицу, файлы перемещены.')
-
-    # Закрытие соединений
-    cursor.close()
-    conn.close()
+        # Закрытие соединений
+        cursor.close()
+        conn.close()
+    else:
+        print('New data is empty')
 
 def lambda_handler(event, context):
     upload_data_to_rds()

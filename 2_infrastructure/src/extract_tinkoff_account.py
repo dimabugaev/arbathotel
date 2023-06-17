@@ -77,7 +77,10 @@ def update_payments(connection, source_id:int, data_for_update:dict):
             "execution_order": "executionOrder"
         }
     
-    load_data = data_for_update['operation']
+    load_data = data_for_update.get('operation')
+    if load_data is None:
+        return ''
+
     for data_row in load_data:
         data_row['periodMonth'] = my_utility.get_begin_month_by_date(datetime.strptime(data_row['date'], '%Y-%m-%d'))    
     
@@ -105,7 +108,7 @@ def set_export_status(conn, source_id:int, datefrom: date, dateto: date):
                                     operate.end_of_month(period_plan.period_month)
                             end	 as loaded_date
                     
-                        from operate.get_date_period_table_fnc(%(datefrom)s, (%(dateto)s - interval '1 day')::Date) period_plan
+                        from operate.get_date_period_table_fnc(%(datefrom)s::Date, (%(dateto)s - interval '1 day')::Date) period_plan
                         on conflict (source_id, period_month) do 
                         update
                         SET loaded_date = EXCLUDED.loaded_date""", {"source_id": source_id, "datefrom": datefrom, "dateto":dateto})

@@ -30,7 +30,16 @@ def lambda_handler(event, context):
      """)
     
     my_plan = cursor.fetchall()
+
+
+    result_list = []
+    columns = [desc[0] for desc in cursor.description]
+    for row in my_plan:
+        if isinstance(event, dict):
+            row[0] = event.get(row[1], '')
+        result_list.append(dict(zip(columns, row)))
+
     cursor.close()
     conn.close()
 
-    return my_plan
+    return result_list

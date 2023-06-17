@@ -205,49 +205,6 @@ module "lambda_function_employees_reports" {
     }
   } 
 
-#  attach_policy = true
-#  policy        = "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess"
-
-# example policy
-#   attach_policy_jsons = true
-#   policy_jsons = [
-#     <<-EOT
-#       {
-#           "Version": "2012-10-17",
-#           "Statement": [
-#               {
-#                   "Effect": "Allow",
-#                   "Action": [
-#                       "xray:*"
-#                   ],
-#                   "Resource": ["*"]
-#               }
-#           ]
-#       }
-#     EOT
-#   ]
-#   number_of_policy_jsons = 1
-
-#   attach_policy = true
-#   policy        = "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess"
-
-#   attach_policies    = true
-#   policies           = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
-#   number_of_policies = 1
-
-#   attach_policy_statements = true
-#   policy_statements = {
-#     dynamodb = {
-#       effect    = "Allow",
-#       actions   = ["dynamodb:BatchWriteItem"],
-#       resources = ["arn:aws:dynamodb:eu-west-1:052212379155:table/Test"]
-#     },
-#     s3_read = {
-#       effect    = "Deny",
-#       actions   = ["s3:HeadObject", "s3:GetObject"],
-#       resources = ["arn:aws:s3:::my-bucket/*"]
-#     }
-#   }
 
 
   vpc_subnet_ids         = module.vpc.private_subnets
@@ -512,6 +469,8 @@ module "lambda_function_bnovo_extract" {
 
   publish = true
 
+  timeout = 10
+
   create_package         = false
   local_existing_package = local.extract_bnovo_zip
 
@@ -556,6 +515,8 @@ module "lambda_function_bnovo_finance_extract" {
   local_existing_package = local.extract_bnovo_finance_zip
 
   attach_network_policy  = true
+
+  timeout = 10
 
   attach_policy_statements = true
   policy_statements = {

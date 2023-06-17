@@ -1,4 +1,5 @@
 import my_utility
+import json
 
 def lambda_handler(event, context):
     conn = my_utility.get_db_connection()
@@ -43,4 +44,4 @@ def lambda_handler(event, context):
     cursor.close()
     conn.close()
 
-    return result_list
+    return json.loads(json.dumps(result_list, indent=4, default=str))

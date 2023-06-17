@@ -21,8 +21,8 @@ def lambda_handler(event, context):
         select
             '' as sid,
             p.source_id,
-            extract('year' from p.period_month) as year,
-            extract('month' from p.period_month) as month
+            extract('year' from p.period_month)::int as year,
+            extract('month' from p.period_month)::int as month
         from 
             plan p left join bnovo_raw.balance_by_period f 
                 on p.period_month = f.period_month and p.source_id = f.source_id 

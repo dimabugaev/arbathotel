@@ -25,19 +25,19 @@ def lambda_handler(event, context):
             p.certkey,
             p.source_id,
             p.account,
-            coalesce(f.loaded_date, p.period_month) as datafrom,
-            case 
+            to_char(coalesce(f.loaded_date, p.period_month),'dd.MM.yyyy') as datafrom,
+            to_char(case 
                 when p.period_month = date_trunc('month', (current_date - interval '1 day'))::Date then
                     (current_date - interval '1 day')::Date 
                 else
                     p.end_period
-            end as datato
+            end,'dd.MM.yyyy') as datato
         from 
             plan p left join banks_raw.loaded_data_by_period f 
                 on p.period_month = f.period_month and p.source_id = f.source_id 
         where
             f.source_id is null or f.loaded_date < p.end_period;
-            """)
+    """)
     
     my_plan = cursor.fetchall()
 

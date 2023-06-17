@@ -19,13 +19,13 @@ def lambda_handler(event, context):
 
         select
             p.source_id,
-            coalesce(f.loaded_date, p.period_month) as datafrom,
-            case 
+            to_char(coalesce(f.loaded_date, p.period_month),'dd.MM.yyyy') as datafrom,
+            to_char(case 
                 when p.period_month = date_trunc('month', (current_date - interval '1 day'))::Date then
                     current_date::Date
                 else
                     (p.end_period + interval '1 day')::Date
-            end as datato
+            end, 'dd.MM.yyyy')  as datato
         from 
             plan p left join banks_raw.loaded_data_by_period f 
                 on p.period_month = f.period_month and p.source_id = f.source_id 

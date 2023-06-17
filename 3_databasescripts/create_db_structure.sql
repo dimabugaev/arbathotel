@@ -619,7 +619,8 @@ CREATE TABLE banks_raw.loaded_data_by_period
     credit decimal(18,2),
     date_update timestamp not null default current_timestamp,
     
-    CONSTRAINT fk_sources_loaded_data FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+    CONSTRAINT fk_sources_loaded_data FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
+    CONSTRAINT loaded_data_by_period_uniq UNIQUE (source_id, period_month)
 );
 
 

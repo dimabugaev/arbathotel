@@ -109,15 +109,31 @@ def set_export_status(conn, source_id:int, datefrom: date, dateto: date):
                             end	 as loaded_date
                     
                         from operate.get_date_period_table_fnc(%(datefrom)s::Date, (%(dateto)s - interval '1 day')::Date) period_plan
-                        on conflict (source_id, period_month) do 
-                        update
-                        SET loaded_date = EXCLUDED.loaded_date""", {"source_id": source_id, "datefrom": datefrom, "dateto":dateto})
+
+                        on conflict (source_id, period_month) 
+                        do update
+                        SET loaded_date = EXCLUDED.loaded_date;""", {"source_id": source_id, "datefrom": datefrom, "dateto":dateto})
 
     conn.commit()
     cursor.close()
 
-def export_account_data_from_tinkoff_to_rds(source_id:int, account:str, token:str, datefrom: date, dateto: date):
+def export_account_data_from_tinkoff_to_rds(source_id:int, datefrom: date, dateto: date):
     with my_utility.get_db_connection() as conn:
+
+        cursor = conn.cursor()
+        cursor.execute("""select 
+                          so.source_external_key as account,
+                          so.source_password as token
+                        from operate.sources so 
+                        where so.id = %(source_id)s
+                        limit 1""", {'source_id': source_id})
+    
+        if cursor.rowcount < 1:
+            return my_utility.get_response({'FormatError': source_id})
+
+        cred_data = cursor.fetchone()
+        account = cred_data[0]
+        token = cred_data[1]
 
         next_cursor = ''
         while True:
@@ -136,9 +152,7 @@ def export_account_data_from_tinkoff_to_rds(source_id:int, account:str, token:st
 def lambda_handler(event, context):
 
     source_id = event['source_id']
-    account = event['account']
-    token = event['token']
     datefrom = datetime.strptime(event['datefrom'], '%d.%m.%Y')
     dateto = datetime.strptime(event['dateto'], '%d.%m.%Y')
 
-    export_account_data_from_tinkoff_to_rds(source_id, account, token, datefrom, dateto)
+    export_account_data_from_tinkoff_to_rds(source_id, datefrom, dateto)

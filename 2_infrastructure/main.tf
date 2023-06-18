@@ -473,7 +473,7 @@ module "lambda_function_bnovo_extract" {
 
   publish = true
 
-  timeout = 10
+  timeout = 120
 
   create_package         = false
   local_existing_package = local.extract_bnovo_zip

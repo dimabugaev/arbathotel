@@ -108,7 +108,7 @@ def set_export_status(conn, source_id:int, datefrom: date, dateto: date):
                                     operate.end_of_month(period_plan.period_month)
                             end	 as loaded_date
                     
-                        from operate.get_date_period_table_fnc(%(datefrom)s::Date, (%(dateto)s - interval '1 day')::Date) period_plan
+                        from operate.get_date_period_table_fnc(date_trunc('month', %(datefrom)s)::Date, (%(dateto)s - interval '1 day')::Date) period_plan
 
                         on conflict (source_id, period_month) 
                         do update

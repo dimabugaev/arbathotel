@@ -759,6 +759,11 @@ module "lambda_function_psb_extract_java" {
       actions   = ["s3:GetObject"],
       resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
     }
+    s3_bucket_read = {
+      effect    = "Allow",
+      actions   = ["s3:ListBucket"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data"]
+    }
   } 
 
   vpc_subnet_ids         = module.vpc.private_subnets

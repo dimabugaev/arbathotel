@@ -200,6 +200,9 @@ where
 select *
 from operate.report_strings rs; 
 
+select *
+from operate.sources s;
+
 delete 
 	from operate.report_strings 
 where
@@ -425,6 +428,8 @@ from psb_bank_raw.docs_rows dr
 group by
 	dr.debit;
 
+3966000.38	4898184.61
+2023-03-01	2023-04-29
 
 
 select * from banks_raw.loaded_data_by_period; 
@@ -434,6 +439,8 @@ select * from banks_raw.tinkoff_payments;
 select * from banks_raw.ucb_payments;
 
 select * from banks_raw.psb_acquiring_term;
+
+select * from banks_raw.psb_docs pd;
 
 select * 
 	

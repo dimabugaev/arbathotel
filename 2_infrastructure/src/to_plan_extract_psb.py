@@ -11,20 +11,14 @@ def lambda_handler(event, context):
                 s.id source_id,
                 period_plan.period_month,
                 s.source_type,
-                operate.end_of_month(period_plan.period_month) end_period,
-                s.source_username certname,
-                s.source_password certkey,
-                s.source_external_key account
+                operate.end_of_month(period_plan.period_month) end_period
             from operate.sources s,
                 operate.get_date_period_table_fnc(s.source_data_begin, (current_date - interval '1 day')::Date) period_plan
             where 
                 s.source_data_begin is not null and s.source_type = 3)
 
         select
-            p.certname,
-            p.certkey,
             p.source_id,
-            p.account,
             to_char(coalesce(f.loaded_date, p.period_month),'dd.MM.yyyy') as datefrom,
             to_char(case 
                 when p.period_month = date_trunc('month', (current_date - interval '1 day'))::Date then

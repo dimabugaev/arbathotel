@@ -520,7 +520,7 @@ module "lambda_function_bnovo_finance_extract" {
 
   attach_network_policy  = true
 
-  timeout = 10
+  timeout = 30
 
   attach_policy_statements = true
   policy_statements = {

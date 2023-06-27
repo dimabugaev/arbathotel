@@ -440,9 +440,11 @@ select * from banks_raw.ucb_payments;
 
 select * from banks_raw.psb_acquiring_term;
 
-select * from banks_raw.psb_docs pd;
+select * from banks_raw.psb_docs_rows pd;
 
 select * 
 	
 from banks_raw.psb_acquiring_qr paq;
+
+select * from operate.report_items ri;
 

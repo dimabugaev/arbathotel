@@ -227,6 +227,9 @@ def update_finance(connection, session, source_id: int, period: date, supplier_i
 
         data_page = get_data_pages_for_update(get_finance_data(session, period, supplier_id, current_page), period)
 
+        if current_page == page_count and data_page is None:
+            break
+
     if (len(payment_record_ids) > 0):
 
         cursor = connection.cursor()

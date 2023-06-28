@@ -1,6 +1,7 @@
 import my_utility
 import json
 from datetime import date, datetime
+import time
 
 def get_finance_data(session, period: date, supplier_id: str, page: int = 1):
 
@@ -17,8 +18,19 @@ def get_finance_data(session, period: date, supplier_id: str, page: int = 1):
     ) 
 
     print(url)
-    with session.get(url) as response:
-        items = json.loads(response.text) 
+
+
+    count_of_rep = 3
+    for i in range(count_of_rep):
+        with session.get(url) as response:
+            if response is None:
+                if i == count_of_rep - 1:
+                    raise ValueError('-- bad request ALL TIMES is NULL!!--')    
+                print('-- bad request ... delay and repeat attempt # ' + (i+1))
+                time.sleep(1)
+                continue
+            items = json.loads(response.text)
+            break 
 
     return items
 
@@ -227,8 +239,6 @@ def update_finance(connection, session, source_id: int, period: date, supplier_i
 
         data_page = get_data_pages_for_update(get_finance_data(session, period, supplier_id, current_page), period)
 
-        if current_page == page_count and data_page is None:
-            break
 
     if (len(payment_record_ids) > 0):
 

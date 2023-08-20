@@ -12,8 +12,8 @@ def get_booking_data(session, period: date, page: int = 1):
 
     items = {}
     url = "https://online.bnovo.ru/dashboard?create_from={}&create_to={}&advanced_search=2&c=100&page={}".format(
-        date_begin.strftime('%d-%m-%Y'),
-        date_end.strftime('%d-%m-%Y'),
+        date_begin.strftime('%d.%m.%Y'),
+        date_end.strftime('%d.%m.%Y'),
         page    
     ) 
 
@@ -41,8 +41,8 @@ def get_invoice_data(session, period: date, page: int = 1):
 
     items = {}
     url = "https://online.bnovo.ru/finance/invoices?date_from={}&date_to={}&page={}".format(
-        date_begin.strftime('%d-%m-%Y'),
-        date_end.strftime('%d-%m-%Y'),
+        date_begin.strftime('%d.%m.%Y'),
+        date_end.strftime('%d.%m.%Y'),
         page    
     ) 
 

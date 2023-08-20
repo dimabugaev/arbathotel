@@ -54,31 +54,6 @@ def get_total_cash_data(session, last_pay_date: date, supplier_id: str):
     return items
 
 
-def get_binovo_cred(connection, source_id):
-    cursor = connection.cursor()
-
-    res = {'username': None, 'password': None}
-
-    cursor.execute("""SELECT 
-                        so.source_username, 
-                        so.source_password,
-                        so.id 
-                      FROM operate.sources so
-                      WHERE 
-                        so.source_type = 2
-                        AND so.id = %(source_id)s
-                        AND coalesce(so.source_username, '') <> ''
-                        AND coalesce(so.source_password, '') <> '' """, {'source_id': source_id})
-    
-    if cursor.rowcount > 0:
-        my_cred = cursor.fetchone()
-        res['username'] = my_cred[0]
-        res['password'] = my_cred[1]
-
-    cursor.close()
-
-    return res
-
 def update_balance(connection, source_id: int, period: date, supplier_id: str, first_page_data: dict, total_cash_page: dict):
     cursor = connection.cursor()
     cursor.execute("""
@@ -284,7 +259,7 @@ def export_finance_from_bnovo_to_rds(source_id: int, period: date, sid: str = ""
         http_session = None
 
         if len(sid) == 0:
-            session_cred = get_binovo_cred(conn, source_id)
+            session_cred = my_utility.get_binovo_cred(conn, source_id)
             if session_cred['username'] is None:
                 print('Credentions is absent!!')
                 return False

@@ -157,4 +157,29 @@ def get_http_session_bnovo_by_sid(sid: str):
     session.cookies.update({
         "SID": sid    
     })
-    return session    
+    return session
+
+def get_binovo_cred(connection, source_id):
+    cursor = connection.cursor()
+
+    res = {'username': None, 'password': None}
+
+    cursor.execute("""SELECT 
+                        so.source_username, 
+                        so.source_password,
+                        so.id 
+                      FROM operate.sources so
+                      WHERE 
+                        so.source_type = 2
+                        AND so.id = %(source_id)s
+                        AND coalesce(so.source_username, '') <> ''
+                        AND coalesce(so.source_password, '') <> '' """, {'source_id': source_id})
+    
+    if cursor.rowcount > 0:
+        my_cred = cursor.fetchone()
+        res['username'] = my_cred[0]
+        res['password'] = my_cred[1]
+
+    cursor.close()
+
+    return res    

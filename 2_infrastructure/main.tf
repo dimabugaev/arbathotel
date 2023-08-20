@@ -31,6 +31,7 @@ locals {
 
   extract_bnovo_zip = "./build/extract_bnovo_data.zip"
   extract_bnovo_finance_zip = "./build/extract_bnovo_finance.zip"
+  extract_bnovo_booking_zip = "./build/extract_bnovo_booking.zip"
 
   extract_tinkoff_account_zip = "./build/extract_tinkoff_account.zip"
 
@@ -535,13 +536,38 @@ module "lambda_function_bnovo_finance_extract" {
   vpc_subnet_ids         = module.vpc.private_subnets
   vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
 
+  tags = local.tags
+}
 
-  #allowed_triggers = {
-  #  HourlyCronInvoke = {
-  #    principal  = "events.amazonaws.com"
-  #    source_arn = aws_cloudwatch_event_rule.every_hour.arn
-  #  }
-  #}
+module "lambda_function_bnovo_booking_extract" {
+  source = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.name}-bnovo-booking-extract-lambda"
+  description   = "lambda function for extract BOOKING and INVOICES data from open API Bnovo"
+  handler       = "extract_bnovo_booking.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = local.extract_bnovo_booking_zip
+
+  attach_network_policy  = true
+
+  timeout = 30
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  } 
+
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_cron_security_group.security_group_id]
 
   tags = local.tags
 }

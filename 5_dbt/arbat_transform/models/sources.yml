@@ -1,0 +1,46 @@
+version: 2
+
+sources:
+  - name: operate
+    schema: operate
+    tables:
+      - name: sources
+        identifier: sources
+      - name: report_strings
+        identifier: report_strings
+      - name: report_items
+        identifier: report_items
+      - name: hotels
+        identifier: hotels
+  
+  - name: bnovo
+    schema: bnovo_raw
+    tables:
+      - name: hotels
+        identifier: hotels
+      - name: items
+        identifier: items
+      - name: suppliers
+        identifier: suppliers
+      - name: payments
+        identifier: payments
+      - name: payment_records
+        identifier: payment_records
+
+  - name: banks
+    schema: banks_raw
+    tables:
+      - name: ucb_payments
+        identifier: ucb_payments
+      - name: tinkoff_payments
+        identifier: tinkoff_payments
+      - name: psb_docs
+        identifier: psb_docs
+      - name: psb_docs_rows
+        identifier: psb_docs_rows
+      - name: psb_acquiring_term
+        identifier: psb_acquiring_term
+      - name: psb_acquiring_qr
+        identifier: psb_acquiring_qr
+      - name: psb_acquiring_qr_refund
+        identifier: psb_acquiring_qr_refund

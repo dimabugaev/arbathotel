@@ -266,7 +266,7 @@ def update_invoice(connection, session, source_id: int, period: date):
 
         my_utility.update_dim_raw(connection, data_page["invoices"], "invoices"+uuid.uuid4().hex, "bnovo_raw.invoices", invoices_map, source_id)
 
-        invoices_ids.extend(data_page["bookings_id"])
+        invoices_ids.extend(data_page["invoices_id"])
 
         current_page += 1
         if current_page > page_count:

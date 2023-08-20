@@ -187,7 +187,7 @@ def update_booking(connection, session, source_id: int, period: date):
     current_page = 1
     while True:
 
-        my_utility.update_dim_raw(connection, data_page["bookings"], "bookings"+uuid.uuid4(), "bnovo_raw.bookings", bookings_map, source_id)
+        my_utility.update_dim_raw(connection, data_page["bookings"], "bookings"+uuid.uuid4().hex, "bnovo_raw.bookings", bookings_map, source_id)
 
         booking_ids.extend(data_page["bookings_id"])
 
@@ -264,7 +264,7 @@ def update_invoice(connection, session, source_id: int, period: date):
     current_page = 1
     while True:
 
-        my_utility.update_dim_raw(connection, data_page["invoices"], "invoices"+uuid.uuid4(), "bnovo_raw.invoices", invoices_map, source_id)
+        my_utility.update_dim_raw(connection, data_page["invoices"], "invoices"+uuid.uuid4().hex, "bnovo_raw.invoices", invoices_map, source_id)
 
         invoices_ids.extend(data_page["bookings_id"])
 

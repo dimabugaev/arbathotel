@@ -134,6 +134,8 @@ module "db" {
   major_engine_version = "14.7"       # DB option group
   instance_class       = "db.t3.micro"
 
+  auto_minor_version_upgrade = false
+
   allocated_storage     = 20
   max_allocated_storage = 100
 

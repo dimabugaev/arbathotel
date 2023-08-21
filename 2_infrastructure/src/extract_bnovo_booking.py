@@ -311,7 +311,8 @@ def export_booking_from_bnovo_to_rds(source_id: int, period: date, sid: str = ""
 
         update_booking(conn, http_session, source_id, period)
 
-        update_invoice(conn, http_session, source_id, period)
+        #It's removed to the function for extract data becouse of bnovo doesn't support getting data of invoices's by period
+        #update_invoice(conn, http_session, source_id, period)
         #print(first_page_data['last_payment'])
 
         cursor.close()

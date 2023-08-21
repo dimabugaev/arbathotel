@@ -18,7 +18,7 @@ def lambda_handler(event, context):
             where 
                 s.source_data_begin is not null and s.source_type = 2)
 
-        select
+        select distinct
             '' as sid,
             p.source_id,
             extract('year' from p.period_month)::int as year,

@@ -448,3 +448,6 @@ from banks_raw.psb_acquiring_qr paq;
 
 select * from operate.report_items ri;
 
+select * from bnovo_raw.bookings b 
+where b.group_id is not null;
+

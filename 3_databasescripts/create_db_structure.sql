@@ -649,7 +649,7 @@ CREATE TABLE bnovo_raw.bookings
 CREATE TABLE bnovo_raw.invoices
 (
 	source_id int,
-	period_month date not null,
+	--period_month date not null,
     id varchar,
     number varchar,
     hotel_id varchar,

@@ -77,7 +77,7 @@ def get_invoice_data_pages_for_update(page_data: dict) -> dict:
 def update_invoice(connection, session, source_id: int):
     
     invoices_map = {
-            "period_month": "period_month",
+            #"period_month": "period_month",
             "id": "id",
             "number": "number",
             "hotel_id": "hotel_id",

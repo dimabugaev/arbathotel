@@ -15,6 +15,7 @@ sources:
   
   - name: bnovo
     schema: bnovo_raw
+    loaded_at_field: date_update
     tables:
       - name: hotels
         identifier: hotels
@@ -22,6 +23,10 @@ sources:
         identifier: items
       - name: suppliers
         identifier: suppliers
+      - name: invoices
+        identifier: invoices
+      - name: bookings
+        identifier: bookings   
       - name: payments
         identifier: payments
       - name: payment_records
@@ -29,6 +34,7 @@ sources:
 
   - name: banks
     schema: banks_raw
+    loaded_at_field: date_update
     tables:
       - name: ucb_payments
         identifier: ucb_payments

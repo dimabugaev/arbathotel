@@ -79,6 +79,7 @@ module "vpc" {
   #database_subnet_names = ["DEV Database Subnet One", "DEV Database Subnet Two"]
 
   enable_dns_hostnames = true
+  
   enable_dns_support   = true
 
   enable_nat_gateway = true

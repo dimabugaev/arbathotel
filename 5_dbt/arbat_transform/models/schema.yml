@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: calc_psb_payments_keys
+    description: 'This is table contain the payments with the extcactedly invoices keys for futher destribute'
+    columns:
+      - name: source_id
+        description: 'Source ID equal of account number'
+        tests:
+          - not_null
+      - name: payment_key
+        description: 'Surrogate key of a payment rows'
+        tests:
+          - not_null
+      - name: payment_id
+        description: 'Payment ID from bank'
+        tests:
+          - not_null 
+      - name: number_doc
+        description: 'Income payment number - business key of payment'
+        tests:
+          - not_null
+      - name: key_invoice
+        description: 'Expectation unique key by invoice which cover this payment'
+        tests:
+          - unique
+          - not_null    

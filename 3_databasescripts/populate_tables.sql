@@ -62,6 +62,31 @@ INSERT INTO operate.sources (source_name, source_external_key, source_type, sour
 VALUES('Tinkoff Bulanec 40802810200000734551','40802810200000734551',4, Null, 't.bdr9ZePnL4k3fbqwPW-q6jPqdRO4kWsUruFzcLiVqVBWioppSjJSTp-c-APNew6Y8Lx6TK4CCV2XCHbL_4waTg');
 
 
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Bulanec 40802810400003082832','40802810400003082832',3, 'certificateBav.pfx', 'jhv098utDgTYT654IbW');
+
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Bulanec 40802810200003159952','40802810200003159952',3, 'certificateBav.pfx', 'jhv098utDgTYT654IbW');
+
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Bulanec 40802810300003159218','40802810300003159218',3, 'certificateBav.pfx', 'jhv098utDgTYT654IbW');
+
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Polyakov 40802810300003007030','40802810300003007030',3, 'certificatePol.pfx', 'SDGvg634!!fg');
+
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Polyakov 40802810100000007000','40802810100000007000',3, 'certificatePol.pfx', 'SDGvg634!!fg');
+
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Polyakov 45408810100000000066','45408810100000000066',3, 'certificatePol.pfx', 'SDGvg634!!fg');
+
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Polyakov 45408810400000000067','45408810400000000067',3, 'certificatePol.pfx', 'SDGvg634!!fg');
+
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('PSB Polyakov 40802810000003182064','40802810000003182064',3, 'certificatePol.pfx', 'SDGvg634!!fg');
+
+
 
 INSERT INTO operate.report_items (item_name) VALUES('TEST4');
 
@@ -401,6 +426,30 @@ group by
 	period_month,
 	hotel_supplier_id;
 
+
+select
+	source_id,
+	extract(month from row_date)::varchar || extract(year from row_date)::varchar period_month,
+	
+	sum(case
+		when not debit then
+			summa_rur
+		else
+			0
+	end) as income,
+	sum(case
+		when debit then
+			summa_rur
+		else
+			0
+	end) as outcome
+from 
+	banks_raw.psb_docs_rows
+group by
+	source_id,
+	extract(month from row_date)::varchar || extract(year from row_date)::varchar;
+
+
 select
 	coalesce(sum(case
 		when pr.amount > 0 then
@@ -450,4 +499,32 @@ select * from operate.report_items ri;
 
 select * from bnovo_raw.bookings b 
 where b.group_id is not null;
+
+
+
+with plan as( 
+            select 
+                s.id source_id,
+                period_plan.period_month,
+                s.source_type,
+                operate.end_of_month(period_plan.period_month) end_period
+            from operate.sources s,
+                operate.get_date_period_table_fnc(s.source_data_begin, (current_date - interval '1 day')::Date) period_plan
+            where 
+                s.source_data_begin is not null and s.source_type = 3)
+
+        select
+            p.source_id,
+            to_char(coalesce(f.loaded_date, p.period_month),'dd.MM.yyyy') as datefrom,
+            to_char(case 
+                when p.period_month = date_trunc('month', (current_date - interval '1 day'))::Date then
+                    (current_date - interval '1 day')::Date 
+                else
+                    p.end_period
+            end,'dd.MM.yyyy') as dateto
+        from 
+            plan p left join banks_raw.loaded_data_by_period f 
+                on p.period_month = f.period_month and p.source_id = f.source_id 
+        where
+            f.source_id is null or f.loaded_date < p.end_period;
 

@@ -122,6 +122,11 @@ def get_end_month_by_date(date_period: date) -> date:
 
 #BNOVO!!
 #connection to bnovo
+def get_bnovo_session_by_source_id(connection, source_id):
+    cred = get_binovo_cred(connection, source_id)
+    return get_autorized_http_session_bnovo(cred['username'], cred['password'])
+
+
 def get_autorized_http_session_bnovo(username, password):
     session = requests.Session()
     url = "https://online.bnovo.ru"

@@ -109,7 +109,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: develop-ecr-repo
-        run:
+        run: |
           cd 5_dbt/arbat_transform
-          docker build -f dockerfile -t $ECR_REGISTRY/mart-makeing:dbt-arbat-transform-latest .
-          docker push $ECR_REGISTRY/mart-makeing:dbt-arbat-transform-latest
+          docker build -f dockerfile -t $ECR_REGISTRY/$REPOSITORY:dbt-arbat-transform-latest .
+          docker push $ECR_REGISTRY/$REPOSITORY:dbt-arbat-transform-latest

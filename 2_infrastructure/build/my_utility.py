@@ -7,7 +7,7 @@ from datetime import date, timedelta
 
 #email reports data
 def get_email_and_storage_data():
-    secret_name = os.environ['REPORT_SECRET']
+    secret_name = "dev-reports-email-cred"
     region_name = "eu-central-1"    
 
     #session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg

@@ -21,7 +21,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Build zip
         run: |
@@ -40,6 +41,9 @@ jobs:
           cp src/to_plan_extract_bnovo_fin.py build/
           cp src/to_plan_extract_psb.py build/
           cp src/to_plan_extract_tinkoff.py build/
+          cp src/to_plan_extract_bnovo_booking.py build/
+          cp src/extract_bnovo_guests.py build/
+          cp src/extract_bnovo_ufms.py build/
           cd build
           zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ typing_extensions.py my_utility.py employees_reports_data.py 
           zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ typing_extensions.py my_utility.py dict_operate_data.py 
@@ -52,7 +56,10 @@ jobs:
           zip -r upload_ucb_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py upload_ucb_account.py
           zip -r to_plan_extract_bnovo_fin.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_bnovo_fin.py
           zip -r to_plan_extract_psb.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_psb.py
-          zip -r to_plan_extract_tinkoff.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_tinkoff.py   
+          zip -r to_plan_extract_tinkoff.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_tinkoff.py
+          zip -r to_plan_extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_bnovo_booking.py
+          zip -r extract_bnovo_guests.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_guests.py
+          zip -r extract_bnovo_ufms.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_ufms.py   
           cd ../
           ls build/
 
@@ -74,8 +81,28 @@ jobs:
           TF_VAR_reports_email: ${{ secrets.REPORTS_EMAIL_ADDRESS }}
           TF_VAR_reports_email_password: ${{ secrets.REPORTS_EMAIL_PASSWORD }}
         run: |
-          cd 2_infrastructure/
+          cd 2_infrastructure/tf_common
           terraform -version
           terraform init
           terraform validate
-          terraform apply -auto-approve 
+          terraform apply -auto-approve
+          
+          cd ../tf_dev
+          terraform -version
+          terraform init
+          terraform validate
+          terraform apply -auto-approve
+
+          cd ../../
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, Tag, and Push Image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run:
+          cd 5_dbt/arbat_transform
+          docker build -f dockerfile -t $ECR_REGISTRY/mart-makeing:dbt-arbat-transform-latest .
+          docker push $ECR_REGISTRY/mart-makeing:dbt-arbat-transform-latest

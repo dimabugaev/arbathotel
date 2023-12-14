@@ -63,7 +63,7 @@ provider "aws" {
 }
 
 #VPS + Subnets
-
+#+++++
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.77.0"
@@ -97,7 +97,7 @@ module "vpc" {
 }
 
 #SG for DB
-
+#++++
 module "rds_security_group" {
    source  = "terraform-aws-modules/security-group/aws"
    version = "~> 4.0"
@@ -120,7 +120,7 @@ module "rds_security_group" {
 }
 
 #RDS
-
+#++++
 module "db" {
   source = "terraform-aws-modules/rds/aws"
   version = "5.9.0"
@@ -187,7 +187,7 @@ module "db" {
 
 
 #lambda
-
+#+++++
 module "lambda_function_employees_reports" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
@@ -225,7 +225,7 @@ module "lambda_function_employees_reports" {
     }
   }
 }
-
+#+++++
 module "lambda_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
@@ -245,7 +245,7 @@ module "lambda_security_group" {
   egress_rules = ["all-all"]
 }
 
-
+#+++++
 module "lambda_function_dict_operate" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
@@ -284,7 +284,7 @@ module "lambda_function_dict_operate" {
 }
 
 
-
+#+++++
 module "api_gateway" {
   source = "terraform-aws-modules/apigateway-v2/aws"
 
@@ -372,7 +372,7 @@ module "api_gateway" {
 
   tags = local.tags
 }
-
+#+++++
 module "api_gateway_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
@@ -389,7 +389,7 @@ module "api_gateway_security_group" {
   tags = local.tags
 }
 
-
+#++++++
 module "secrets_endpoints_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
@@ -426,11 +426,11 @@ module "secrets_endpoints_security_group" {
 
 #secrets
 
-
+#+++++
 resource "aws_secretsmanager_secret" "secretsRDS" {
    name = "${local.name}-rds-instance"
 }
-
+#+++++
 resource "aws_secretsmanager_secret_version" "secretsRDS" {
   secret_id     = aws_secretsmanager_secret.secretsRDS.id
   secret_string = <<EOF

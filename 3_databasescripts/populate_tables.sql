@@ -327,8 +327,18 @@ alter table operate.sources
 add source_username varchar,
 add	source_password varchar;
 
+alter table bnovo_raw.bookings
+add adults decimal(2,0),
+add children decimal(2,0);
+
+
+
 alter table operate.sources 
-add source_data_begin date;
+add source_username varchar,
+add	source_password varchar;
+
+alter table bnovo_raw.booking_guests_link  
+add date_update timestamp not null default current_timestamp;
 
 
 
@@ -527,4 +537,257 @@ with plan as(
                 on p.period_month = f.period_month and p.source_id = f.source_id 
         where
             f.source_id is null or f.loaded_date < p.end_period;
+           
+           
+           
+select 
+	b.source_id,
+	b.id, 
+	b.arrival::date arrival_date,
+	b.departure::date departure_date,
+	b.date_update 
+from 
+	bnovo_raw.bookings b
+where 
+	b.source_id = 13 and b.arrival::date <= '2023-11-25'::date and b.departure::date >= '2023-11-25'::date;
+
+
+with amount_of_doubles as(
+	select 
+		sb.booking_id,
+		count(distinct sb.adults) - 1  changed_adults,
+		count(distinct sb.children) - 1 changed_children,
+		count(distinct sb.plan_departure_date) - 1 changed_departure
+	from
+		public.snp_bookings sb
+	group by
+		booking_id
+	having 
+		count(distinct sb.adults) > 1 or count(distinct sb.children) > 1 or count(distinct sb.plan_departure_date) > 1
+
+)
+select 
+	*
+from amount_of_doubles;
+
+
+
+with selected_bookings as(
+	select 
+		*
+	from 
+		public.src_bookings
+	where
+		plan_arrival_date::date <= now()::date 
+		and plan_departure_date::date >= (now() - interval '1 DAY')::date
+		and not status_id = 2 and not status_id = 1
+),
+divergence_guests_amount as (
+	select 
+		sb.booking_id,
+		max(sb.adults) + max(sb.children) as guest_in_number,
+		count(1) as guest_added
+	from 
+		selected_bookings sb left join public.src_booking_guests sbg 
+			on sb.booking_id = sbg.booking_id
+	group by 
+		sb.booking_id
+	having 
+		max(sb.adults) + max(sb.children) <> count(1)	
+),
+no_canceled as (
+	select 
+		booking_id
+	from 
+		public.src_bookings
+	where
+		plan_arrival_date::date <= (now() - interval '1 DAY')::date 
+		and status_id = 1		
+),
+no_guests_data as (
+	select 
+		sb.booking_id
+	from 
+		selected_bookings sb left join public.src_booking_guests sbg 
+			on sb.booking_id = sbg.booking_id
+	where 
+		sbg.citizenship_id is null or sbg.citizenship_id = 0
+		or sbg.citizenship_name is null or trim(sbg.citizenship_name) = '' 
+		or sbg.name is null or trim(sbg.name) = ''
+		or sbg.surname is null or trim(sbg.surname) = ''
+		or sbg.birthdate is null
+		or sbg.document_type is null or sbg.document_type = 0
+		or sbg.document_series is null or trim(sbg.document_series) = ''
+		or sbg.document_number is null or trim(sbg.document_number) = ''
+),
+select_changed as(
+	select
+		sb.booking_id,
+		case 
+			when count(distinct sb.adults) > 1 or count(distinct sb.children) > 1 then
+				true
+			else
+				false
+		end as amount_of_guest_changed,
+		case 
+			when count(distinct sb.plan_departure_date) > 1 then 
+				true 
+			else 
+				false
+		end as departure_date_changed
+	from
+		public.snp_bookings sb
+	where 
+		sb.status_id = 1 or 
+		sb.status_id = 3
+	group by
+		sb.booking_id
+	having 
+		count(distinct sb.adults) > 1 or count(distinct sb.children) > 1 or count(distinct sb.plan_departure_date) > 1	
+),
+guests_changed as(
+	select 
+		count_delta.booking_id,
+		sum(count_delta.delta_guests) as delta_guests
+	from (
+		select 
+			sb.booking_id,
+			sb.adults + sb.children - (lead(sb.adults) over id_win + lead(sb.children) over id_win) as delta_guests
+		from
+			public.snp_bookings sb inner join select_changed sc on sb.booking_id = sc.booking_id and sc.amount_of_guest_changed
+		where 
+			sb.status_id = 1 or 
+			sb.status_id = 3 
+		window id_win as (partition by sb.booking_id order by sb.updated_at desc) 
+	) count_delta
+	group by 
+		booking_id		
+),
+departure_changed as(
+	select 
+		count_delta.booking_id,
+		sum(count_delta.delta_departure_date) as delta_departure_date
+	from (
+		select 
+			sb.booking_id,
+			sb.plan_departure_date - lead(sb.plan_departure_date) over id_win as delta_departure_date
+		from
+			public.snp_bookings sb inner join select_changed sc on sb.booking_id = sc.booking_id and sc.departure_date_changed
+		where 
+			sb.status_id = 1 or 
+			sb.status_id = 3 
+		window id_win as (partition by sb.booking_id order by sb.updated_at desc) 
+	) count_delta
+	group by 
+		booking_id
+),
+err_satuses as(
+	select 
+		booking_id,
+		1 as err_status_id,
+		'Расхождение гостей' as err_status_name
+	from 
+		divergence_guests_amount
+	
+	union all
+	
+	select 
+		booking_id,
+		2 as err_status_id,
+		'Не отмененные' as err_status_name
+	from 
+		no_canceled
+		
+	union all
+	
+	select 
+		booking_id,
+		3 as err_status_id,
+		'Нет регистрационных данных гостей' as err_status_name
+	from 
+		no_guests_data
+	
+	union all
+	
+	select 
+		booking_id,
+		case 
+			when delta_guests > 0 then
+				4
+			else
+				5
+		end as err_status_id,
+		case 
+			when delta_guests > 0 then
+				'Увеличение гостей'
+			else
+				'Уменьшение гостей'
+		end as err_status_name
+	from 
+		guests_changed
+	
+	union all
+	
+	select 
+		booking_id,
+		case 
+			when delta_departure_date > 0 then
+				6
+			else
+				7
+		end as err_status_id,
+		case 
+			when delta_departure_date > 0 then
+				'Продление проживания'
+			else
+				'Уменьшение дней проживания'
+		end as err_status_name
+	from 
+		departure_changed
+)
+select
+	*
+from 
+	err_satuses err inner join public.src_bookings sb on err.booking_id = sb.booking_id
+	inner join src_bnovo_hotels sbh on sb.hotel_id = sbh.hotel_id
+	;
+
+
+
+
+select 
+	*,
+	plan_departure_date::date - plan_arrival_date::date
+from
+	public.src_bookings
+where
+	plan_arrival_date::date <= now()::date 
+	and plan_departure_date::date >= (now() - interval '1 DAY')::date
+	and (status_id = 3 or status_id = 4)
+	and plan_departure_date::date - plan_arrival_date::date > 1;
+
+with one_days_booking_guests as (
+	select 
+		sb.booking_id,
+		sb.plan_arrival_date::date as arrival_date, 
+		sb.plan_departure_date::date - sb.plan_arrival_date::date,
+		sbg.id as guest_id
+	from
+		public.src_bookings sb inner join public.src_booking_guests sbg on sb.booking_id = sbg.booking_id 
+	where
+		sb.plan_arrival_date::date <= now()::date 
+		and sb.plan_departure_date::date >= (now() - interval '1 DAY')::date
+		and (sb.status_id = 3 or sb.status_id = 4)
+		and sb.plan_departure_date::date - sb.plan_arrival_date::date = 1
+)
+
+select distinct 
+	odb.booking_id
+from
+	public.src_bookings sb inner join public.src_booking_guests sbg on sb.booking_id = sbg.booking_id
+		inner join one_days_booking_guests odb on odb.guest_id = sbg.id and sb.real_departure::date = odb.arrival_date
+
+		
+
+
 

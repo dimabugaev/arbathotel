@@ -404,7 +404,13 @@ drop table if exists bnovo_raw.balance_by_period;
 drop table if exists bnovo_raw.payments;
 drop table if exists bnovo_raw.payment_records;
 drop table if exists bnovo_raw.bookings;
+drop table if exists bnovo_raw.guests;
+drop table if exists bnovo_raw.booking_guests_link;
+drop table if exists bnovo_raw.bookings_for_guests_request;
 drop table if exists bnovo_raw.invoices;
+drop table if exists bnovo_raw.temp_no_applyed_guests;
+drop table if exists bnovo_raw.ufms_data;
+drop table if exists bnovo_raw.load_bookings_by_period;
 
 
 CREATE TABLE bnovo_raw.items
@@ -490,6 +496,15 @@ CREATE TABLE bnovo_raw.balance_by_period
 	date_update timestamp not null default current_timestamp,
 	
 	CONSTRAINT fk_sources_total_balance_by_period FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
+CREATE TABLE bnovo_raw.load_bookings_by_period
+(
+	source_id int,
+	period_month date not null,
+	date_update timestamp not null default current_timestamp,
+	
+	CONSTRAINT fk_sources_total_booking_by_period FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
 );
 
 CREATE TABLE bnovo_raw.payments
@@ -640,12 +655,121 @@ CREATE TABLE bnovo_raw.bookings
     board_nutritia varchar,
     online_warranty_deadline_date varchar,
     auto_booking_cancel varchar,
+    adults decimal(2,0),
+    children decimal(2,0),
     date_update timestamp not null default current_timestamp,
  
 	CONSTRAINT fk_sources_bookings FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
 );
 
+CREATE TABLE bnovo_raw.guests
+(
+	source_id int,
+	id varchar,
+    hotel_id varchar,
+    country_id varchar,
+    country_name varchar,
+    citizenship_id varchar,
+    citizenship_name varchar,
+    name varchar,
+    surname varchar,
+    email varchar,
+    phone varchar,
+    birthdate varchar,
+    postcode varchar,
+    city varchar,
+    address varchar,
+    passport_num varchar,
+    passport_date_start varchar,
+    passport_date_end varchar,
+    notes varchar,
+    tags varchar,
+    guest_type varchar,
+    gender varchar,
+    middlename varchar,
+    birth_country_name varchar,
+    birth_country_id varchar,
+    birth_region_name varchar,
+    birth_area_name varchar,
+    birth_city_name varchar,
+    birth_locality_name varchar,
+    document_type varchar,
+    document_series varchar,
+    document_number varchar,
+    document_unit_code varchar,
+    document_organization_issued varchar,
+    document_date_issued varchar,
+    document_date_end varchar,
+    address_free varchar,
+    address_fias varchar,
+    address_region varchar,
+    address_region_only varchar,
+    address_area_only varchar,
+    address_street_name varchar,
+    address_house varchar,
+    address_housing varchar,
+    address_flat varchar,
+    address_date varchar,
+    migcard_series varchar,
+    migcard_number varchar,
+    migcard_date_arrival varchar,
+    migcard_kpp varchar,
+    migcard_kpp_code varchar,
+    migcard_date_start varchar,
+    migcard_date_end varchar,
+    representative_customer_id varchar,
+    relationtype_id varchar,
+    representative_customer_full_name varchar,
+    date_update timestamp not null default current_timestamp,
+    
+	CONSTRAINT fk_sources_guests FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
 
+CREATE TABLE bnovo_raw.booking_guests_link
+(
+	source_id int,
+	booking_id varchar,
+	guest_id varchar,
+	date_update timestamp not null default current_timestamp,
+	
+	CONSTRAINT fk_sources_booking_guests_link FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
+	CONSTRAINT unique_source_booking_guest UNIQUE (source_id, booking_id, guest_id)
+);
+
+CREATE TABLE bnovo_raw.temp_no_applyed_guests
+(
+	source_id int,
+	guest_id varchar,
+	
+	CONSTRAINT fk_sources_no_applyed_guests FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
+	CONSTRAINT unique_source_no_applyed_guest UNIQUE (source_id, guest_id)
+);
+
+CREATE TABLE bnovo_raw.ufms_data
+(
+	source_id int,
+	id varchar,
+    hotel_id varchar,
+    booking_id varchar,
+    customer_id varchar,
+    status varchar,
+    scala_id varchar,
+    scala_number varchar,
+    last_error varchar,
+    last_attempt_date varchar,
+    create_date varchar,
+    update_date varchar,
+    scala_status varchar,
+    citizenship_id varchar,
+    arrival varchar,
+    departure varchar,
+    customer_name varchar,
+    customer_surname varchar,
+	date_update timestamp not null default current_timestamp,
+    
+	CONSTRAINT fk_sources_ufms FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+                    
 CREATE TABLE bnovo_raw.invoices
 (
 	source_id int,

@@ -31,6 +31,14 @@ sources:
         identifier: payments
       - name: payment_records
         identifier: payment_records
+      - name: guests
+        identifier: guests
+      - name: booking_guests_link
+        identifier: booking_guests_link
+      - name: temp_no_applyed_guests
+        identifier: temp_no_applyed_guests
+      - name: ufms_data
+        identifier: ufms_data
 
   - name: banks
     schema: banks_raw

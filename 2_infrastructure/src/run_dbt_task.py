@@ -18,7 +18,7 @@ def lambda_handler(event, context):
         # Set the container overrides
         container_overrides = [
             {
-        #        'name': CONTAINER_NAME,
+                'name': "dbt-container",
                 'environment': [
                     {'name': 'DBT_POSTGRES_HOST', 'value': launch_params['host']},
                     {'name': 'DBT_POSTGRES_PORT', 'value': launch_params['port']},
@@ -32,9 +32,12 @@ def lambda_handler(event, context):
 
         #logger.info("Submitting task to ECS")
 
+        print(launch_params['ecs-cluster'])
+        print(launch_params['ecs-dbt-task-definition'])
+
         response = ecs_client.run_task(
             taskDefinition=launch_params['ecs-dbt-task-definition'],
-            cluster=launch_params['ecs-cluster-name'],
+            cluster=launch_params['ecs-cluster'],
             launchType='FARGATE',
             overrides={'containerOverrides': container_overrides},
             networkConfiguration={

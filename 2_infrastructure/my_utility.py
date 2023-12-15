@@ -3,10 +3,11 @@ import boto3
 import json
 import requests
 from datetime import date, timedelta
+from sshtunnel import SSHTunnelForwarder
 
 #email reports data
 def get_email_and_storage_data():
-    secret_name = "dev-reports-email-cred"
+    secret_name = "develop-reports-email-cred"
     region_name = "eu-central-1"    
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
@@ -17,10 +18,25 @@ def get_email_and_storage_data():
     secret_value_dict['s3client'] = s3client
     return secret_value_dict
 
+#ESC get params to run
+def get_params_to_run_ecs_task_dbt() -> dict:
+    secret_name = 'develop-db-instance'
+    region_name = "eu-central-1"    
+
+    session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
+    #session = boto3.session.Session()
+    client = session.client(service_name='secretsmanager', region_name=region_name)
+    secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
+
+    secret_name = 'develop-ecs-cluster-data'
+    secret_value_dict.update(json.loads(client.get_secret_value(SecretId=secret_name)['SecretString']))
+
+    return secret_value_dict
+
 #DB
 #connection to data base
 def get_db_connection():
-    secret_name = "dev-rds-instance"
+    secret_name = "develop-db-instance"
     region_name = "eu-central-1"
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
@@ -33,7 +49,17 @@ def get_db_connection():
     password = secret_value_dict['password']
     database_name = secret_value_dict['dbname']
 
-    return psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
+    tunnel = SSHTunnelForwarder(
+        ('18.158.4.219', 22),
+        ssh_username='ec2-user',
+        ssh_private_key='/Users/dmitrybugaev/arbat-developer',
+        remote_bind_address=(endpoint, 5432),
+    #    local_bind_address=(endpoint, 5432), # could be any available port
+    )
+
+    tunnel.start()
+    #return psycopg2.connect(host=endpoint, database=database_name, user=username, password=password)
+    return psycopg2.connect(host=tunnel.local_bind_host, port=tunnel.local_bind_port, database=database_name, user=username, password=password)
 
 
 #map_of_collumn - keys - name of SQL table columns, values - name of data list items keys DB Table must have source_id

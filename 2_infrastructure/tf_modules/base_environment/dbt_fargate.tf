@@ -78,7 +78,7 @@ resource "aws_ecs_task_definition" "dbt_task" {
   container_definitions = <<EOF
     [
     {
-        "name": "${local.prefixname}-dbt-container",
+        "name": "dbt-container",
         "image": "${aws_ecr_repository.repo_dbt.repository_url}:dbt-arbat-transform-latest",
         "cpu": 512,
         "memory": 1024,    
@@ -117,8 +117,8 @@ resource "aws_secretsmanager_secret_version" "secretsECS" {
   secret_id     = aws_secretsmanager_secret.secretsECS.id
   secret_string = <<EOF
    {
-    "ecs-cluster-name": "${aws_ecs_cluster.ecs_cluster.name}",
-    "ecs-dbt-task-definition": "${aws_ecs_task_definition.dbt_task.family}",
+    "ecs-cluster": "${aws_ecs_cluster.ecs_cluster.arn}",
+    "ecs-dbt-task-definition": "${aws_ecs_task_definition.dbt_task.arn}",
     "ecs-task-private-subnet": "${data.terraform_remote_state.common.outputs.private_subnets[0]}",
     "ecs-task-security-group": "${module.ecs_task_security_group.security_group_id}"
    }
@@ -154,6 +154,11 @@ module "lambda_function_run_dbt_task" {
       effect    = "Allow",
       actions   = ["ecs:RunTask"],
       resources = [aws_ecs_task_definition.dbt_task.arn]
+    },
+    pass_role = {
+      effect    = "Allow",
+      actions   = ["iam:PassRole"],
+      resources = [aws_iam_role.iam_ecs_service_role.arn]
     }
   }
 

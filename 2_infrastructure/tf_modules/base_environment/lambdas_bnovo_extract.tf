@@ -139,6 +139,8 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.to_plan_extract_bnovo_fin_zip}"
 
+  timeout = 120
+
   attach_network_policy = true
 
   attach_policy_statements = true
@@ -174,6 +176,8 @@ module "lambda_function_plan_to_extract_bnovo_booking" {
 
   create_package         = false
   local_existing_package = "${var.buildpath}${var.to_plan_extract_bnovo_booking_zip}"
+
+  timeout = 60
 
   attach_network_policy = true
 
@@ -211,6 +215,8 @@ module "lambda_function_extract_bnovo_guests" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_guests_zip}"
 
+  timeout = 120
+
   attach_network_policy = true
 
   attach_policy_statements = true
@@ -247,6 +253,8 @@ module "lambda_function_extract_bnovo_ufms" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_ufms_zip}"
 
+  timeout = 120
+
   attach_network_policy = true
 
   attach_policy_statements = true
@@ -282,6 +290,8 @@ module "lambda_function_plan_to_extract_frequently_bnovo" {
 
   create_package         = false
   local_existing_package = "${var.buildpath}${var.to_plan_extract_frequently_bnovo_zip}"
+
+  timeout = 10
 
   attach_network_policy = true
 

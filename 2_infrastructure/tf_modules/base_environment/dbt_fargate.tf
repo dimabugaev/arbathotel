@@ -119,7 +119,7 @@ resource "aws_secretsmanager_secret_version" "secretsECS" {
    {
     "ecs-cluster-name": "${aws_ecs_cluster.ecs_cluster.name}",
     "ecs-dbt-task-definition": "${aws_ecs_task_definition.dbt_task.family}",
-    "ecs-task-private-subnet": "${data.terraform_remote_state.common.outputs.private_subnets}",
+    "ecs-task-private-subnet": "${data.terraform_remote_state.common.outputs.private_subnets[0]}",
     "ecs-task-security-group": "${module.ecs_task_security_group.security_group_id}"
    }
   EOF

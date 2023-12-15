@@ -2,8 +2,6 @@ FROM python:3.8.1-slim-buster
 
 RUN pip install --upgrade pip
 
-ARG RUNING_SCRIPT=run_booking_marts_dbt.sh
-
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
@@ -14,4 +12,4 @@ COPY . .
 RUN chmod -R 755 scripts/
 
 ENTRYPOINT [ "/bin/sh", "-c" ]
-CMD ["scripts/$RUNING_SCRIPT"]
+CMD ["scripts/run_dbt.sh"]

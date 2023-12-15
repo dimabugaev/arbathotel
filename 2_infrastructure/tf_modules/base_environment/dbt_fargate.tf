@@ -94,3 +94,77 @@ resource "aws_ecs_task_definition" "dbt_task" {
     ]
     EOF
 }
+
+module "ecs_task_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.0"
+
+  name        = "${local.prefixname}-ecs-task-sg-dbt-run"
+  description = "Security group for launch DBT transformations"
+  vpc_id      = data.terraform_remote_state.common.outputs.vpc_id
+
+
+  egress_rules = ["all-all"]
+
+  tags = local.tags
+}
+
+resource "aws_secretsmanager_secret" "secretsECS" {
+  name = "${local.prefixname}-ecs-cluster-data"
+}
+
+resource "aws_secretsmanager_secret_version" "secretsECS" {
+  secret_id     = aws_secretsmanager_secret.secretsECS.id
+  secret_string = <<EOF
+   {
+    "ecs-cluster-name": "${aws_ecs_cluster.ecs_cluster.name}",
+    "ecs-dbt-task-definition": "${aws_ecs_task_definition.dbt_task.family}",
+    "ecs-task-private-subnet": "${data.terraform_remote_state.common.outputs.private_subnets}",
+    "ecs-task-security-group": "${module.ecs_task_security_group.security_group_id}"
+   }
+  EOF
+}
+
+module "lambda_function_run_dbt_task" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
+
+  function_name = "${local.prefixname}-run_dbt_task"
+  description   = "lambda function for runing dbt task"
+  handler       = "run_dbt_task.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  timeout = 120
+
+  create_package         = false
+  local_existing_package = "${var.buildpath}${var.run_dbt_task_zip}"
+
+  attach_network_policy = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn, aws_secretsmanager_secret.secretsECS.arn]
+    },
+    esc_cluster = {
+      effect    = "Allow",
+      actions   = ["ecs:RunTask"],
+      resources = [aws_ecs_task_definition.dbt_task.arn]
+    }
+  }
+
+  environment_variables = {
+    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+    ECS_SECRET = aws_secretsmanager_secret.secretsECS.name
+  }
+
+  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.ecs_task_security_group.security_group_id]
+
+  tags = local.tags
+}
+

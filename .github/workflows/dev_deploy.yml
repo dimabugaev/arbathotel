@@ -45,6 +45,7 @@ jobs:
           cp src/extract_bnovo_guests.py build/
           cp src/extract_bnovo_ufms.py build/
           cp src/run_dbt_task.py build/
+          cp src/to_plan_extract_frequently_bnovo.py build/
           cd build
           zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ typing_extensions.py my_utility.py employees_reports_data.py 
           zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ typing_extensions.py my_utility.py dict_operate_data.py 
@@ -61,7 +62,8 @@ jobs:
           zip -r to_plan_extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_bnovo_booking.py
           zip -r extract_bnovo_guests.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_guests.py
           zip -r extract_bnovo_ufms.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py extract_bnovo_ufms.py
-          zip -r run_dbt_task.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py run_dbt_task.py   
+          zip -r run_dbt_task.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py run_dbt_task.py
+          zip -r to_plan_extract_frequently_bnovo.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ typing_extensions.py my_utility.py to_plan_extract_frequently_bnovo.py   
           cd ../
           ls build/
 

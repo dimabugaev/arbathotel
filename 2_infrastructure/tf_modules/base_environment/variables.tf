@@ -91,6 +91,13 @@ variable "extract_bnovo_ufms_zip" {
   default     = "extract_bnovo_ufms.zip"
   type        = string
 }
+
+variable "to_plan_extract_frequently_bnovo_zip" {
+  description = "Name pakage"
+  default     = "to_plan_extract_frequently_bnovo.zip"
+  type        = string
+}
+
 #===
 #==ECS
 variable "run_dbt_task_zip" {

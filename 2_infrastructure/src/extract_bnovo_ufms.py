@@ -155,7 +155,7 @@ def lambda_handler(event, context):
     source_id = event['source_id']
 
     current_day = False
-    if event['all_data'] == 0:
+    if event.get('all_data') is None:
         period = datetime.now(pytz.timezone('Europe/Moscow')).date()
         current_day = True
     else:

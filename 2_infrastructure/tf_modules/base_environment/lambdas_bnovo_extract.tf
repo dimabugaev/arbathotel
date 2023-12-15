@@ -8,14 +8,14 @@ module "bnovo_extract_security_group" {
   description = "Lambda security group for functions extract from bnovo"
   vpc_id      = data.terraform_remote_state.common.outputs.vpc_id
 
-  
+
   egress_rules = ["all-all"]
 
   tags = local.tags
 }
 
 module "lambda_function_bnovo_master_data_extract" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
   function_name = "${local.prefixname}-bnovo-extract-lambda"
@@ -30,7 +30,7 @@ module "lambda_function_bnovo_master_data_extract" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_data_zip}"
 
-  attach_network_policy  = true
+  attach_network_policy = true
 
   attach_policy_statements = true
   policy_statements = {
@@ -39,7 +39,7 @@ module "lambda_function_bnovo_master_data_extract" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
   environment_variables = {
     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
@@ -52,7 +52,7 @@ module "lambda_function_bnovo_master_data_extract" {
 }
 
 module "lambda_function_bnovo_finance_extract" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
   function_name = "${local.prefixname}-bnovo-finance-extract-lambda"
@@ -65,7 +65,7 @@ module "lambda_function_bnovo_finance_extract" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_finance_zip}"
 
-  attach_network_policy  = true
+  attach_network_policy = true
 
   timeout = 30
 
@@ -76,7 +76,7 @@ module "lambda_function_bnovo_finance_extract" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
   environment_variables = {
     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
@@ -89,7 +89,7 @@ module "lambda_function_bnovo_finance_extract" {
 }
 
 module "lambda_function_bnovo_booking_extract" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
   function_name = "${local.prefixname}-bnovo-booking-extract-lambda"
@@ -102,7 +102,7 @@ module "lambda_function_bnovo_booking_extract" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_booking_zip}"
 
-  attach_network_policy  = true
+  attach_network_policy = true
 
   timeout = 30
 
@@ -113,7 +113,7 @@ module "lambda_function_bnovo_booking_extract" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
   environment_variables = {
     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
@@ -126,7 +126,7 @@ module "lambda_function_bnovo_booking_extract" {
 }
 
 module "lambda_function_plan_to_extract_bnovo_fin" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
   function_name = "${local.prefixname}-plan-to-extract-bnovo-fin"
@@ -139,7 +139,7 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.to_plan_extract_bnovo_fin_zip}"
 
-  attach_network_policy  = true
+  attach_network_policy = true
 
   attach_policy_statements = true
   policy_statements = {
@@ -148,7 +148,7 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
   environment_variables = {
     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
@@ -162,7 +162,7 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
 }
 
 module "lambda_function_plan_to_extract_bnovo_booking" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
   function_name = "${local.prefixname}-plan-to-extract-bnovo-booking"
@@ -175,7 +175,7 @@ module "lambda_function_plan_to_extract_bnovo_booking" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.to_plan_extract_bnovo_booking_zip}"
 
-  attach_network_policy  = true
+  attach_network_policy = true
 
   attach_policy_statements = true
   policy_statements = {
@@ -184,7 +184,7 @@ module "lambda_function_plan_to_extract_bnovo_booking" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
   environment_variables = {
     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
@@ -198,7 +198,7 @@ module "lambda_function_plan_to_extract_bnovo_booking" {
 }
 
 module "lambda_function_extract_bnovo_guests" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
   function_name = "${local.prefixname}-extract-bnovo-guests"
@@ -211,7 +211,7 @@ module "lambda_function_extract_bnovo_guests" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_guests_zip}"
 
-  attach_network_policy  = true
+  attach_network_policy = true
 
   attach_policy_statements = true
   policy_statements = {
@@ -220,7 +220,7 @@ module "lambda_function_extract_bnovo_guests" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
   environment_variables = {
     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
@@ -234,7 +234,7 @@ module "lambda_function_extract_bnovo_guests" {
 }
 
 module "lambda_function_extract_bnovo_ufms" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
   version = "~> 2.0"
 
   function_name = "${local.prefixname}-extract-bnovo-ufms"
@@ -247,7 +247,7 @@ module "lambda_function_extract_bnovo_ufms" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_ufms_zip}"
 
-  attach_network_policy  = true
+  attach_network_policy = true
 
   attach_policy_statements = true
   policy_statements = {
@@ -256,7 +256,7 @@ module "lambda_function_extract_bnovo_ufms" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
   environment_variables = {
     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
@@ -269,7 +269,41 @@ module "lambda_function_extract_bnovo_ufms" {
   tags = local.tags
 }
 
+module "lambda_function_plan_to_extract_frequently_bnovo" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "~> 2.0"
 
+  function_name = "${local.prefixname}-plan-to-extract-frequently-bnovo"
+  description   = "lambda function for planing frequently extract data from Bnovo"
+  handler       = "to_plan_extract_frequently_bnovo.lambda_handler"
+  runtime       = "python3.8"
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = "${var.buildpath}${var.to_plan_extract_frequently_bnovo_zip}"
+
+  attach_network_policy = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  }
+
+  environment_variables = {
+    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+  }
+
+  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
+
+
+  tags = local.tags
+}
 
 
 

@@ -151,7 +151,7 @@ def update_invoice(connection, session, source_id: int):
         cursor.close()
 
 
-def export_data_from_bnovo_to_rds():
+def export_data_from_bnovo_to_rds(load_invoices = False):
     conn = my_utility.get_db_connection()
     cursor = conn.cursor()
 
@@ -219,7 +219,9 @@ def export_data_from_bnovo_to_rds():
         my_utility.update_dim_raw(conn, get_items(http_session)["items"], "items", "bnovo_raw.items", items_map, row[2])
         my_utility.update_dim_raw(conn, [get_account_details(http_session)["hotel"]], "hotel", "bnovo_raw.hotels", hotels_map, row[2])
         my_utility.update_dim_raw(conn, get_suppliers(http_session)["suppliers"], "suppliers", "bnovo_raw.suppliers", suppliers_map, row[2])
-        update_invoice(conn, http_session, row[2])
+        
+        if load_invoices: 
+            update_invoice(conn, http_session, row[2])
 
         sid_map[row[2]] = http_session.cookies.get('SID')
 
@@ -231,5 +233,9 @@ def export_data_from_bnovo_to_rds():
 
 
 def lambda_handler(event, context):
-    sid_map = export_data_from_bnovo_to_rds()
+    load_invoices = False
+    if event.get('invoices') is not None:
+        load_invoices = True
+        
+    sid_map = export_data_from_bnovo_to_rds(load_invoices)
     return sid_map

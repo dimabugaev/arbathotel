@@ -239,7 +239,7 @@ module "lambda_function_extract_bnovo_ufms" {
 
   function_name = "${local.prefixname}-extract-bnovo-ufms"
   description   = "lambda function extract sent data to UFMS from open API Bnovo"
-  handler       = "to_plan_extract_bnovo_fin.lambda_handler"
+  handler       = "extract_bnovo_ufms.lambda_handler"
   runtime       = "python3.8"
 
   publish = true

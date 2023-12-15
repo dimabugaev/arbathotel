@@ -7,7 +7,7 @@ echo ""
 if [ "$DBT_TRANSFORM_MODE" = "booking-problems-mart-update" ]; then
     echo "Booking problems marts updating..."
     echo ""
-    dbt run -s "+mart_ufms_applications, +mart_booking_problem" --project-dir .
+    dbt run -s "+mart_ufms_applications +mart_booking_problem" --project-dir .
 elif [ "$DBT_TRANSFORM_MODE" = "full-update" ]; then
     echo "All tables updating..."
     echo ""

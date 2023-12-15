@@ -5,7 +5,7 @@ arbat_transform:
       type: postgres
       threads: 4
       host: "{{ env_var('DBT_POSTGRES_HOST') }}"
-      port: "{{ env_var('DBT_POSTGRES_PORT') }}"
+      port: "{{ env_var('DBT_POSTGRES_PORT') | as_number }}"
       user: "{{ env_var('DBT_POSTGRES_USER') }}"
       pass: "{{ env_var('DBT_POSTGRES_PASS') }}"
       dbname: "{{ env_var('DBT_POSTGRES_DBNAME') }}"

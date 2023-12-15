@@ -30,6 +30,13 @@ module "rds_security_group" {
       description              = "PostgreSQL access from lambda API"
       source_security_group_id = module.bnovo_extract_security_group.security_group_id
     },
+    {
+      from_port                = 5432
+      to_port                  = 5432
+      protocol                 = "tcp"
+      description              = "PostgreSQL access from lambda API"
+      source_security_group_id = module.ecs_task_security_group.security_group_id
+    },
   ]
   tags = local.tags
 }

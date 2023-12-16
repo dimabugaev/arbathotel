@@ -18,13 +18,13 @@ def get_booking_guests(session, booking_id: str):
             if response is None:
                 if i == count_of_rep - 1:
                     raise ValueError('-- bad request ALL TIMES is NULL!!--')    
-                print('-- bad request ... delay and repeat attempt # ' + (i+1))
+                print('-- bad request ... delay and repeat attempt # ' + str(i+1))
                 time.sleep(1)
                 continue
             if response.text[0] == '<':
                 if i == count_of_rep - 1:
                     raise ValueError('-- Too Many Requests ALL TIMES is Too many!!--')
-                print('-- Too Many Requests ... delay and repeat attempt # ' + (i+1))
+                print('-- Too Many Requests ... delay and repeat attempt # ' + str(i+1))
                 time.sleep(3)
                 continue  
             items = json.loads(response.text)

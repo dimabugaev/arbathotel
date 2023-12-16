@@ -3,6 +3,7 @@ import re
 from aws_lambda_powertools.event_handler import APIGatewayHttpResolver
 from typing import Any
 from datetime import datetime
+import pytz
 
 #from datetime import date, timedelta, datetime
 
@@ -17,9 +18,11 @@ def get_date_from_string_to_query(str_date: str) -> str:
 
     #2023-01-03T08:00:00.000Z
     format = '%Y-%m-%dT%H:%M:%S.%f%z'
+    tz = pytz.timezone("Europe/Moscow")
     if isinstance(str_date, str):
         try:
-            report_date = my_utility.get_begin_month_by_date(datetime.strptime(str_date, format).date())   
+            moscow_date = tz.normalize(datetime.strptime(str_date, format).astimezone(tz))
+            report_date = my_utility.get_begin_month_by_date(moscow_date.date())
             result = "TO_DATE('" + str(str(report_date)) + "','YYYY-mm-DD')"
         except:
             result = "NULL"

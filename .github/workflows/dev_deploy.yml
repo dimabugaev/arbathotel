@@ -47,8 +47,8 @@ jobs:
           cp src/run_dbt_task.py build/
           cp src/to_plan_extract_frequently_bnovo.py build/
           cd build
-          zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ typing_extensions.py my_utility.py employees_reports_data.py 
-          zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ typing_extensions.py my_utility.py dict_operate_data.py 
+          zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py employees_reports_data.py 
+          zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py dict_operate_data.py 
           zip -r extract_bnovo_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_data.py
           zip -r extract_bnovo_finance.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_finance.py
           zip -r extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_booking.py

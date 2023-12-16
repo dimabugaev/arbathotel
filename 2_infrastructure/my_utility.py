@@ -20,8 +20,8 @@ def get_email_and_storage_data():
 
 #ESC get params to run
 def get_params_to_run_ecs_task_dbt() -> dict:
-    secret_name = 'dev-rds-instance'
-    #secret_name = 'develop-db-instance'
+    #secret_name = 'dev-rds-instance'
+    secret_name = 'develop-db-instance'
     region_name = "eu-central-1"    
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg

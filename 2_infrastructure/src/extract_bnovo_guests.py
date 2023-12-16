@@ -175,12 +175,13 @@ def update_guests(connection, session, source_id: int, period: date):
     delete_query = "DELETE FROM bnovo_raw.temp_no_applyed_guests WHERE source_id = %(source_id)s;"
     cursor.execute(delete_query, {'source_id': source_id})
 
-    insert_query = f"""
-            INSERT INTO bnovo_raw.temp_no_applyed_guests (source_id, guest_id) 
-            VALUES {', '.join([f"('{source_id}', "+ str(guest) +")" for guest in guest_no_applyed_data["guests_ids"]])}
-            ON CONFLICT DO NOTHING;
-            """
-    cursor.execute(insert_query)
+    if len(guest_no_applyed_data["guests_ids"]) > 0:
+        insert_query = f"""
+                INSERT INTO bnovo_raw.temp_no_applyed_guests (source_id, guest_id) 
+                VALUES {', '.join([f"('{source_id}', "+ str(guest) +")" for guest in guest_no_applyed_data["guests_ids"]])}
+                ON CONFLICT DO NOTHING;
+                """
+        cursor.execute(insert_query)
 
     cursor.close()
 

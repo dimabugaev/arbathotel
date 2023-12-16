@@ -45,7 +45,7 @@ def get_no_applyed_guests(session):
                 if i == count_of_rep - 1:
                     raise ValueError('-- Too Many Requests ALL TIMES is Too many!!--')
                 print('-- Too Many Requests ... delay and repeat attempt # ' + (i+1))
-                time.sleep(1)
+                time.sleep(3)
                 continue    
             items = json.loads(response.text)
             break 

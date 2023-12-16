@@ -786,6 +786,27 @@ select distinct
 from
 	public.src_bookings sb inner join public.src_booking_guests sbg on sb.booking_id = sbg.booking_id
 		inner join one_days_booking_guests odb on odb.guest_id = sbg.id and sb.real_departure::date = odb.arrival_date
+		
+		
+		
+with plan as( 
+            select 
+                s.id source_id,
+                current_date as period_month,
+                s.source_type,
+                date_trunc('month', (current_date - interval '1 month'))::Date past_period,
+                date_trunc('month', current_date)::Date current_period
+            from operate.sources s
+            where 
+                s.source_data_begin is not null and s.source_type = 2)
+
+        select distinct
+            '' as sid,
+            p.source_id
+        from 
+            plan p
+        --where
+        --    f.source_id is null or f.period_month = p.past_period or f.period_month = p.current_period;
 
 		
 

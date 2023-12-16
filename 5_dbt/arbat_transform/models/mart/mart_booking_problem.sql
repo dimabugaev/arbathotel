@@ -33,14 +33,20 @@ divergence_guests_amount as (
 	select 
 		sb.booking_id,
 		max(sb.adults) + max(sb.children) as guest_in_number,
-		count(1) as guest_added
+		sum(case 
+				when sbg.booking_id is not null then 1 
+				else 0 
+  			end) as guest_added
 	from 
 		selected_bookings sb left join {{ ref('src_booking_guests') }} as sbg 
 			on sb.booking_id = sbg.booking_id
 	group by 
 		sb.booking_id
 	having 
-		max(sb.adults) + max(sb.children) <> count(1)	
+		max(sb.adults) + max(sb.children) <> count(sum(case 
+															when sbg.booking_id is not null then 1 
+															else 0 
+														end))	
 ),
 no_canceled as (
 	select 

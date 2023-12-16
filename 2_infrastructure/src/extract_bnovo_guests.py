@@ -26,7 +26,7 @@ def get_booking_guests(session, booking_id: str):
                     raise ValueError('-- Too Many Requests ALL TIMES is Too many!!--')
                 print('-- Too Many Requests ... delay and repeat attempt # ' + (i+1))
                 time.sleep(3)
-                continue   
+                continue  
             items = json.loads(response.text)
             break 
 

@@ -27,6 +27,9 @@ def get_date_from_string_to_query(str_date: str) -> str:
     return result
 
 def get_sources() -> list:
+
+    global connection
+
     cursor = connection.cursor()
     
     cursor.execute("""select 
@@ -46,6 +49,9 @@ def get_sources() -> list:
     return cursor.fetchall()
                             
 def get_hotels() -> list:
+
+    global connection
+
     cursor = connection.cursor()
     
     cursor.execute("""select 
@@ -59,6 +65,9 @@ def get_hotels() -> list:
     return cursor.fetchall()
 
 def get_employees() -> list:
+
+    global connection
+
     cursor = connection.cursor()
     
     cursor.execute("""select 
@@ -74,6 +83,9 @@ def get_employees() -> list:
     return cursor.fetchall()
 
 def get_report_items() -> list:
+
+    global connection
+
     cursor = connection.cursor()
     
     cursor.execute("""select 
@@ -94,6 +106,9 @@ def get_report_items() -> list:
     return cursor.fetchall()
 
 def get_report_settings(source_id : str) -> list:
+
+    global connection
+
     if re.match('\S+', source_id) is None: # bad string
         return my_utility.get_response({'FormatError': source_id})
     
@@ -124,6 +139,8 @@ def get_report_settings(source_id : str) -> list:
 
 
 def put_sources(datastrings: list):
+
+    global connection
 
     if len(datastrings) > 0:
         cursor = connection.cursor()
@@ -159,7 +176,7 @@ def put_sources(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_source_table_update
-                                (id, source_name, source_type, source_external_key, source_income_debt, source_username, source_password)
+                                (id, source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin)
                               VALUES """ + args_str)
             
 
@@ -203,6 +220,8 @@ def put_sources(datastrings: list):
 
 
 def put_hotels(datastrings: list):
+
+    global connection
 
     if len(datastrings) > 0:
         cursor = connection.cursor()
@@ -258,6 +277,8 @@ def put_hotels(datastrings: list):
 
 
 def put_employees(datastrings: list):
+
+    global connection
 
     if len(datastrings) > 0:
         cursor = connection.cursor()
@@ -322,6 +343,8 @@ def put_employees(datastrings: list):
 
 
 def put_report_items(datastrings: list):
+
+    global connection
 
     if len(datastrings) > 0:
         cursor = connection.cursor()
@@ -396,6 +419,8 @@ def put_report_items(datastrings: list):
 
 
 def put_report_items_setings(datastrings: list):
+
+    global connection
 
     if len(datastrings) > 0:
         cursor = connection.cursor()
@@ -500,6 +525,8 @@ def put_dict() -> dict:
 
 def lambda_handler(event, context):
     print({'event': event, 'context': context})
+
+    global connection
 
     result = {}
     try:

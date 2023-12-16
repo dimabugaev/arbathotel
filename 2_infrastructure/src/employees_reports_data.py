@@ -47,6 +47,8 @@ def get_date_from_iso_string_to_query_param(str_date: any) -> str:
 
 @app.get("/string")
 def get_report_strings():
+    
+    global connection
     source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
     date_start = get_date_from_iso_string_to_query_param(app.current_event.get_query_string_value(name="date_start", default_value=""))
     date_end = get_date_from_iso_string_to_query_param(app.current_event.get_query_string_value(name="date_end", default_value=""))
@@ -142,6 +144,8 @@ def get_report_strings():
 @app.post("/string")
 def put_operate_report_strings():
     
+    global connection
+    
     source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
     newstrings = app.current_event.json_body
 
@@ -214,6 +218,9 @@ def put_operate_report_strings():
 
 @app.get("/dict")
 def get_hotels_and_report_ivents() -> dict:
+    
+    global connection
+
     source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
 
     if re.match('\S+', source_id) is None: # bad string
@@ -268,6 +275,9 @@ def get_hotels_and_report_ivents() -> dict:
 
 @app.get("/close")
 def current_string_to_histirical():
+    
+    global connection
+
     source_id = app.current_event.get_query_string_value(name="source_id", default_value="")
 
     cursor = connection.cursor()
@@ -304,6 +314,8 @@ def current_string_to_histirical():
 
 def lambda_handler(event, context):
     print({'event': event, 'context': context})
+
+    global connection
 
     result = {}
     try:

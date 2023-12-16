@@ -51,8 +51,9 @@ def get_guests_no_applyed_for_update(guests_data: dict) -> dict:
     res = {}
     res["guests_ids"] = []
 
-    for guest in guests_data["bookings"]:
-        res["guests_ids"].append(guest["customer"]["id"])
+    if guests_data.get("bookings") is not None:
+        for guest in guests_data["bookings"]:
+            res["guests_ids"].append(guest["customer"]["id"])
 
     return res
 

@@ -43,10 +43,10 @@ divergence_guests_amount as (
 	group by 
 		sb.booking_id
 	having 
-		max(sb.adults) + max(sb.children) <> count(sum(case 
-															when sbg.booking_id is not null then 1 
-															else 0 
-														end))	
+		max(sb.adults) + max(sb.children) <> sum(case 
+													when sbg.booking_id is not null then 1 
+													else 0 
+												end)	
 ),
 no_canceled as (
 	select 

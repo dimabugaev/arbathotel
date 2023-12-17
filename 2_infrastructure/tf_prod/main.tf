@@ -9,9 +9,9 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "arbat-hotel-terraform-state"
-    key    = "prod_terraform.tfstate"
-    region = "eu-central-1"
+    bucket  = "arbat-hotel-terraform-state"
+    key     = "prod_terraform.tfstate"
+    region  = "eu-central-1"
     profile = "arbathotelserviceterraformuser"
   }
 
@@ -21,4 +21,11 @@ terraform {
 provider "aws" {
   region  = "eu-central-1"
   profile = "arbathotelserviceterraformuser"
+}
+
+module "environment" {
+  source                 = "../tf_modules/base_environment/"
+  environment            = "prod"
+  reports_email          = var.reports_email
+  reports_email_password = var.reports_email_password
 }

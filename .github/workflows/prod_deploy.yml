@@ -1,0 +1,119 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy on productive enviroment
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Build zip
+        run: |
+          cd 2_infrastructure/
+          ls build/
+          cp src/my_utility.py build/
+          cp src/employees_reports_data.py build/
+          cp src/dict_operate_data.py build/
+          cp src/extract_bnovo_data.py build/
+          cp src/extract_bnovo_finance.py build/
+          cp src/extract_bnovo_booking.py build/
+          cp src/extract_tinkoff_account.py build/
+          cp src/extract_email_reports_data.py build/
+          cp src/upload_psb_acquiring.py build/
+          cp src/upload_ucb_account.py build/
+          cp src/to_plan_extract_bnovo_fin.py build/
+          cp src/to_plan_extract_psb.py build/
+          cp src/to_plan_extract_tinkoff.py build/
+          cp src/to_plan_extract_bnovo_booking.py build/
+          cp src/extract_bnovo_guests.py build/
+          cp src/extract_bnovo_ufms.py build/
+          cp src/run_dbt_task.py build/
+          cp src/to_plan_extract_frequently_bnovo.py build/
+          cd build
+          zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py employees_reports_data.py 
+          zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py dict_operate_data.py 
+          zip -r extract_bnovo_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_data.py
+          zip -r extract_bnovo_finance.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_finance.py
+          zip -r extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_booking.py
+          zip -r extract_tinkoff_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_tinkoff_account.py
+          zip -r extract_email_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_email_reports_data.py 
+          zip -r upload_psb_acquiring.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ xlrd/ openpyxl/ et_xmlfile/ pytz/ typing_extensions.py my_utility.py upload_psb_acquiring.py  
+          zip -r upload_ucb_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py upload_ucb_account.py
+          zip -r to_plan_extract_bnovo_fin.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_bnovo_fin.py
+          zip -r to_plan_extract_psb.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_psb.py
+          zip -r to_plan_extract_tinkoff.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_tinkoff.py
+          zip -r to_plan_extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_bnovo_booking.py
+          zip -r extract_bnovo_guests.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_guests.py
+          zip -r extract_bnovo_ufms.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_ufms.py
+          zip -r run_dbt_task.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py run_dbt_task.py
+          zip -r to_plan_extract_frequently_bnovo.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_frequently_bnovo.py   
+          cd ../
+          ls build/
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: eu-central-1
+
+      - name: Add profile credentials to ~/.aws/credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} --profile arbathotelserviceterraformuser
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} --profile arbathotelserviceterraformuser
+
+      - name: terraform
+        env:
+          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+          TF_VAR_reports_email: ${{ secrets.REPORTS_EMAIL_ADDRESS }}  #need to change mail!!!!
+          TF_VAR_reports_email_password: ${{ secrets.REPORTS_EMAIL_PASSWORD }}
+          TF_VAR_arbat_pub_key: ${{ secrets.ARBAT_PUB_KEY }}
+        run: |
+          cd 2_infrastructure/tf_common
+          terraform -version
+          terraform init
+          terraform validate
+          terraform apply -auto-approve
+          
+          cd ../tf_prod
+          terraform -version
+          terraform init
+          terraform validate
+          terraform apply -auto-approve
+
+          cd ../../
+
+      - name: Login to Amazon ECR
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_OUTPUT: json
+          AWS_REGION: eu-central-1
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, Tag, and Push Image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: productive-ecr-repo
+        run: |
+          cd 5_dbt/arbat_transform
+          docker build -f dockerfile -t $ECR_REGISTRY/$REPOSITORY:dbt-arbat-transform-latest .
+          docker push $ECR_REGISTRY/$REPOSITORY:dbt-arbat-transform-latest

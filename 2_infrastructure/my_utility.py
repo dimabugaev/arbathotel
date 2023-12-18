@@ -37,7 +37,8 @@ def get_params_to_run_ecs_task_dbt() -> dict:
 #DB
 #connection to data base
 def get_db_connection():
-    secret_name = "develop-db-instance"
+    #secret_name = "develop-db-instance"
+    secret_name = "productive-db-instance"
     region_name = "eu-central-1"
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg

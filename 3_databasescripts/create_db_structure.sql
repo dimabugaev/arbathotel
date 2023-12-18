@@ -655,8 +655,8 @@ CREATE TABLE bnovo_raw.bookings
     board_nutritia varchar,
     online_warranty_deadline_date varchar,
     auto_booking_cancel varchar,
-    adults decimal(2,0),
-    children decimal(2,0),
+    adults decimal(10,0),
+    children decimal(10,0),
     date_update timestamp not null default current_timestamp,
  
 	CONSTRAINT fk_sources_bookings FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )

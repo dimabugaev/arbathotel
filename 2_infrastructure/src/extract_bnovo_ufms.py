@@ -18,7 +18,7 @@ def get_ufms_data(session, page: int = 1):
 
     print(url)
 
-    count_of_rep = 3
+    count_of_rep = 10
     for i in range(count_of_rep):
         with session.get(url) as response:
             if response is None:
@@ -26,6 +26,12 @@ def get_ufms_data(session, page: int = 1):
                     raise ValueError('-- bad request ALL TIMES is NULL!!--')    
                 print('-- bad request ... delay and repeat attempt # ' + (i+1))
                 time.sleep(1)
+                continue
+            if response.text[0] == '<':
+                if i == count_of_rep - 1:
+                    raise ValueError('-- Too Many Requests ALL TIMES is Too many!!--')
+                print('-- Too Many Requests ... delay and repeat attempt # ' + str(i+1))
+                time.sleep(5)
                 continue
             items = json.loads(response.text)
             break 
@@ -47,7 +53,7 @@ def get_current_day_ufms_data(session, period: date, page: int = 1):
 
     print(url)
 
-    count_of_rep = 3
+    count_of_rep = 10
     for i in range(count_of_rep):
         with session.get(url) as response:
             if response is None:
@@ -55,6 +61,12 @@ def get_current_day_ufms_data(session, period: date, page: int = 1):
                     raise ValueError('-- bad request ALL TIMES is NULL!!--')    
                 print('-- bad request ... delay and repeat attempt # ' + (i+1))
                 time.sleep(1)
+                continue
+            if response.text[0] == '<':
+                if i == count_of_rep - 1:
+                    raise ValueError('-- Too Many Requests ALL TIMES is Too many!!--')
+                print('-- Too Many Requests ... delay and repeat attempt # ' + str(i+1))
+                time.sleep(5)
                 continue
             items = json.loads(response.text)
             break 

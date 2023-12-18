@@ -19,8 +19,8 @@ select
     departure::timestamp as plan_departure_date,
     real_arrival::timestamp,
     real_departure::timestamp,
-    adults::decimal(2,0),
-    children::decimal(2,0),
+    adults::decimal(10,0),
+    children::decimal(10,0),
     date_update as updated_at
 from
     raw_bookings

@@ -12,7 +12,7 @@ def get_booking_guests(session, booking_id: str):
 
     print(url)
 
-    count_of_rep = 3
+    count_of_rep = 10
     for i in range(count_of_rep):
         with session.get(url) as response:
             if response is None:
@@ -38,7 +38,7 @@ def get_no_applyed_guests(session):
 
     print(url)
 
-    count_of_rep = 3
+    count_of_rep = 10
     for i in range(count_of_rep):
         with session.get(url) as response:
             if response is None:

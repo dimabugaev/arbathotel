@@ -128,7 +128,7 @@ departure_changed as(
 	from (
 		select 
 			sb.booking_id,
-			sb.plan_departure_date - lead(sb.plan_departure_date) over id_win as delta_departure_date
+			(extract(epoch from sb.plan_departure_date) - extract(epoch from lead(sb.plan_departure_date) over id_win))/86400 as delta_departure_date
 		from
 			{{ ref('snp_bookings') }} sb inner join select_changed sc 
 				on sb.booking_id = sc.booking_id and sc.departure_date_changed and (sb.status_id = 3 or sb.status_id = 4)

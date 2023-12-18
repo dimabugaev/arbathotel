@@ -269,7 +269,12 @@ def update_booking(connection, session, source_id: int, period: date, current_da
         """, {'source_id': source_id, 'period': period, 
             'booking_ids': tuple(booking_ids)})
         
+        connection.commit()
+        cursor.close()
+        
     if (datetime.now().year != period.year or datetime.now().month != period.month) and not current_day:
+        
+        cursor = connection.cursor()
         cursor.execute("""
             INSERT INTO bnovo_raw.load_bookings_by_period (source_id, period_month)
             VALUES (%(source_id)s, %(period)s);

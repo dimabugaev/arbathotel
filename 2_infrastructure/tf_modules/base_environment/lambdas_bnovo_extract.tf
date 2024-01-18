@@ -1,7 +1,7 @@
 #EXTRACT functions
 
 module "bnovo_extract_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
+  source = "terraform-aws-modules/security-group/aws"
   #version = "~> 4.0"
 
   name        = "${local.prefixname}-lambda-sg-bnovo-extract"
@@ -15,13 +15,14 @@ module "bnovo_extract_security_group" {
 }
 
 module "lambda_function_bnovo_master_data_extract" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-bnovo-extract-lambda"
-  description   = "lambda function for extract data from open API Bnovo"
-  handler       = "extract_bnovo_data.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-bnovo-extract-lambda"
+  description                       = "lambda function for extract data from open API Bnovo"
+  handler                           = "extract_bnovo_data.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
@@ -52,13 +53,14 @@ module "lambda_function_bnovo_master_data_extract" {
 }
 
 module "lambda_function_bnovo_finance_extract" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-bnovo-finance-extract-lambda"
-  description   = "lambda function for extract FINANCE data from open API Bnovo"
-  handler       = "extract_bnovo_finance.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-bnovo-finance-extract-lambda"
+  description                       = "lambda function for extract FINANCE data from open API Bnovo"
+  handler                           = "extract_bnovo_finance.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
@@ -89,13 +91,14 @@ module "lambda_function_bnovo_finance_extract" {
 }
 
 module "lambda_function_bnovo_booking_extract" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-bnovo-booking-extract-lambda"
-  description   = "lambda function for extract BOOKING and INVOICES data from open API Bnovo"
-  handler       = "extract_bnovo_booking.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-bnovo-booking-extract-lambda"
+  description                       = "lambda function for extract BOOKING and INVOICES data from open API Bnovo"
+  handler                           = "extract_bnovo_booking.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
@@ -126,13 +129,14 @@ module "lambda_function_bnovo_booking_extract" {
 }
 
 module "lambda_function_plan_to_extract_bnovo_fin" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-plan-to-extract-bnovo-fin"
-  description   = "lambda function for planing to launch extract FINANCE data from open API Bnovo"
-  handler       = "to_plan_extract_bnovo_fin.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-plan-to-extract-bnovo-fin"
+  description                       = "lambda function for planing to launch extract FINANCE data from open API Bnovo"
+  handler                           = "to_plan_extract_bnovo_fin.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
@@ -164,13 +168,14 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
 }
 
 module "lambda_function_plan_to_extract_bnovo_booking" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-plan-to-extract-bnovo-booking"
-  description   = "lambda function for planing to launch extract BOOKING data from open API Bnovo"
-  handler       = "to_plan_extract_bnovo_booking.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-plan-to-extract-bnovo-booking"
+  description                       = "lambda function for planing to launch extract BOOKING data from open API Bnovo"
+  handler                           = "to_plan_extract_bnovo_booking.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
@@ -202,13 +207,14 @@ module "lambda_function_plan_to_extract_bnovo_booking" {
 }
 
 module "lambda_function_extract_bnovo_guests" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-extract-bnovo-guests"
-  description   = "lambda function to launch extract GUESTS data from open API Bnovo"
-  handler       = "extract_bnovo_guests.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-extract-bnovo-guests"
+  description                       = "lambda function to launch extract GUESTS data from open API Bnovo"
+  handler                           = "extract_bnovo_guests.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
@@ -240,13 +246,14 @@ module "lambda_function_extract_bnovo_guests" {
 }
 
 module "lambda_function_extract_bnovo_ufms" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-extract-bnovo-ufms"
-  description   = "lambda function extract sent data to UFMS from open API Bnovo"
-  handler       = "extract_bnovo_ufms.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-extract-bnovo-ufms"
+  description                       = "lambda function extract sent data to UFMS from open API Bnovo"
+  handler                           = "extract_bnovo_ufms.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
@@ -278,13 +285,14 @@ module "lambda_function_extract_bnovo_ufms" {
 }
 
 module "lambda_function_plan_to_extract_frequently_bnovo" {
-  source  = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-plan-to-extract-frequently-bnovo"
-  description   = "lambda function for planing frequently extract data from Bnovo"
-  handler       = "to_plan_extract_frequently_bnovo.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-plan-to-extract-frequently-bnovo"
+  description                       = "lambda function for planing frequently extract data from Bnovo"
+  handler                           = "to_plan_extract_frequently_bnovo.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 

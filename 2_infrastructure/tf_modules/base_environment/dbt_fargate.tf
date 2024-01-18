@@ -129,10 +129,11 @@ module "lambda_function_run_dbt_task" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-run_dbt_task"
-  description   = "lambda function for runing dbt task"
-  handler       = "run_dbt_task.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-run_dbt_task"
+  description                       = "lambda function for runing dbt task"
+  handler                           = "run_dbt_task.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 

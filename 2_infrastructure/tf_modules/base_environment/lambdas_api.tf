@@ -118,10 +118,11 @@ module "lambda_function_employees_reports" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-reports-operations-lambda"
-  description   = "lambda function for support to work operations reports"
-  handler       = "employees_reports_data.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-reports-operations-lambda"
+  description                       = "lambda function for support to work operations reports"
+  handler                           = "employees_reports_data.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
@@ -159,10 +160,11 @@ module "lambda_function_dict_operate" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name = "${local.prefixname}-dict-operations-lambda"
-  description   = "lambda function for support to operations with dictionary"
-  handler       = "dict_operate_data.lambda_handler"
-  runtime       = "python3.8"
+  function_name                     = "${local.prefixname}-dict-operations-lambda"
+  description                       = "lambda function for support to operations with dictionary"
+  handler                           = "dict_operate_data.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
   publish = true
 

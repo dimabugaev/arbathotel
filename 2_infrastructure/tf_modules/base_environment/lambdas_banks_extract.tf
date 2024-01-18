@@ -24,7 +24,7 @@ module "s3_bucket_for_data_processing" {
 
 module "banks_extract_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  #version = "~> 4.0"
 
   name        = "${local.prefixname}-lambda-sg-banks-extract"
   description = "Lambda security group for functions extract from BANKS"
@@ -38,7 +38,7 @@ module "banks_extract_security_group" {
 
 module "lambda_function_plan_to_extract_psb" {
   source = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  #version = "~> 2.0"
 
   function_name = "${local.prefixname}-plan-to-extract-psb"
   description   = "lambda function for planing to launch extract PAYMENTS data from open API PSB"
@@ -73,7 +73,7 @@ module "lambda_function_plan_to_extract_psb" {
 
 module "lambda_function_plan_to_extract_tinkoff" {
   source = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  #version = "~> 2.0"
 
   function_name = "${local.prefixname}-plan-to-extract-tinkoff"
   description   = "lambda function for planing to launch extract PAYMENTS data from open API TIMKOFF"
@@ -108,7 +108,7 @@ module "lambda_function_plan_to_extract_tinkoff" {
 
 module "lambda_function_tinkoff_extract" {
   source = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  #version = "~> 2.0"
 
   function_name = "${local.prefixname}-tinkoff-extract-lambda"
   description   = "lambda function for extract Payment data from open API TINKOFF"
@@ -145,7 +145,7 @@ module "lambda_function_tinkoff_extract" {
 
 module "lambda_function_psb_extract_java" {
   source = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  #version = "~> 2.0"
 
   function_name = "${local.prefixname}-psb-extract-lambda"
   description   = "lambda function for extract Payment data from open API PSB"
@@ -197,7 +197,7 @@ module "lambda_function_psb_extract_java" {
 
 module "lambda_function_extract_email_reports" {
   source = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  #version = "~> 2.0"
 
   function_name = "${local.prefixname}-extract-email-reports-lambda"
   description   = "lambda function for extract EMAIL reports and put them into S3"
@@ -241,7 +241,7 @@ module "lambda_function_extract_email_reports" {
 
 module "lambda_function_upload_psb_acquiring" {
   source = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  #version = "~> 2.0"
 
   function_name = "${local.prefixname}-upload-psb-acquiring-lambda"
   description   = "lambda function for upload acquiring PSB data from xls S3 to RDS"
@@ -294,7 +294,7 @@ module "lambda_function_upload_psb_acquiring" {
 
 module "lambda_function_upload_ucb_account" {
   source = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  #version = "~> 2.0"
 
   function_name = "${local.prefixname}-upload-ucs-account-lambda"
   description   = "lambda function for upload UCP payment data from csv S3 to RDS"

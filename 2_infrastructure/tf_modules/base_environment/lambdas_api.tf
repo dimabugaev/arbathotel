@@ -1,7 +1,7 @@
 #API Lambdas
 module "api_gateway_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  source = "terraform-aws-modules/security-group/aws"
+  #version = "~> 4.0"
 
   name        = "${local.prefixname}-api-gateway-sg"
   description = "API Gateway group"
@@ -96,8 +96,8 @@ module "api_gateway" {
 }
 
 module "lambda_api_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  source = "terraform-aws-modules/security-group/aws"
+  #version = "~> 4.0"
 
   name        = "${local.prefixname}-lambda-sg-acces-from-api"
   description = "Lambda security group for get access fro API gateway"
@@ -115,10 +115,10 @@ module "lambda_api_security_group" {
 }
 
 module "lambda_function_employees_reports" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
 
-  function_name =  "${local.prefixname}-reports-operations-lambda"
+  function_name = "${local.prefixname}-reports-operations-lambda"
   description   = "lambda function for support to work operations reports"
   handler       = "employees_reports_data.lambda_handler"
   runtime       = "python3.8"
@@ -128,8 +128,8 @@ module "lambda_function_employees_reports" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.employees_reports_zip}"
 
-  attach_network_policy  = true
-  
+  attach_network_policy = true
+
   attach_policy_statements = true
   policy_statements = {
     secretsmanager = {
@@ -137,7 +137,7 @@ module "lambda_function_employees_reports" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
 
   environment_variables = {
@@ -156,10 +156,10 @@ module "lambda_function_employees_reports" {
 }
 
 module "lambda_function_dict_operate" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
 
-  function_name =  "${local.prefixname}-dict-operations-lambda"
+  function_name = "${local.prefixname}-dict-operations-lambda"
   description   = "lambda function for support to operations with dictionary"
   handler       = "dict_operate_data.lambda_handler"
   runtime       = "python3.8"
@@ -169,8 +169,8 @@ module "lambda_function_dict_operate" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.dict_operate_zip}"
 
-  attach_network_policy  = true
-  
+  attach_network_policy = true
+
   attach_policy_statements = true
   policy_statements = {
     secretsmanager = {
@@ -178,7 +178,7 @@ module "lambda_function_dict_operate" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
     }
-  } 
+  }
 
   environment_variables = {
     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name

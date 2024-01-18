@@ -4,8 +4,8 @@ resource "aws_iam_role" "iam_ecs_service_role" {
   tags = local.tags
 
   assume_role_policy = <<EOF
-    {
-    "Version": "2012-10-17",
+{
+  "Version": "2012-10-17",
     "Statement": [
         {
         "Sid": "",
@@ -96,8 +96,8 @@ resource "aws_ecs_task_definition" "dbt_task" {
 }
 
 module "ecs_task_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  source = "terraform-aws-modules/security-group/aws"
+  #version = "~> 4.0"
 
   name        = "${local.prefixname}-ecs-task-sg-dbt-run"
   description = "Security group for launch DBT transformations"
@@ -126,8 +126,8 @@ resource "aws_secretsmanager_secret_version" "secretsECS" {
 }
 
 module "lambda_function_run_dbt_task" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
 
   function_name = "${local.prefixname}-run_dbt_task"
   description   = "lambda function for runing dbt task"

@@ -809,6 +809,25 @@ with plan as(
         --    f.source_id is null or f.period_month = p.past_period or f.period_month = p.current_period;
 
 		
+select 
+	count(1),
+	source_id
+from 
+	bnovo_raw.load_bookings_by_period lbbp 
+group by
+	source_id 
+	
+select 
+	count(1)
+from 
+	bnovo_raw.load_bookings_by_period lbbp 
+	
+select 
+	count(1)
+from
+	bnovo_raw.bookings b 
+
+	
 
 
 

@@ -89,12 +89,14 @@ jobs:
           cd 2_infrastructure/tf_common
           terraform -version
           terraform init
+          terraform providers
           terraform validate
           terraform apply -auto-approve
           
           cd ../tf_dev
           terraform -version
           terraform init
+          terraform providers
           terraform validate
           terraform apply -auto-approve
 

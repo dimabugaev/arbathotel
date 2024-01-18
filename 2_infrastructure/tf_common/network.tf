@@ -74,7 +74,8 @@ module "secretsmanager_access_security_group" {
 
 module "nat" {
   source  = "int128/nat-instance/aws"
-  version = "2.1.0"
+  version = "2.0.0"
+  #version = "~> 4.0"
 
   key_name = "arbat-developer-key"
 

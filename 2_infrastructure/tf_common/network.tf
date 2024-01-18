@@ -4,11 +4,11 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.77.0"
 
-  name                 = "main-vpc"
-  cidr                 = "192.168.0.0/16"
-  azs                  = slice(data.aws_availability_zones.available.names, 0, 2)
-  public_subnets       = ["192.168.1.0/24", "192.168.2.0/24"]
-  private_subnets       = ["192.168.11.0/24", "192.168.12.0/24"] 
+  name            = "main-vpc"
+  cidr            = "192.168.0.0/16"
+  azs             = slice(data.aws_availability_zones.available.names, 0, 2)
+  public_subnets  = ["192.168.1.0/24", "192.168.2.0/24"]
+  private_subnets = ["192.168.11.0/24", "192.168.12.0/24"]
   #database_subnets       = ["192.168.21.0/24", "192.168.22.0/24"]
 
   enable_dns_hostnames = true
@@ -16,12 +16,12 @@ module "vpc" {
 
   #enable_nat_gateway = true
   #single_nat_gateway = true
-  
+
   #create_database_subnet_group = true
   #create_database_subnet_route_table     = true
   #create_database_internet_gateway_route = true
 
-  enable_secretsmanager_endpoint   = true
+  enable_secretsmanager_endpoint              = true
   secretsmanager_endpoint_private_dns_enabled = true
   secretsmanager_endpoint_security_group_ids  = [module.secrets_endpoints_security_group.security_group_id]
   #secretsmanager_endpoint_subnet_ids = private_subnets
@@ -73,7 +73,8 @@ module "secretsmanager_access_security_group" {
 }
 
 module "nat" {
-  source = "int128/nat-instance/aws"
+  source  = "int128/nat-instance/aws"
+  version = "2.1.0"
 
   key_name = "arbat-developer-key"
 

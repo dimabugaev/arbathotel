@@ -4,14 +4,14 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.16"
+      version = "~> 5.27"
     }
   }
 
   backend "s3" {
-    bucket = "arbat-hotel-terraform-state"
-    key    = "common_terraform.tfstate"
-    region = "eu-central-1"
+    bucket  = "arbat-hotel-terraform-state"
+    key     = "common_terraform.tfstate"
+    region  = "eu-central-1"
     profile = "arbathotelserviceterraformuser"
   }
 
@@ -29,8 +29,8 @@ data "aws_availability_zones" "available" {
 
 locals {
   tags = {
-    Name       = "common services"
-    Environment    = "common"
-    Terraform = "true"
+    Name        = "common services"
+    Environment = "common"
+    Terraform   = "true"
   }
 }

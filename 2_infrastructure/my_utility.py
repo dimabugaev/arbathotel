@@ -2,6 +2,8 @@ import psycopg2
 import boto3
 import json
 import requests
+import sys
+import time
 from datetime import date, timedelta
 from sshtunnel import SSHTunnelForwarder
 
@@ -37,8 +39,8 @@ def get_params_to_run_ecs_task_dbt() -> dict:
 #DB
 #connection to data base
 def get_db_connection():
-    #secret_name = "develop-db-instance"
-    secret_name = "productive-db-instance"
+    secret_name = "develop-db-instance"
+    #secret_name = "productive-db-instance"
     region_name = "eu-central-1"
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
@@ -52,7 +54,7 @@ def get_db_connection():
     database_name = secret_value_dict['dbname']
 
     tunnel = SSHTunnelForwarder(
-        ('18.158.4.219', 22),
+        ('3.68.164.219', 22),
         ssh_username='ec2-user',
         ssh_private_key='/Users/dmitrybugaev/arbat-developer',
         remote_bind_address=(endpoint, 5432),
@@ -167,18 +169,47 @@ def get_autorized_http_session_bnovo(username, password):
 
     session.headers.update({
         "Content-Type": "application/json",
-        "Accept": "application/json" 
+        "Accept": "application/json",
+        "User-agent": "hotel bot " + username 
     })
 
     # Make the POST request using the session
-    with session.post(url, data=json.dumps(body)) as response:
-        # Check if the request was successful
-        if response.status_code == 200:
-            print("Authorization SID for {}: {}".format(username, session.cookies.get('SID')))
-        else:
-            print("Failed to get authorization token for {}. Status code: {}".format(username, response.status_code))
+    count_to_success = 10
+    for i in range(count_to_success):
+        with session.post(url, data=json.dumps(body)) as response:
+            # Check if the request was successful
+            if response.status_code == 200:
+                print("Authorization SID for {}: {}".format(username, session.cookies.get('SID')))
+                return session
+            elif response.status_code == 429:
+                print('too many requests in connect session')
+                print('sleep ' + str(i*i+1))
+                time.sleep(i*i+1)
+            else:
+                print("Failed to get authorization token for {}. Status code: {}".format(username, response.status_code))
+                break
     
-    return session
+    raise Exception("Failed to get authorization token for" + response.status_code)
+    #return session
+
+def get_response_text_json(session, request_url, count=10):
+    for i in range(count):
+        with session.get(request_url) as response:
+            if response is None:    
+                print('-- returned NULL ... delay and repeat attempt # ' + (i+1))
+                print('sleep ' + str(i*i+1))
+                time.sleep(i*i+1)
+            elif response.status_code == 429:
+                print('too many requests')
+                print('sleep ' + str(i*i+1))
+                time.sleep(i*i+1)
+            elif response.status_code == 200:
+                return json.loads(response.text)
+            else:
+                print(response.headers)
+                break
+
+    raise ValueError('-- Faild to get request -- ' + request_url)
 
 def get_http_session_bnovo_by_sid(sid: str):
     session = requests.Session()

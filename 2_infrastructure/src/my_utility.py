@@ -3,6 +3,7 @@ import boto3
 import json
 import requests
 import os
+import time
 from datetime import date, timedelta
 
 #email reports data
@@ -155,18 +156,48 @@ def get_autorized_http_session_bnovo(username, password):
 
     session.headers.update({
         "Content-Type": "application/json",
-        "Accept": "application/json" 
+        "Accept": "application/json",
+        "User-agent": "hotel bot " + username 
     })
 
     # Make the POST request using the session
-    with session.post(url, data=json.dumps(body)) as response:
-        # Check if the request was successful
-        if response.status_code == 200:
-            print("Authorization SID for {}: {}".format(username, session.cookies.get('SID')))
-        else:
-            print("Failed to get authorization token for {}. Status code: {}".format(username, response.status_code))
+    count_to_success = 10
+    for i in range(count_to_success):
+        with session.post(url, data=json.dumps(body)) as response:
+            # Check if the request was successful
+            if response.status_code == 200:
+                print("Authorization SID for {}: {}".format(username, session.cookies.get('SID')))
+                return session
+            elif response.status_code == 429:
+                print('too many requests in connect session')
+                print('sleep ' + str(i*i+1))
+                time.sleep(i*i+1)
+            else:
+                print("Failed to get authorization token for {}. Status code: {}".format(username, response.status_code))
+                break
     
-    return session
+    raise Exception("Failed to get authorization token for" + response.status_code)
+    #return session
+
+def get_response_text_json(session, request_url, count=10):
+    for i in range(count):
+        with session.get(request_url) as response:
+            if response is None:    
+                print('-- returned NULL ... delay and repeat attempt # ' + (i+1))
+                print('sleep ' + str(i*i+1))
+                time.sleep(i*i+1)
+            elif response.status_code == 429:
+                print('too many requests')
+                print('sleep ' + str(i*i+1))
+                time.sleep(i*i+1)
+            elif response.status_code == 200:
+                return json.loads(response.text)
+            else:
+                print(response.headers)
+                break
+
+    raise ValueError('-- Faild to get request -- ' + request_url)
+
 
 def get_http_session_bnovo_by_sid(sid: str):
     session = requests.Session()

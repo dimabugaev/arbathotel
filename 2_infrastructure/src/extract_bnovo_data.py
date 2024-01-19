@@ -7,10 +7,7 @@ def get_items(session):
     items = {}
     url = "https://online.bnovo.ru/finance/items"
 
-    with session.get(url) as response:
-        items = json.loads(response.text) 
-
-    return items
+    return my_utility.get_response_text_json(session, url)
 
 def get_account_details(session):
 
@@ -18,10 +15,7 @@ def get_account_details(session):
 
     url = "https://online.bnovo.ru/account/current"
 
-    with session.get(url) as response:
-        account_details = json.loads(response.text)
-    
-    return account_details
+    return my_utility.get_response_text_json(session, url)
 
 def get_suppliers(session):
 
@@ -29,10 +23,7 @@ def get_suppliers(session):
 
     url = "https://online.bnovo.ru/finance/details"
 
-    with session.get(url) as response:
-        suppliers = json.loads(response.text)
-    
-    return suppliers
+    return my_utility.get_response_text_json(session, url)
 
 
 def get_invoice_data(session, page: int = 1):
@@ -45,19 +36,7 @@ def get_invoice_data(session, page: int = 1):
 
     print(url)
 
-    count_of_rep = 3
-    for i in range(count_of_rep):
-        with session.get(url) as response:
-            if response is None:
-                if i == count_of_rep - 1:
-                    raise ValueError('-- bad request ALL TIMES is NULL!!--')    
-                print('-- bad request ... delay and repeat attempt # ' + (i+1))
-                time.sleep(1)
-                continue
-            items = json.loads(response.text)
-            break 
-
-    return items
+    return my_utility.get_response_text_json(session, url)
 
 def get_invoice_data_pages_for_update(page_data: dict) -> dict:
     #date_begin = my_utility.get_begin_month_by_date(period)

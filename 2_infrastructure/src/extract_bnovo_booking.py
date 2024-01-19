@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 import pytz
 import time
 import uuid
+import sys
 
 def get_booking_data(session, period: date, page: int = 1):
 
@@ -20,25 +21,7 @@ def get_booking_data(session, period: date, page: int = 1):
 
     print(url)
 
-    count_of_rep = 100
-    for i in range(count_of_rep):
-        with session.get(url) as response:
-            if response is None:
-                if i == count_of_rep - 1:
-                    raise ValueError('-- bad request ALL TIMES is NULL!!--')    
-                print('-- bad request ... delay and repeat attempt # ' + (i+1))
-                time.sleep(1)
-                continue
-            if response.text[0] == '<':
-                if i == count_of_rep - 1:
-                    raise ValueError('-- Too Many Requests ALL TIMES is Too many!!--')
-                print('-- Too Many Requests ... delay and repeat attempt # ' + str(i+1))
-                time.sleep(10)
-                continue  
-            items = json.loads(response.text)
-            break 
-
-    return items
+    return my_utility.get_response_text_json(session, url)
 
 
 def get_current_day_booking_data(session, period: date, page: int = 1):
@@ -54,25 +37,7 @@ def get_current_day_booking_data(session, period: date, page: int = 1):
 
     print(url)
 
-    count_of_rep = 3
-    for i in range(count_of_rep):
-        with session.get(url) as response:
-            if response is None:
-                if i == count_of_rep - 1:
-                    raise ValueError('-- bad request ALL TIMES is NULL!!--')    
-                print('-- bad request ... delay and repeat attempt # ' + (i+1))
-                time.sleep(1)
-                continue
-            if response.text[0] == '<':
-                if i == count_of_rep - 1:
-                    raise ValueError('-- Too Many Requests ALL TIMES is Too many!!--')
-                print('-- Too Many Requests ... delay and repeat attempt # ' + str(i+1))
-                time.sleep(3)
-                continue  
-            items = json.loads(response.text)
-            break 
-
-    return items
+    return my_utility.get_response_text_json(session, url)
 
 def get_invoice_data(session, period: date, page: int = 1):
 
@@ -89,19 +54,7 @@ def get_invoice_data(session, period: date, page: int = 1):
 
     print(url)
 
-    count_of_rep = 3
-    for i in range(count_of_rep):
-        with session.get(url) as response:
-            if response is None:
-                if i == count_of_rep - 1:
-                    raise ValueError('-- bad request ALL TIMES is NULL!!--')    
-                print('-- bad request ... delay and repeat attempt # ' + (i+1))
-                time.sleep(1)
-                continue
-            items = json.loads(response.text)
-            break 
-
-    return items
+    return my_utility.get_response_text_json(session, url)
 
 def get_booking_data_pages_for_update(page_data: dict, period: date) -> dict:
     date_begin = my_utility.get_begin_month_by_date(period)

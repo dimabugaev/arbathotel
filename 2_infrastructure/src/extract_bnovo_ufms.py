@@ -113,6 +113,9 @@ def update_ufms(connection, session, source_id: int, period: date, current_day: 
     else:
         first_page_data = get_ufms_data(session)
 
+    if first_page_data.get('pages') is None:
+        print(first_page_data)
+
     page_count = first_page_data['pages']['total_pages']
 
 

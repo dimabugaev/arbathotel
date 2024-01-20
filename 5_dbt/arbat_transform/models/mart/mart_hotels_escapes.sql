@@ -6,6 +6,7 @@ with selected_bookings as(
 	where
 		plan_arrival_date::date > (now() - interval '2 MONTH')::date
         and plan_departure_date::date < (now() + interval '2 DAY')::date
+		and status_id <> 2
 )
 select
 	sbh.name as hotel,

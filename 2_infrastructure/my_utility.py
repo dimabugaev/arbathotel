@@ -39,8 +39,8 @@ def get_params_to_run_ecs_task_dbt() -> dict:
 #DB
 #connection to data base
 def get_db_connection():
-    secret_name = "develop-db-instance"
-    #secret_name = "productive-db-instance"
+    #secret_name = "develop-db-instance"
+    secret_name = "productive-db-instance"
     region_name = "eu-central-1"
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
@@ -54,7 +54,7 @@ def get_db_connection():
     database_name = secret_value_dict['dbname']
 
     tunnel = SSHTunnelForwarder(
-        ('3.68.164.219', 22),
+        ('18.184.148.168', 22),
         ssh_username='ec2-user',
         ssh_private_key='/Users/dmitrybugaev/arbat-developer',
         remote_bind_address=(endpoint, 5432),

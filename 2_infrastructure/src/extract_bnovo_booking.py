@@ -360,7 +360,8 @@ def export_booking_from_bnovo_to_rds(source_id: int, period: date, sid: str = ""
 
 def lambda_handler(event, context):
 
-    sid = event['sid']
+    #sid = event['sid']
+    sid = ''
     source_id = event['source_id']
 
     current_day = False

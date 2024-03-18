@@ -1,0 +1,2 @@
+GET https://id-sandbox.alfabank.ru/oidc/authorize?response_type=code&client_id=06fabd37-19e8-4d12-b13d-efde07c4b0ac&redirect_uri=http%3A%2F%2Flocalhost&scope=transactions%20openid&state=abcde HTTP/1.1
+accept: application/json

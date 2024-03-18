@@ -86,6 +86,12 @@ VALUES('PSB Polyakov 45408810400000000067','45408810400000000067',3, 'certificat
 INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
 VALUES('PSB Polyakov 40802810000003182064','40802810000003182064',3, 'certificatePol.pfx', 'SDGvg634!!fg');
 
+INSERT INTO operate.sources (source_name, source_external_key, source_type, source_username, source_password) 
+VALUES('Alfa test 40702810102300000001','40702810102300000001',5, 'test_certificate.cer', 'test_key.key');
+
+INSERT INTO banks_raw.alfa_params (client_id, client_secret, refresh_token, certificate, private_key) 
+VALUES('06fabd37-19e8-4d12-b13d-efde07c4b0ac','7#j79b2R(*F28CI3fQ8$k$02e', '2ea2dc23-b36d-468a-a058-21a91d844cdc', 'test_certificate.cer', 'test_key.key');
+
 
 
 INSERT INTO operate.report_items (item_name) VALUES('TEST4');

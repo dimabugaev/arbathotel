@@ -36,11 +36,18 @@ def get_params_to_run_ecs_task_dbt() -> dict:
 
     return secret_value_dict
 
+def get_object_s3(bucket_name, object_key):
+    session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
+    #session = boto3.session.Session()
+    client = session.client(service_name='s3')
+
+    return client.get_object(Bucket=bucket_name, Key=object_key)
+       
 #DB
 #connection to data base
 def get_db_connection():
-    #secret_name = "develop-db-instance"
-    secret_name = "productive-db-instance"
+    secret_name = "develop-db-instance"
+    #secret_name = "productive-db-instance"
     region_name = "eu-central-1"
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg

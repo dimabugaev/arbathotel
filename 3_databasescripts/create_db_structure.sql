@@ -827,6 +827,9 @@ drop table if exists banks_raw.psb_acquiring_term;
 drop table if exists banks_raw.psb_acquiring_qr;
 drop table if exists banks_raw.psb_acquiring_qr_refund;
 
+drop table if exists banks_raw.alfa_params;
+drop table if exists banks_raw.alfa_payments;
+
 
 
 CREATE TABLE banks_raw.psb_docs
@@ -879,7 +882,81 @@ CREATE TABLE banks_raw.loaded_data_by_period
     CONSTRAINT loaded_data_by_period_uniq UNIQUE (source_id, period_month)
 );
 
+CREATE TABLE banks_raw.alfa_params
+(
+    client_id varchar PRIMARY KEY,
+    client_secret varchar,
+    refresh_token varchar,
+    certificate varchar,
+    private_key varchar,
+    passcode varchar
+);
 
+CREATE TABLE banks_raw.alfa_payments
+(
+    source_id int,
+    period_month date,
+    id varchar, --uuid
+    amount_amount varchar,
+    amount_currency_name varchar,
+    amount_rub_amount varchar,
+    amount_rub_currency_name varchar,
+    corresponding_account varchar,
+    direction varchar,
+    document_date varchar,
+    filial varchar,
+    number varchar,
+    operation_code varchar,
+    operation_date varchar,
+    payment_purpose varchar,
+    priority varchar,
+    transaction_id varchar,
+    debtor_code varchar,
+    extended_debtor_code varchar,
+   
+    rur_delivery_kind varchar,
+    
+    rur_departmental_info_uip varchar,
+    rur_departmental_drawer_status101 varchar,
+    rur_departmental_kbk varchar,
+    rur_departmental_oktmo varchar,
+    rur_departmental_reason_code106 varchar,
+    rur_departmental_tax_period107 varchar,
+    rur_departmental_doc_number108 varchar,
+    rur_departmental_doc_date109 varchar,
+    rur_departmental_payment_kind110 varchar,
+
+	rur_cart_info_document_code varchar,
+	rur_cart_info_document_date varchar,
+	rur_cart_info_rest_amount varchar,
+	rur_cart_info_document_number varchar,
+	rur_cart_info_document_content varchar,
+	rur_cart_info_payment_number varchar,
+	
+    rur_payee_account varchar,
+    rur_payee_bank_bic varchar,
+    rur_payee_bank_corr_account varchar,
+    rur_payee_bank_name varchar,
+    rur_payee_inn varchar,
+    rur_payee_kpp varchar,
+    rur_payee_name varchar,
+    rur_payer_account varchar,
+    rur_payer_bank_bic varchar,
+    rur_payer_bank_corr_account varchar,
+    rur_payer_bank_name varchar,
+    rur_payer_inn varchar,
+    rur_payer_kpp varchar,
+    rur_payer_name varchar,
+    rur_paying_condition varchar,
+    rur_purpose_code varchar,
+    rur_receipt_date varchar,
+    rur_value_date varchar,
+    
+    date_update timestamp not null default current_timestamp,
+    
+    CONSTRAINT fk_sources_tinkoff_payments FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+); 
+    
 CREATE TABLE banks_raw.tinkoff_payments
 (
     source_id int,

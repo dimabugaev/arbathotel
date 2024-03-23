@@ -462,7 +462,7 @@ def export_account_data_from_alfa_to_rds(source_id:int, datefrom: date, dateto: 
     with my_utility.get_db_connection() as conn:
 
         bucket_name = 'arbat-hotel-additional-data'
-        prefix = 'test-alfa-cert/'
+        prefix = 'alfa-cert/'
 
         cursor = conn.cursor()
         cursor.execute("""select 

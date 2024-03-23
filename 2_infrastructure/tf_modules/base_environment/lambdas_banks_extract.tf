@@ -196,7 +196,7 @@ module "lambda_function_alfa_extract" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name                     = "${local.prefixname}-tinkoff-extract-lambda"
+  function_name                     = "${local.prefixname}-alfa-extract-lambda"
   description                       = "lambda function for extract Payment data from open API ALFA"
   handler                           = "extract_alfa_account.lambda_handler"
   runtime                           = "python3.8"

@@ -137,7 +137,7 @@ module "lambda_function_plan_to_extract_alfa" {
     s3_read = {
       effect    = "Allow",
       actions   = ["s3:GetObject"],
-      resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data/alfa-cert/*"]
     },
     s3_bucket_read = {
       effect    = "Allow",
@@ -223,7 +223,7 @@ module "lambda_function_alfa_extract" {
     s3_read = {
       effect    = "Allow",
       actions   = ["s3:GetObject"],
-      resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data/alfa-cert/*"]
     },
     s3_bucket_read = {
       effect    = "Allow",

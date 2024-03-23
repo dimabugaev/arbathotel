@@ -123,6 +123,8 @@ module "lambda_function_plan_to_extract_alfa" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.to_plan_extract_alfa}"
 
+  timeout = 60
+
   attach_network_policy = true
 
   attach_policy_statements = true
@@ -169,7 +171,7 @@ module "lambda_function_tinkoff_extract" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_tinkoff_account_zip}"
 
-  timeout = 10
+  timeout = 60
 
   attach_network_policy = true
 
@@ -207,7 +209,7 @@ module "lambda_function_alfa_extract" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_alfa_account_zip}"
 
-  timeout = 10
+  timeout = 60
 
   attach_network_policy = true
 

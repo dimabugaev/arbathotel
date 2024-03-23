@@ -42,7 +42,7 @@ def get_session(cert_content, key_content, passcode):
 def get_token(conn, client_id, client_secret, refresh_token, certificate, private_key, passcode):
     #session = requests.Session()
     session = get_session(certificate, private_key, passcode)
-    url = "https://sandbox.alfabank.ru/oidc/token"
+    url = "https://baas.alfabank.ru/oidc/token"
 
     session.headers.update({
         "Content-Type": "application/x-www-form-urlencoded",
@@ -95,6 +95,8 @@ def token_for_client_id(conn, tokens_cash, client_id):
 
     cred_data = cursor.fetchone()
     
+    #print(cred_data)
+
     cert_key = prefix + cred_data[2]
     key_key = prefix + cred_data[3]
     passcode = cred_data[4]
@@ -111,7 +113,7 @@ def token_for_client_id(conn, tokens_cash, client_id):
         f.write(response['Body'].read())
 
     
-    return get_token(conn, cred_data[1], cred_data[2], cred_data[3], cert_content, key_content, passcode)
+    return get_token(conn, client_id, cred_data[0], cred_data[1], cert_content, key_content, passcode)
 
 
 def lambda_handler(event, context):
@@ -149,6 +151,8 @@ def lambda_handler(event, context):
      """)
     
     my_plan = cursor.fetchall()
+
+    #print(my_plan)
 
     tokens = {}
     result_list = []

@@ -59,7 +59,7 @@ def get_token(conn, client_id, client_secret, refresh_token, certificate, privat
     #with session.post(url, data=payload, cert=(certificate, '4321', private_key)) as response:
     with session.post(url, data=payload) as response:
         result = json.loads(response.text)
-        print(result)
+        #print(result)
         with conn.cursor() as cursor:
             cursor.execute("""update banks_raw.alfa_params
                               set

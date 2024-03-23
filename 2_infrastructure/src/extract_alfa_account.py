@@ -9,7 +9,7 @@ from requests.adapters import HTTPAdapter
 
 #CFG_FILE = '<path_to_cfg>'
 secure_hosts = [
-  'https://sandbox.alfabank.ru'
+  'https://baas.alfabank.ru'
 ]
 
 class SSLAdapter(HTTPAdapter):
@@ -65,9 +65,9 @@ def get_payments(token, account, current_date, next_cursor, certificate, private
 
     #session = requests.Session()
     session = get_session(certificate, private_key, passcode)
-    url = "https://sandbox.alfabank.ru/api/statement/transactions?" + next_cursor
+    url = "https://baas.alfabank.ru/api/statement/transactions?" + next_cursor
     if not next_cursor:
-        url = "https://sandbox.alfabank.ru/api/statement/transactions?accountNumber={}&statementDate={}"
+        url = "https://baas.alfabank.ru/api/statement/transactions?accountNumber={}&statementDate={}"
         url = url.format(
             account,
             current_date.strftime('%Y-%m-%d')
@@ -430,7 +430,7 @@ def set_export_status(conn, source_id:int, datefrom: date, dateto: date):
 def get_token(conn, client_id, client_secret, refresh_token, certificate, private_key, passcode):
     #session = requests.Session()
     session = get_session(certificate, private_key, passcode)
-    url = "https://sandbox.alfabank.ru/oidc/token"
+    url = "https://baas.alfabank.ru/oidc/token"
 
     session.headers.update({
         "Content-Type": "application/x-www-form-urlencoded",

@@ -108,6 +108,52 @@ module "lambda_function_plan_to_extract_tinkoff" {
   tags = local.tags
 }
 
+module "lambda_function_plan_to_extract_alfa" {
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
+
+  function_name                     = "${local.prefixname}-plan-to-extract-alfa"
+  description                       = "lambda function for planing to launch extract PAYMENTS data from open API ALFA"
+  handler                           = "to_plan_extract_alfa.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = "${var.buildpath}${var.to_plan_extract_alfa}"
+
+  attach_network_policy = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    },
+    s3_read = {
+      effect    = "Allow",
+      actions   = ["s3:GetObject"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
+    },
+    s3_bucket_read = {
+      effect    = "Allow",
+      actions   = ["s3:ListBucket"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data"]
+    }
+  }
+
+  environment_variables = {
+    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+  }
+
+  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
+
+  tags = local.tags
+}
+
 module "lambda_function_tinkoff_extract" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
@@ -133,6 +179,54 @@ module "lambda_function_tinkoff_extract" {
       effect    = "Allow",
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  }
+
+  environment_variables = {
+    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+  }
+
+  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
+
+  tags = local.tags
+}
+
+module "lambda_function_alfa_extract" {
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
+
+  function_name                     = "${local.prefixname}-tinkoff-extract-lambda"
+  description                       = "lambda function for extract Payment data from open API ALFA"
+  handler                           = "extract_alfa_account.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = "${var.buildpath}${var.extract_alfa_account_zip}"
+
+  timeout = 10
+
+  attach_network_policy = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    },
+    s3_read = {
+      effect    = "Allow",
+      actions   = ["s3:GetObject"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
+    },
+    s3_bucket_read = {
+      effect    = "Allow",
+      actions   = ["s3:ListBucket"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data"]
     }
   }
 
@@ -181,7 +275,7 @@ module "lambda_function_psb_extract_java" {
       effect    = "Allow",
       actions   = ["s3:GetObject"],
       resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
-    }
+    },
     s3_bucket_read = {
       effect    = "Allow",
       actions   = ["s3:ListBucket"],

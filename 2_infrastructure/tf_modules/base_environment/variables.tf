@@ -118,9 +118,21 @@ variable "to_plan_extract_tinkoff" {
   type        = string
 }
 
+variable "to_plan_extract_alfa" {
+  description = "Name pakage"
+  default     = "to_plan_extract_alfa.zip"
+  type        = string
+}
+
 variable "extract_tinkoff_account_zip" {
   description = "Name pakage"
   default     = "extract_tinkoff_account.zip"
+  type        = string
+}
+
+variable "extract_alfa_account_zip" {
+  description = "Name pakage"
+  default     = "extract_alfa_account.zip"
   type        = string
 }
 

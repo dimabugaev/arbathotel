@@ -2,8 +2,46 @@ import my_utility
 import json
 import requests
 
-def get_token(conn, client_id, client_secret, refresh_token):
+import ssl
+from requests.adapters import HTTPAdapter
+
+#CFG_FILE = '<path_to_cfg>'
+secure_hosts = [
+  'https://baas.alfabank.ru'
+]
+
+class SSLAdapter(HTTPAdapter):
+    def __init__(self, certfile, keyfile, password=None, *args, **kwargs):
+        self._certfile = certfile
+        self._keyfile = keyfile
+        self._password = password
+        return super(self.__class__, self).__init__(*args, **kwargs)
+
+    def init_poolmanager(self, *args, **kwargs):
+        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        context.load_cert_chain(certfile=self._certfile,
+                                keyfile=self._keyfile,
+                                password=self._password)
+        kwargs['ssl_context'] = context
+        return super(self.__class__, self).init_poolmanager(*args, **kwargs)
+
+def get_session(cert_content, key_content, passcode):
+    # def get_config():
+    #     with open(CFG_FILE) as reader:
+    #         return json.load(reader)
+
     session = requests.Session()
+    adapter = SSLAdapter(cert_content, key_content, passcode)
+
+    for host in secure_hosts:
+        session.mount(host, adapter)
+
+    session.verify = False
+    return session
+
+def get_token(conn, client_id, client_secret, refresh_token, certificate, private_key, passcode):
+    #session = requests.Session()
+    session = get_session(certificate, private_key, passcode)
     url = "https://sandbox.alfabank.ru/oidc/token"
 
     session.headers.update({
@@ -18,6 +56,7 @@ def get_token(conn, client_id, client_secret, refresh_token):
 
     token = ''
 
+    #with session.post(url, data=payload, cert=(certificate, '4321', private_key)) as response:
     with session.post(url, data=payload) as response:
         result = json.loads(response.text)
         print(result)
@@ -36,17 +75,43 @@ def token_for_client_id(conn, tokens_cash, client_id):
     token = tokens_cash.get(client_id)
     if token:
         return token
+    
+    bucket_name = 'arbat-hotel-additional-data'
+    prefix = 'alfa-cert/'
 
     cursor = conn.cursor()
     cursor.execute("""select 
                         ap.client_secret as client_secret,
-                        ap.refresh_token as refresh_token
+                        ap.refresh_token as refresh_token,
+                        ap.certificate as certificate,
+                        ap.private_key as private_key,
+                        ap.passcode as passcode
                     from banks_raw.alfa_params ap 
                     where ap.client_id = %(client_id)s
                     limit 1""", {'client_id': client_id})
+
+    if cursor.rowcount < 1:
+        return ''
+
+    cred_data = cursor.fetchone()
     
-    params = cursor.fetchone()
-    return get_token(conn, client_id, params[0], params[1])
+    cert_key = prefix + cred_data[2]
+    key_key = prefix + cred_data[3]
+    passcode = cred_data[4]
+
+    cert_content = "/tmp/" + cred_data[2]
+    key_content = "/tmp/" + cred_data[3]
+
+    response = my_utility.get_object_s3(bucket_name, cert_key)
+    with open(cert_content, 'wb') as f:
+        f.write(response['Body'].read())
+
+    response = my_utility.get_object_s3(bucket_name, key_key)
+    with open(key_content, 'wb') as f:
+        f.write(response['Body'].read())
+
+    
+    return get_token(conn, cred_data[1], cred_data[2], cred_data[3], cert_content, key_content, passcode)
 
 
 def lambda_handler(event, context):

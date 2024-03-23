@@ -35,12 +35,14 @@ jobs:
           cp src/extract_bnovo_finance.py build/
           cp src/extract_bnovo_booking.py build/
           cp src/extract_tinkoff_account.py build/
+          cp src/extract_alfa_account.py build/
           cp src/extract_email_reports_data.py build/
           cp src/upload_psb_acquiring.py build/
           cp src/upload_ucb_account.py build/
           cp src/to_plan_extract_bnovo_fin.py build/
           cp src/to_plan_extract_psb.py build/
           cp src/to_plan_extract_tinkoff.py build/
+          cp src/to_plan_extract_alfa.py build/
           cp src/to_plan_extract_bnovo_booking.py build/
           cp src/extract_bnovo_guests.py build/
           cp src/extract_bnovo_ufms.py build/
@@ -53,12 +55,14 @@ jobs:
           zip -r extract_bnovo_finance.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_finance.py
           zip -r extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_booking.py
           zip -r extract_tinkoff_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_tinkoff_account.py
+          zip -r extract_alfa_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_alfa_account.py
           zip -r extract_email_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_email_reports_data.py 
           zip -r upload_psb_acquiring.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ xlrd/ openpyxl/ et_xmlfile/ pytz/ typing_extensions.py my_utility.py upload_psb_acquiring.py  
           zip -r upload_ucb_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py upload_ucb_account.py
           zip -r to_plan_extract_bnovo_fin.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_bnovo_fin.py
           zip -r to_plan_extract_psb.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_psb.py
           zip -r to_plan_extract_tinkoff.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_tinkoff.py
+          zip -r to_plan_extract_alfa.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_alfa.py
           zip -r to_plan_extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_bnovo_booking.py
           zip -r extract_bnovo_guests.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_guests.py
           zip -r extract_bnovo_ufms.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_ufms.py

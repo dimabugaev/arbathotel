@@ -79,6 +79,13 @@ module "api_gateway" {
       //integration_type   = "LAMBDA_PROXY"
     }
 
+    "POST /report-adr/{source_id}" = {
+      lambda_arn             = module.lambda_function_report_bnovo.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
     #"$default" = {
     #  lambda_arn = module.lambda_function_employees_reports.lambda_function_arn
     #}
@@ -113,6 +120,50 @@ module "lambda_api_security_group" {
 
   egress_rules = ["all-all"]
 }
+
+
+module "lambda_function_report_bnovo" {
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
+
+  function_name                     = "${local.prefixname}-report-bnovo-lambda"
+  description                       = "lambda function for redirect queries to bnovo"
+  handler                           = "api_report_bnovo.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
+
+  publish = true
+
+  create_package         = false
+  local_existing_package = "${var.buildpath}${var.api_report_bnovo_zip}"
+
+  attach_network_policy = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  }
+
+
+  environment_variables = {
+    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+  }
+
+  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.lambda_api_security_group.security_group_id]
+
+  allowed_triggers = {
+    AllowExecutionFromAPIGateway = {
+      service    = "apigateway"
+      source_arn = "${module.api_gateway.apigatewayv2_api_execution_arn}/*/*/*"
+    }
+  }
+}
+
 
 module "lambda_function_employees_reports" {
   source = "terraform-aws-modules/lambda/aws"

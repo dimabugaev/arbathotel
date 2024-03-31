@@ -1091,7 +1091,7 @@ BEGIN
   with recursive dates as (
 	
 	select 
-		start_date date_val
+		date_trunc('month', start_date)::Date date_val
 		
 	union all
 	

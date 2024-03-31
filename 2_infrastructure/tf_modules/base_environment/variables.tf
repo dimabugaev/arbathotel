@@ -165,3 +165,9 @@ variable "dict_operate_zip" {
   default     = "dict_operate_data.zip"
   type        = string
 }
+
+variable "api_report_bnovo_zip" {
+  description = "Name pakage"
+  default     = "api_report_bnovo.zip"
+  type        = string
+}

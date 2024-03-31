@@ -31,6 +31,7 @@ jobs:
           cp src/my_utility.py build/
           cp src/employees_reports_data.py build/
           cp src/dict_operate_data.py build/
+          cp src/api_report_bnovo.py build/
           cp src/extract_bnovo_data.py build/
           cp src/extract_bnovo_finance.py build/
           cp src/extract_bnovo_booking.py build/
@@ -51,6 +52,7 @@ jobs:
           cd build
           zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py employees_reports_data.py 
           zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py dict_operate_data.py 
+          zip -r api_report_bnovo.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py api_report_bnovo.py 
           zip -r extract_bnovo_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_data.py
           zip -r extract_bnovo_finance.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_finance.py
           zip -r extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_booking.py

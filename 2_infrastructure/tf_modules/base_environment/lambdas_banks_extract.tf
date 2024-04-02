@@ -242,11 +242,11 @@ module "lambda_function_alfa_extract" {
   tags = local.tags
 }
 
-module "lambda_function_psb_extract_java_tire" {
+module "lambda_function_psb_extract_java" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name                     = "${local.prefixname}-psb-extract-lambda-tire"
+  function_name                     = "${local.prefixname}-psb-extract-lambda"
   description                       = "lambda function for extract Payment data from open API PSB"
   handler                           = "MySoapClient::handleRequest"
   runtime                           = "java8"

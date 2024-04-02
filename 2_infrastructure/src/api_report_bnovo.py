@@ -20,7 +20,7 @@ def get_report(session, source_id: int, body):
 
     print(url)
 
-    with session.post(url, data=body) as response:
+    with session.post(url, data=json.dumps(body)) as response:
         if response.status_code == 200:
             return json.loads(response.text)
         else:

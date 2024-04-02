@@ -179,6 +179,7 @@ module "lambda_function_employees_reports" {
 
   create_package         = false
   local_existing_package = "${var.buildpath}${var.employees_reports_zip}"
+  memory_size            = 1024
 
   attach_network_policy = true
 

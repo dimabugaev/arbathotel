@@ -242,11 +242,11 @@ module "lambda_function_alfa_extract" {
   tags = local.tags
 }
 
-module "lambda_function_psb_extract_java_tire_1" {
+module "lambda_function_psb_extract_java_tire" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name                     = "${local.prefixname}-psb-extract-lambda-tire-1"
+  function_name                     = "${local.prefixname}-psb-extract-lambda-tire"
   description                       = "lambda function for extract Payment data from open API PSB"
   handler                           = "MySoapClient::handleRequest"
   runtime                           = "java8"
@@ -302,7 +302,7 @@ module "lambda_function_psb_extract_java_tire_2" {
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-2"
   description                       = "lambda function for extract Payment data from open API PSB"
   handler                           = "MySoapClient::handleRequest"
-  runtime                           = "java8"
+  runtime                           = "java21"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -355,7 +355,7 @@ module "lambda_function_psb_extract_java_tire_3" {
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-3"
   description                       = "lambda function for extract Payment data from open API PSB"
   handler                           = "MySoapClient::handleRequest"
-  runtime                           = "java8"
+  runtime                           = "java21"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true

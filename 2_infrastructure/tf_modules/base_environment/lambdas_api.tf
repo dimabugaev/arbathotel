@@ -137,6 +137,7 @@ module "lambda_function_report_bnovo" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.api_report_bnovo_zip}"
   memory_size            = 1024
+  timeout                = 60
 
   attach_network_policy = true
 

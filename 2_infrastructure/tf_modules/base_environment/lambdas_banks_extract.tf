@@ -242,11 +242,11 @@ module "lambda_function_alfa_extract" {
   tags = local.tags
 }
 
-module "lambda_function_psb_extract_java" {
+module "lambda_function_psb_extract_java_tire_1" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"
 
-  function_name                     = "${local.prefixname}-psb-extract-lambda"
+  function_name                     = "${local.prefixname}-psb-extract-lambda-tire-1"
   description                       = "lambda function for extract Payment data from open API PSB"
   handler                           = "MySoapClient::handleRequest"
   runtime                           = "java8"
@@ -294,6 +294,114 @@ module "lambda_function_psb_extract_java" {
 
   tags = local.tags
 }
+
+module "lambda_function_psb_extract_java_tire_2" {
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
+
+  function_name                     = "${local.prefixname}-psb-extract-lambda-tire-2"
+  description                       = "lambda function for extract Payment data from open API PSB"
+  handler                           = "MySoapClient::handleRequest"
+  runtime                           = "java8"
+  cloudwatch_logs_retention_in_days = 1
+
+  publish = true
+
+  create_package = false
+
+  s3_existing_package = {
+    bucket = "arbat-hotel-additional-data"
+    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
+  }
+
+  timeout     = 180
+  memory_size = 512
+
+  attach_network_policy = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    },
+    s3_read = {
+      effect    = "Allow",
+      actions   = ["s3:GetObject"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
+    },
+    s3_bucket_read = {
+      effect    = "Allow",
+      actions   = ["s3:ListBucket"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data"]
+    }
+  }
+
+  environment_variables = {
+    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+  }
+
+  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
+
+  tags = local.tags
+}
+
+module "lambda_function_psb_extract_java_tire_3" {
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
+
+  function_name                     = "${local.prefixname}-psb-extract-lambda-tire-3"
+  description                       = "lambda function for extract Payment data from open API PSB"
+  handler                           = "MySoapClient::handleRequest"
+  runtime                           = "java8"
+  cloudwatch_logs_retention_in_days = 1
+
+  publish = true
+
+  create_package = false
+
+  s3_existing_package = {
+    bucket = "arbat-hotel-additional-data"
+    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
+  }
+
+  timeout     = 180
+  memory_size = 512
+
+  attach_network_policy = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    },
+    s3_read = {
+      effect    = "Allow",
+      actions   = ["s3:GetObject"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
+    },
+    s3_bucket_read = {
+      effect    = "Allow",
+      actions   = ["s3:ListBucket"],
+      resources = ["arn:aws:s3:::arbat-hotel-additional-data"]
+    }
+  }
+
+  environment_variables = {
+    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+  }
+
+  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
+
+  tags = local.tags
+}
+
+
 
 module "lambda_function_extract_email_reports" {
   source = "terraform-aws-modules/lambda/aws"

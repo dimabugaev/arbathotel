@@ -96,7 +96,7 @@ module "nat" {
   version = "2.1.0"
   #version = "~> 4.0"
 
-  key_name = "arbat-developer-key"
+  key_name = "arbat-bastion-key"
 
   name                        = "main-nat"
   vpc_id                      = module.vpc.vpc_id

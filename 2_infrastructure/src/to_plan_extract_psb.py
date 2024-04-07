@@ -6,7 +6,10 @@ def lambda_handler(event, context):
     cursor = conn.cursor()
     cert_name = event['cert_name']
     if not cert_name:
-        cert_name = ''    
+        cert_name = ''
+
+    print(cert_name)   
+    print(type(cert_name)) 
 
     cursor.execute("""
         with plan as( 
@@ -18,7 +21,7 @@ def lambda_handler(event, context):
             from operate.sources s,
                 operate.get_date_period_table_fnc(s.source_data_begin, (current_date - interval '1 day')::Date) period_plan
             where 
-                s.source_data_begin is not null and s.source_type = 3 and s.source_username = %s)
+                s.source_data_begin is not null and s.source_type = 3 and s.source_username = %(cert_name)s)
 
         select
             p.source_id,
@@ -34,7 +37,7 @@ def lambda_handler(event, context):
                 on p.period_month = f.period_month and p.source_id = f.source_id 
         where
             f.source_id is null or f.loaded_date < p.end_period;
-    """, cert_name)
+    """, {'cert_name': cert_name})
     
     my_plan = cursor.fetchall()
 

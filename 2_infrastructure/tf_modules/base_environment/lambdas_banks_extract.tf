@@ -249,7 +249,7 @@ module "lambda_function_psb_extract_java-tire-1" {
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-1"
   description                       = "lambda function for extract Payment data from open API PSB"
   handler                           = "MySoapClient::handleRequest"
-  runtime                           = "java21"
+  runtime                           = "java8.al2"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -302,7 +302,7 @@ module "lambda_function_psb_extract_java_tire_2" {
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-2"
   description                       = "lambda function for extract Payment data from open API PSB"
   handler                           = "MySoapClient::handleRequest"
-  runtime                           = "java21"
+  runtime                           = "java8.al2"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -355,7 +355,7 @@ module "lambda_function_psb_extract_java_tire_3" {
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-3"
   description                       = "lambda function for extract Payment data from open API PSB"
   handler                           = "MySoapClient::handleRequest"
-  runtime                           = "java21"
+  runtime                           = "java8.al2"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true

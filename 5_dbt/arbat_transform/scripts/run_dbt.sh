@@ -4,6 +4,8 @@ dbt deps --project-dir .
 echo ""
 dbt parse --project-dir .
 echo ""
+dbt seed --project-dir .
+echo ""
 if [ "$DBT_TRANSFORM_MODE" = "booking-problems-mart-update" ]; then
     echo "Booking problems marts updating..."
     echo ""

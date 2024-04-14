@@ -66,7 +66,8 @@ select
     bp.payment_purpose,
     bp.contragent_inn,
     bp.contragent,
-    bp.total_debt
+    bp.total_debt,
+    ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id) as sort_as_count_debt
 from
    banks_payments bp join {{ ref('seed_sources_type_id') }} st
    on bp.source_type = st.type_id

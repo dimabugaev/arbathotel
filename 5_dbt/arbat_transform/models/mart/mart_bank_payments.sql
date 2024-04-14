@@ -52,7 +52,7 @@ select
     bp.source_id,
     bp.id,
     bp.account_number,
-    st.type_id
+    st.type_id,
     st.type_name,
     bp.date_transaction,
     bp.in_summ,

@@ -263,7 +263,7 @@ def get_payments_for_update(page_data: dict) -> dict:
             transaction["amount_rub_currency_name"] = transaction["amountRub"].get("currencyName")
 
             transaction["delivery_kind"] = transaction["rurTransfer"].get("deliveryKind")
-            transaction["rur_payee_account"] = transaction["rurTransfer"].get("deliveryKind")
+            transaction["rur_payee_account"] = transaction["rurTransfer"].get("payeeAccount")
             transaction["rur_payee_bank_bic"] = transaction["rurTransfer"].get("payeeBankBic")
             transaction["rur_payee_bank_corr_account"] = transaction["rurTransfer"].get("payeeBankCorrAccount")
             transaction["rur_payee_bank_name"] = transaction["rurTransfer"].get("payeeBankName")

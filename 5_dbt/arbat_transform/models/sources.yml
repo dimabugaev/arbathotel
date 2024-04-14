@@ -44,8 +44,8 @@ sources:
     schema: banks_raw
     loaded_at_field: date_update
     tables:
-      - name: ucb_payments
-        identifier: ucb_payments
+      - name: alfa_payments
+        identifier: alfa_payments
       - name: tinkoff_payments
         identifier: tinkoff_payments
       - name: psb_docs

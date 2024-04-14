@@ -73,4 +73,4 @@ select
 	end) OVER (partition by tp.source_id ORDER BY to_date(tp.draw_date, 'YYYY-MM-DD'), tp.id) + COALESCE(s.source_income_debt,0) AS total_debt
 from 
 	tinkoff_payments tp join
-	{{ ref('src_sources') }} s on tp.source_id = s.id
+	{{ ref('src_sources') }} s on tp.source_id = s.source_id

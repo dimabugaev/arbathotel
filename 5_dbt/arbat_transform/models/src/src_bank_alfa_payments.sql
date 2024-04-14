@@ -71,4 +71,4 @@ select
 	end) OVER (partition by ap.source_id ORDER BY (ap.operation_date::timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Moscow')::date, ap.id) + COALESCE(s.source_income_debt,0) AS total_debt		
 from 
 	alfa_payments ap join
-	{{ ref('src_sources') }} s on ap.source_id = s.id
+	{{ ref('src_sources') }} s on ap.source_id = s.source_id

@@ -41,4 +41,4 @@ select
 	end) OVER (partition by pdr.source_id ORDER BY pdr.row_date, pdr.doc_id) + COALESCE(s.source_income_debt,0) AS total_debt
 from 
 	psb_strings pdr join
-	{{ ref('src_sources') }} s on pdr.source_id = s.id
+	{{ ref('src_sources') }} s on pdr.source_id = s.source_id

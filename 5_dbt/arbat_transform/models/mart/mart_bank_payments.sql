@@ -1,3 +1,9 @@
+{{
+  config(
+	materialized = 'table',
+	)
+}}
+
 with banks_payments as (
     select
         source_id,

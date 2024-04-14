@@ -38,3 +38,5 @@ models:
       +materialized: table
     calc:
       materialized: table
+    mart:
+      materialized: table

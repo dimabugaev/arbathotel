@@ -1,3 +1,9 @@
+{{
+  config(
+	materialized = 'table',
+	)
+}}
+
 with selected_bookings as(
 	select 
 		*

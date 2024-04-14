@@ -1,7 +1,7 @@
 with banks_payments as (
     select
         source_id,
-        id,
+        id::text,
         account_number,
         source_type,
         date_transaction,
@@ -18,7 +18,7 @@ with banks_payments as (
 
     select
         source_id,
-        id,
+        id::text,
         account_number,
         source_type,
         date_transaction,
@@ -35,7 +35,7 @@ with banks_payments as (
 
     select
         source_id,
-        id,
+        id::text,
         account_number,
         source_type,
         date_transaction,

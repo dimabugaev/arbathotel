@@ -8,6 +8,7 @@ select
 	tp.source_id,
 	s.source_external_key as account_number,
 	s.source_type, -- bank internal code
+    s.source_name,
 	to_date(tp.date, 'YYYY-MM-DD') date_doc,
 	to_date(tp.draw_date, 'YYYY-MM-DD') date_transaction,
 	case 

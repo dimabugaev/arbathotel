@@ -6,6 +6,7 @@ select
 	pdr.source_id,
 	s.source_external_key as account_number,
 	s.source_type, -- bank internal code
+    s.source_name,
 	pdr.row_date date_doc,
 	pdr.row_date date_transaction,
 	not pdr.debit as income,

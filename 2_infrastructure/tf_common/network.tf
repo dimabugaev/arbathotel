@@ -12,7 +12,8 @@ module "vpc" {
   #database_subnets       = ["192.168.21.0/24", "192.168.22.0/24"]
 
   enable_dns_hostnames = true
-  enable_dns_support   = true
+
+  enable_dns_support = true
 
   manage_default_network_acl    = false
   manage_default_security_group = false

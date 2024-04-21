@@ -100,7 +100,7 @@ module "nat" {
 
   key_name = "arbat-developer-key"
 
-  name                        = "main-nat"
+  name                        = "main-nat-new"
   vpc_id                      = module.vpc.vpc_id
   public_subnet               = module.vpc.public_subnets[0]
   private_subnets_cidr_blocks = module.vpc.private_subnets_cidr_blocks

@@ -62,7 +62,7 @@ select
 	date_transaction,
     source_name,
 	--total_debt,	
-	first_value(total_debt) over(partition by source_id, gr) total_debt
+	first_value(total_debt) over(partition by source_id, gr order by date_transaction) total_debt
 	from 
 		(select 
 			source_id

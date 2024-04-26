@@ -25,7 +25,8 @@ def lambda_handler(event, context):
 
         select
             p.source_id,
-            to_char(coalesce(f.loaded_date, p.period_month),'dd.MM.yyyy') as datefrom,
+            --to_char(coalesce(f.loaded_date, p.period_month),'dd.MM.yyyy') as datefrom,
+            to_char(greatest(least(coalesce(f.loaded_date, p.period_month),(current_date - interval '7 day')::Date), p.period_month),'dd.MM.yyyy') as datefrom,
             to_char(case 
                 when p.period_month = date_trunc('month', (current_date - interval '1 day'))::Date then
                     (current_date - interval '1 day')::Date 

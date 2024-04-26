@@ -55,11 +55,18 @@ from
 	from 
 		date_source_series ds left join saldo_as_is saldo on ds.source_id = saldo.source_id and ds.day_in_period = saldo.date_transaction
 )
-select 
+select
 	source_id,
 	account_number,
 	date_transaction,
-	--total_debt,
-	coalesce(total_debt, lag(total_debt) over (partition by source_id order by date_transaction)) total_debt
-from 
-	debt_by_date_series
+	--total_debt,	
+	first_value(total_debt) over(partition by source_id, gr) total_debt
+	from 
+		(select 
+			source_id
+			,account_number
+			,date_transaction
+			,total_debt
+			,sum(case when total_debt is not null then 1 end) over (partition by source_id order by date_transaction) gr
+		from 
+			debt_by_date_series) t

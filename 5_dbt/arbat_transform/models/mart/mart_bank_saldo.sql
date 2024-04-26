@@ -50,6 +50,7 @@ from
 	select
 		ds.source_id,
 		ds.account_number,
+        ds.source_name,
 		ds.day_in_period as date_transaction,
 		saldo.total_debt
 	from 
@@ -59,6 +60,7 @@ select
 	source_id,
 	account_number,
 	date_transaction,
+    source_name,
 	--total_debt,	
 	first_value(total_debt) over(partition by source_id, gr) total_debt
 	from 
@@ -66,6 +68,7 @@ select
 			source_id
 			,account_number
 			,date_transaction
+            ,source_name
 			,total_debt
 			,sum(case when total_debt is not null then 1 end) over (partition by source_id order by date_transaction) gr
 		from 

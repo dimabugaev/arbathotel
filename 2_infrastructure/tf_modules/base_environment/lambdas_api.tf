@@ -16,7 +16,8 @@ module "api_gateway_security_group" {
 }
 
 module "api_gateway" {
-  source = "terraform-aws-modules/apigateway-v2/aws"
+  source  = "terraform-aws-modules/apigateway-v2/aws"
+  version = "4.0.0"
 
   name          = "${local.prefixname}-api-gateway-http-vpc-links"
   description   = "HTTP API Gateway with VPC links"

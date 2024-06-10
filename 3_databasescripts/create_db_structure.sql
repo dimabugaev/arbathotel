@@ -411,6 +411,8 @@ drop table if exists bnovo_raw.invoices;
 drop table if exists bnovo_raw.temp_no_applyed_guests;
 drop table if exists bnovo_raw.ufms_data;
 drop table if exists bnovo_raw.load_bookings_by_period;
+drop table if exists bnovo_raw.users;
+drop table if exists bnovo_raw.booking_users_link;
 
 
 CREATE TABLE bnovo_raw.items
@@ -734,6 +736,36 @@ CREATE TABLE bnovo_raw.booking_guests_link
 	
 	CONSTRAINT fk_sources_booking_guests_link FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
 	CONSTRAINT unique_source_booking_guest UNIQUE (source_id, booking_id, guest_id)
+);
+
+CREATE TABLE bnovo_raw.users
+(
+	source_id int,
+	id varchar,
+    username varchar,
+    email varchar,
+    logins varchar,
+    last_login varchar,
+    forget_hash varchar,
+    name varchar,
+    middlename varchar,
+    surname varchar,
+    deleted varchar,
+    last_notifications_view_date varchar,
+    date_update timestamp not null default current_timestamp,
+    
+	CONSTRAINT fk_sources_users FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
+CREATE TABLE bnovo_raw.booking_users_link
+(
+	source_id int,
+	booking_id varchar,
+	user_id varchar,
+	date_update timestamp not null default current_timestamp,
+	
+	CONSTRAINT fk_sources_booking_users_link FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
+	CONSTRAINT unique_source_booking_user UNIQUE (source_id, booking_id)
 );
 
 CREATE TABLE bnovo_raw.temp_no_applyed_guests

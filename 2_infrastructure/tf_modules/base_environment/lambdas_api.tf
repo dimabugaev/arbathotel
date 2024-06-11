@@ -87,6 +87,13 @@ module "api_gateway" {
       //integration_type   = "LAMBDA_PROXY"
     }
 
+    "POST /report-users/{source_id}" = {
+      lambda_arn             = module.lambda_function_report_bnovo.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
     #"$default" = {
     #  lambda_arn = module.lambda_function_employees_reports.lambda_function_arn
     #}

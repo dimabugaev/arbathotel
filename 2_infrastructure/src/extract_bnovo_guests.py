@@ -154,17 +154,17 @@ def update_guests(connection, session, source_id: int, period: date):
         guest_data_raw = get_booking_guests(session, row[0])
         guest_data = get_guests_data_for_update(guest_data_raw)
 
-        user_data = get_users_data_for_update(guest_data_raw)
+        # user_data = get_users_data_for_update(guest_data_raw)
 
-        if len(user_data["users"]) > 0:
-            insert_query = f"""
-            INSERT INTO bnovo_raw.booking_users_link (source_id, booking_id, user_id) 
-            VALUES {', '.join([f"('{source_id}', '{row[0]}', "+ str(user["id"]) +")" for user in user_data["users"]])}
-            ON CONFLICT DO UPDATE SET user_id = EXCLUDED.user_id;
-            """
-            cursor.execute(insert_query)
+        # if len(user_data["users"]) > 0:
+        #     insert_query = f"""
+        #     INSERT INTO bnovo_raw.booking_users_link (source_id, booking_id, user_id) 
+        #     VALUES {', '.join([f"('{source_id}', '{row[0]}', "+ str(user["id"]) +")" for user in user_data["users"]])}
+        #     ON CONFLICT DO UPDATE SET user_id = EXCLUDED.user_id;
+        #     """
+        #     cursor.execute(insert_query)
 
-            my_utility.update_dim_raw(connection, user_data["users"], "users"+uuid.uuid4().hex, "bnovo_raw.users", users_map, source_id)    
+        #     my_utility.update_dim_raw(connection, user_data["users"], "users"+uuid.uuid4().hex, "bnovo_raw.users", users_map, source_id)    
 
         if len(guest_data["guests"]) < 1:
             #connection.commit()

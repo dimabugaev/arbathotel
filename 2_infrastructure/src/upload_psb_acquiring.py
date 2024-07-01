@@ -4,7 +4,7 @@ import io
 
 from openpyxl import load_workbook
 
-def read_xls_sheet(cursor, column_mapping: dict, key_column_name: str, sheet, field_index_misstring_sign: int, permanent_table_name:str):
+def read_xls_sheet(cursor, column_mapping: dict, key_column_name: str, sheet, field_index_misstring_sign: int, permanent_table_name:str, file_key):
 
     for row_index in range(1, sheet.nrows):
 
@@ -23,6 +23,10 @@ def read_xls_sheet(cursor, column_mapping: dict, key_column_name: str, sheet, fi
             column_values.append(cell_value)
             update_assignments.append(f"{column_name} = %s")
 
+        column_names.append('file_key')
+        column_values.append(file_key)
+        update_assignments.append(f"file_key = %s")
+
         insert_query = """
             INSERT INTO {table_name} ({column_list})
             VALUES ({value_placeholders})
@@ -30,15 +34,15 @@ def read_xls_sheet(cursor, column_mapping: dict, key_column_name: str, sheet, fi
             DO UPDATE SET {update_assignments}, date_update = current_timestamp;
         """.format(
             table_name=permanent_table_name,
-            column_list=','.join(column_mapping.values()),
-            value_placeholders=','.join(['%s'] * len(column_mapping)),
+            column_list=','.join(column_mapping.values()) + ',file_key',
+            value_placeholders=','.join(['%s'] * (len(column_mapping) + 1)),
             key_column=key_column_name,
             update_assignments=','.join(update_assignments)
         )
 
         cursor.execute(insert_query, column_values + column_values)
 
-def read_xlsx_sheet(cursor, column_mapping: dict, key_column_name: str, sheet, field_index_misstring_sign: int, permanent_table_name:str):
+def read_xlsx_sheet(cursor, column_mapping: dict, key_column_name: str, sheet, field_index_misstring_sign: int, permanent_table_name:str, file_key):
 
     for row in sheet.iter_rows(min_row=2, values_only=True):
 
@@ -60,6 +64,10 @@ def read_xlsx_sheet(cursor, column_mapping: dict, key_column_name: str, sheet, f
             column_values.append(cell_value)
             update_assignments.append(f"{column_name} = %s")
 
+        column_names.append('file_key')
+        column_values.append(file_key)
+        update_assignments.append(f"file_key = %s")
+
         insert_query = """
             INSERT INTO {table_name} ({column_list})
             VALUES ({value_placeholders})
@@ -67,15 +75,15 @@ def read_xlsx_sheet(cursor, column_mapping: dict, key_column_name: str, sheet, f
             DO UPDATE SET {update_assignments}, date_update = current_timestamp;
         """.format(
             table_name=permanent_table_name,
-            column_list=','.join(column_mapping.values()),
-            value_placeholders=','.join(['%s'] * len(column_mapping)),
+            column_list=','.join(column_mapping.values()) + ',file_key',
+            value_placeholders=','.join(['%s'] * (len(column_mapping) + 1)),
             key_column=key_column_name,
             update_assignments=','.join(update_assignments)
         )
 
         cursor.execute(insert_query, column_values + column_values)
 
-def do_normal_acquiring(cursor, sheet):
+def do_normal_acquiring(cursor, sheet, file_key):
     
     column_mapping = {
         0: 'contract_name',
@@ -100,9 +108,9 @@ def do_normal_acquiring(cursor, sheet):
         column_mapping[16] = 'order_number'
         column_mapping[17] = 'description'   
 
-    read_xls_sheet(cursor, column_mapping, 'rpn', sheet, 14, 'banks_raw.psb_acquiring_term')
+    read_xls_sheet(cursor, column_mapping, 'rpn', sheet, 14, 'banks_raw.psb_acquiring_term', file_key)
 
-def do_qr_original(cursor, sheet):
+def do_qr_original(cursor, sheet, file_key):
     
     column_mapping = {
         0: 'date_time',
@@ -126,10 +134,10 @@ def do_qr_original(cursor, sheet):
         18: 'description'
     }
 
-    read_xlsx_sheet(cursor, column_mapping, 'id_payment', sheet, 13, 'banks_raw.psb_acquiring_qr')
+    read_xlsx_sheet(cursor, column_mapping, 'id_payment', sheet, 13, 'banks_raw.psb_acquiring_qr', file_key)
 
 
-def do_qr_refund(cursor, sheet):
+def do_qr_refund(cursor, sheet, file_key):
     
     column_mapping = {
         0: 'date_time_original',
@@ -151,7 +159,7 @@ def do_qr_refund(cursor, sheet):
         16: 'date_update'
     }
 
-    read_xlsx_sheet(cursor, column_mapping, 'id_payment_refund', sheet, 12, 'banks_raw.psb_acquiring_qr_refund')
+    read_xlsx_sheet(cursor, column_mapping, 'id_payment_refund', sheet, 12, 'banks_raw.psb_acquiring_qr_refund', file_key)
 
 
 

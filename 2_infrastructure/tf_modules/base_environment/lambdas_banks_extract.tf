@@ -418,7 +418,7 @@ module "lambda_function_extract_email_reports" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_email_reports_data_zip}"
 
-  timeout = 60
+  timeout = 180
 
   attach_network_policy = true
 
@@ -463,7 +463,7 @@ module "lambda_function_upload_psb_acquiring" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.upload_psb_acquiring_zip}"
 
-  timeout = 60
+  timeout = 120
 
   attach_network_policy = true
 

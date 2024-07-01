@@ -1064,6 +1064,7 @@ CREATE TABLE banks_raw.psb_acquiring_term
     original_currency varchar,
     order_number varchar,
     description varchar,
+    file_key varchar,
     date_update timestamp not null default current_timestamp
     
 );
@@ -1089,6 +1090,7 @@ CREATE TABLE banks_raw.psb_acquiring_qr
     currency varchar,
     about_payment varchar,
     description varchar,
+    file_key varchar,
     date_update timestamp not null default current_timestamp
     
 );
@@ -1110,7 +1112,10 @@ CREATE TABLE banks_raw.psb_acquiring_qr_refund
     original_sum varchar,
     about_refund_payment varchar,
     about_original_payment varchar,
-    payer_bank varchar,
+    payer_refund_bank varchar,
+    payer_original_bank varchar,
+    order_number varchar,
+    file_key varchar,
     date_update timestamp not null default current_timestamp
     
 );

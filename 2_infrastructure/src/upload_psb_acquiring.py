@@ -155,8 +155,9 @@ def do_qr_refund(cursor, sheet, file_key):
         12: 'original_sum',
         13: 'about_refund_payment',
         14: 'about_original_payment',
-        15: 'payer_bank',
-        16: 'date_update'
+        15: 'payer_refund_bank',
+        16: 'payer_original_bank',
+        17: 'order_number'
     }
 
     read_xlsx_sheet(cursor, column_mapping, 'id_payment_refund', sheet, 12, 'banks_raw.psb_acquiring_qr_refund', file_key)
@@ -185,13 +186,13 @@ def upload_data_to_rds():
             if s3_object['Key'].lower().endswith('_e.xls'):
                 workbook = xlrd.open_workbook(file_contents=xls_data)
                 sheet = workbook.sheet_by_index(0)
-                do_normal_acquiring(cursor, sheet)   
+                do_normal_acquiring(cursor, sheet, s3_object['Key'])   
             elif s3_object['Key'].lower().endswith('.xlsx'):
                 
                 workbook = load_workbook(filename=io.BytesIO(xls_data))
                 if len(workbook.sheetnames) > 1:
-                    do_qr_original(cursor, workbook.get_sheet_by_name(workbook.sheetnames[0]))
-                    do_qr_refund(cursor, workbook.get_sheet_by_name(workbook.sheetnames[1]))
+                    do_qr_original(cursor, workbook.get_sheet_by_name(workbook.sheetnames[0]), s3_object['Key'])
+                    do_qr_refund(cursor, workbook.get_sheet_by_name(workbook.sheetnames[1]), s3_object['Key'])
             else:
                 print(s3_object['Key'] + ' - bad format')
                 continue

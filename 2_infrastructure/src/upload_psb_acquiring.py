@@ -108,7 +108,7 @@ def do_normal_acquiring(cursor, sheet, file_key):
         column_mapping[16] = 'order_number'
         column_mapping[17] = 'description'   
 
-    read_xls_sheet(cursor, column_mapping, 'rpn', sheet, 14, 'banks_raw.psb_acquiring_term', file_key)
+    read_xls_sheet(cursor, column_mapping, 'rpn, operation_type', sheet, 12, 'banks_raw.psb_acquiring_term', file_key)
 
 def do_qr_original(cursor, sheet, file_key):
     
@@ -168,7 +168,8 @@ def upload_data_to_rds():
     source_data = my_utility.get_email_and_storage_data()
     s3client = source_data['s3client']
     source_bucket = source_data['s3_bucket_for_attachments']
-    source_prefix = 'dev/psb-acquiring/income/'
+    #source_prefix = 'dev/psb-acquiring/income/'
+    source_prefix = 'dev/psb-acquiring/done/'
     destination_prefix = 'dev/psb-acquiring/done/'
 
     s3_objects = s3client.list_objects_v2(Bucket=source_bucket, Prefix=source_prefix).get('Contents')
@@ -200,9 +201,9 @@ def upload_data_to_rds():
 
             conn.commit()
             destination_key = destination_prefix + s3_object['Key'].split('/')[-1]
-            s3client.copy_object(Bucket=source_bucket, Key=destination_key, CopySource={'Bucket': source_bucket, 'Key': s3_object['Key']})
+            #s3client.copy_object(Bucket=source_bucket, Key=destination_key, CopySource={'Bucket': source_bucket, 'Key': s3_object['Key']})
             
-            s3client.delete_object(Bucket=source_bucket, Key=s3_object['Key'])
+            #s3client.delete_object(Bucket=source_bucket, Key=s3_object['Key'])
 
         print('Данные успешно обработаны и записаны в постоянную таблицу, файлы перемещены.')
 

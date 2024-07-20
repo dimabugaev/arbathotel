@@ -1058,7 +1058,7 @@ CREATE TABLE banks_raw.psb_acquiring_term
     operation_sum varchar,
     commission varchar,
     to_transaction varchar,
-    rpn varchar UNIQUE,
+    rpn varchar,
     operation_type varchar,
     original_sum varchar,
     original_currency varchar,
@@ -1066,7 +1066,7 @@ CREATE TABLE banks_raw.psb_acquiring_term
     description varchar,
     file_key varchar,
     date_update timestamp not null default current_timestamp
-    
+    unique(rpn, operation_type)
 );
 
 CREATE TABLE banks_raw.psb_acquiring_qr

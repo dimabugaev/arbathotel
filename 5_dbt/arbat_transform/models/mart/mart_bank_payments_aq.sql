@@ -8,7 +8,7 @@ with banks_payments as (
     select
         source_id,
         id::text,
-        '',
+        '' id_aq,
         account_number,
         source_type,
         source_name,
@@ -69,6 +69,7 @@ with banks_payments as (
 select
     bp.source_id,
     bp.id,
+    bp.id_aq,
     bp.account_number,
     bp.source_name,
     st.type_id,

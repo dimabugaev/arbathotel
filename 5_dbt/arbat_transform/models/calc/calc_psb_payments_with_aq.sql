@@ -82,21 +82,21 @@ with psb_strings as (
        aq_qr_refund 
 )
 ,distrib_paymants as (
-    coalesce(aq.id_aq || aq.operation_type, pdr.doc_id::text) doc_id,
-	pdr.source_id,
-	pdr.row_date
-	coalesce(aq.debit, pdr.debit) debit,
-	pdr.outer_account,
-	pdr.kb,
-	pdr.contragent_inn,
-	pdr.contragent,
-	pdr.description,
-	coalesce(aq.summa_rur, pdr.summa_rur) summa_rur
-    pdr.debit,
-    aq.terminal_number,
-    aq.order_number 
-from
-    psb_strings pdr left join aq_all aq on pdr.doc_id = aq.bank_payment_id and pdr.source_id = aq.source_id    
+    select
+        coalesce(aq.id_aq || aq.operation_type, pdr.doc_id::text) doc_id,
+        pdr.source_id,
+        pdr.row_date,
+        coalesce(aq.debit, pdr.debit) debit,
+        pdr.outer_account,
+        pdr.kb,
+        pdr.contragent_inn,
+        pdr.contragent,
+        pdr.description,
+        coalesce(aq.summa_rur, pdr.summa_rur) summa_rur,
+        aq.terminal_number,
+        aq.order_number 
+    from
+        psb_strings pdr left join aq_all aq on pdr.doc_id = aq.bank_payment_id and pdr.source_id = aq.source_id    
 )
 select
 	pdr.doc_id id,
@@ -126,6 +126,8 @@ select
 		else -- приход
 			pdr.summa_rur	
 	end as in_summ,
+	pdr.terminal_number,
+	pdr.order_number,
 	SUM(case 
 		when pdr.debit then -- расход
 			0

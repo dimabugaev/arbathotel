@@ -37,7 +37,7 @@ with banks_payments as (
         contragent,
         total_debt
     from
-        {{ ref('src_bank_psb_payments') }}
+        {{ ref('calc_psb_payments_with_aq') }}
 
     union all
 

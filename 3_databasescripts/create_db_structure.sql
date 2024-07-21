@@ -1065,7 +1065,7 @@ CREATE TABLE banks_raw.psb_acquiring_term
     order_number varchar,
     description varchar,
     file_key varchar,
-    date_update timestamp not null default current_timestamp
+    date_update timestamp not null default current_timestamp,
     unique(rpn, operation_type)
 );
 

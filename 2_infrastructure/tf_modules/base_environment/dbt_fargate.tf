@@ -137,7 +137,7 @@ module "lambda_function_run_dbt_task" {
 
   publish = true
 
-  timeout = 120
+  timeout = 600
 
   create_package         = false
   local_existing_package = "${var.buildpath}${var.run_dbt_task_zip}"

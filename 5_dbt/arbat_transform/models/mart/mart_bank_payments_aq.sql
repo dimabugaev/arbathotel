@@ -8,6 +8,7 @@ with banks_payments as (
     select
         source_id,
         id::text,
+        '',
         account_number,
         source_type,
         source_name,
@@ -28,6 +29,7 @@ with banks_payments as (
     select
         source_id,
         id::text,
+        id_aq,
         account_number,
         source_type,
         source_name,
@@ -48,6 +50,7 @@ with banks_payments as (
     select
         source_id,
         id::text,
+        '',
         account_number,
         source_type,
         source_name,
@@ -79,7 +82,7 @@ select
     bp.total_debt,
     terminal_number,
     order_number,
-    ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id) as sort_as_count_debt
+    ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id, bp.id_aq, bp.out_summ) as sort_as_count_debt
 from
    banks_payments bp join {{ ref('seed_sources_type_id') }} st
    on bp.source_type = st.type_id

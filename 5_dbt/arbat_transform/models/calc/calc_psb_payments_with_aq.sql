@@ -81,9 +81,10 @@ with psb_strings as (
     from 
        aq_qr_refund 
 )
-,distrib_paymants as (
+,distrib_payments as (
     select
-        coalesce(aq.id_aq || aq.operation_type, pdr.doc_id::text) doc_id,
+        pdr.doc_id,
+        aq.id_aq,
         pdr.source_id,
         pdr.row_date,
         coalesce(aq.debit, pdr.debit) debit,
@@ -101,6 +102,7 @@ with psb_strings as (
 select
 	pdr.doc_id id,
 	pdr.source_id,
+    pdr.id_aq,
 	s.source_external_key as account_number,
 	s.source_type, -- bank internal code
     s.source_name,
@@ -138,7 +140,7 @@ select
 			pdr.summa_rur
 		else -- приход
 			0	
-	end) OVER (partition by pdr.source_id ORDER BY pdr.row_date, pdr.doc_id) + COALESCE(s.source_income_debt,0) AS total_debt
+	end) OVER (partition by pdr.source_id ORDER BY pdr.row_date, pdr.doc_id, pdr.id_aq, pdr.debit) + COALESCE(s.source_income_debt,0) AS total_debt
 from 
-	distrib_paymants pdr join
+	distrib_payments pdr join
 	{{ ref('src_sources') }} s on pdr.source_id = s.source_id

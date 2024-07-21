@@ -17,7 +17,6 @@ with refund_aq as (
 		substring(recipient_name FROM '^[^ _]*') recipient_name
 	from
         {{ source('banks', 'psb_acquiring_qr_refund') }} 
-		banks_raw.psb_acquiring_qr_refund
 )
 ,bank_payments_for_refund as (
 	select

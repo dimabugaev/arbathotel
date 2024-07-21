@@ -16,8 +16,7 @@ with qr_aq as (
 		sum(operation_com::decimal(18,2)) over (partition by file_key) total_commision_sum,
 		substring(payer_name FROM '^[^ _]*') recipient_name
 	from 
-	{{ source('banks', 'psb_acquiring_qr') }}
-		banks_raw.psb_acquiring_qr 
+	{{ source('banks', 'psb_acquiring_qr') }} 
 )
 ,bank_payments_for_refund as (
 	select

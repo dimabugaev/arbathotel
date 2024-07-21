@@ -17,7 +17,9 @@ with banks_payments as (
         payment_purpose,
         contragent_inn,
         contragent,
-        total_debt
+        total_debt,
+        null terminal_number,
+        null order_number
     from
         {{ ref('src_bank_tinkoff_payments') }}
     
@@ -35,7 +37,9 @@ with banks_payments as (
         payment_purpose,
         contragent_inn,
         contragent,
-        total_debt
+        total_debt,
+        terminal_number,
+        order_number
     from
         {{ ref('calc_psb_payments_with_aq') }}
 
@@ -53,7 +57,9 @@ with banks_payments as (
         payment_purpose,
         contragent_inn,
         contragent,
-        total_debt
+        total_debt,
+        null terminal_number,
+        null order_number
     from
         {{ ref('src_bank_alfa_payments') }}
 )
@@ -71,6 +77,8 @@ select
     bp.contragent_inn,
     bp.contragent,
     bp.total_debt,
+    terminal_number,
+    order_number,
     ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id) as sort_as_count_debt
 from
    banks_payments bp join {{ ref('seed_sources_type_id') }} st

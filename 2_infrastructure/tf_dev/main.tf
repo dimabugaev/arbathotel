@@ -23,9 +23,9 @@ provider "aws" {
   profile = var.aws_profile
 }
 
-module "environment" {
-  source                 = "../tf_modules/base_environment/"
-  environment            = "dev"
-  reports_email          = var.reports_email
-  reports_email_password = var.reports_email_password
-}
+# module "environment" {
+#   source                 = "../tf_modules/base_environment/"
+#   environment            = "dev"
+#   reports_email          = var.reports_email
+#   reports_email_password = var.reports_email_password
+# }

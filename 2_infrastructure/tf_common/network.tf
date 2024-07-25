@@ -34,22 +34,22 @@ module "vpc" {
   tags = local.tags
 }
 
-module "vpc_endpoints" {
+# module "vpc_endpoints" {
 
-  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  vpc_id = module.vpc.vpc_id
+#   source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+#   vpc_id = module.vpc.vpc_id
 
-  endpoints = {
-    secretsmanager = {
-      service             = "secretsmanager"
-      private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
-      security_group_ids  = [module.secrets_endpoints_security_group.security_group_id]
-    },
-  }
+#   endpoints = {
+#     secretsmanager = {
+#       service             = "secretsmanager"
+#       private_dns_enabled = true
+#       subnet_ids          = module.vpc.private_subnets
+#       security_group_ids  = [module.secrets_endpoints_security_group.security_group_id]
+#     },
+#   }
 
-  tags = local.tags
-}
+#   tags = local.tags
+# }
 
 resource "aws_db_subnet_group" "default" {
   name       = "main-db-subnets-group"
@@ -58,27 +58,27 @@ resource "aws_db_subnet_group" "default" {
   tags = local.tags
 }
 
-module "secrets_endpoints_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
-  #version = "~> 4.0"
+# module "secrets_endpoints_security_group" {
+#   source = "terraform-aws-modules/security-group/aws"
+#   #version = "~> 4.0"
 
-  name        = "main-endpoint-sg-to-secretsmanager"
-  description = "SG endpoints to secrets db"
-  vpc_id      = module.vpc.vpc_id
+#   name        = "main-endpoint-sg-to-secretsmanager"
+#   description = "SG endpoints to secrets db"
+#   vpc_id      = module.vpc.vpc_id
 
-  computed_ingress_with_source_security_group_id = [
-    {
-      rule                     = "all-tcp"
-      description              = "Allow access from API call"
-      source_security_group_id = module.secretsmanager_access_security_group.security_group_id
-    },
-  ]
-  number_of_computed_ingress_with_source_security_group_id = 1
+#   computed_ingress_with_source_security_group_id = [
+#     {
+#       rule                     = "all-tcp"
+#       description              = "Allow access from API call"
+#       source_security_group_id = module.secretsmanager_access_security_group.security_group_id
+#     },
+#   ]
+#   number_of_computed_ingress_with_source_security_group_id = 1
 
-  egress_rules = ["all-all"]
+#   egress_rules = ["all-all"]
 
-  tags = local.tags
-}
+#   tags = local.tags
+# }
 
 module "secretsmanager_access_security_group" {
   source = "terraform-aws-modules/security-group/aws"

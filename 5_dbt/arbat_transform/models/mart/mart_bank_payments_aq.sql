@@ -87,8 +87,8 @@ select
     bp.contragent_inn,
     bp.contragent,
     bp.total_debt,
-    bp.hotel_id,
-    bp.hotel_name,
+    bp.hotel_id hotel_id,
+    bp.hotel_name hotel_name,
     bp.terminal_number,
     bp.order_number,
     ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id, bp.id_aq, bp.out_summ) as sort_as_count_debt

@@ -12,6 +12,8 @@ sources:
         identifier: report_items
       - name: hotels
         identifier: hotels
+      - name: devices
+        identifier: devices
   
   - name: bnovo
     schema: bnovo_raw

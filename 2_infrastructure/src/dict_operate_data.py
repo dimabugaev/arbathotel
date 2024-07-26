@@ -322,7 +322,7 @@ def put_devices(datastrings: list):
           if len(list_of_args) > 0:
             
             args_str = ','.join(list_of_args)
-            cursor.execute("""INSERT INTO temp_devices_table_update
+            cursor.execute("""INSERT INTO operate.devices
                                 (id, hotel_id, source_id)
                               VALUES """ + args_str + """
                                 on conflict (id) do update

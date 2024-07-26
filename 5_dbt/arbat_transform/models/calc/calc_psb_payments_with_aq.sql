@@ -21,7 +21,8 @@ with psb_strings as (
         false debit, 
         operation_sum summa_rur,
         bank_payment_id,
-        source_id
+        source_id,
+        hotel_id
     from 
        aq_term
     union all
@@ -35,7 +36,8 @@ with psb_strings as (
         true debit, 
         commission summa_rur,
         bank_payment_id,
-        source_id
+        source_id,
+        hotel_id
     from 
        aq_term 
     union all
@@ -49,7 +51,8 @@ with psb_strings as (
         false debit, 
         operation_sum summa_rur,
         bank_payment_id,
-        source_id
+        source_id,
+        hotel_id
     from 
        aq_qr
     union all
@@ -63,7 +66,8 @@ with psb_strings as (
         true debit, 
         commission summa_rur,
         bank_payment_id,
-        source_id
+        source_id,
+        hotel_id
     from 
        aq_qr
     union all
@@ -77,7 +81,8 @@ with psb_strings as (
         false debit, 
         operation_sum summa_rur,
         bank_payment_id,
-        source_id
+        source_id,
+        hotel_id
     from 
        aq_qr_refund 
 )
@@ -95,7 +100,8 @@ with psb_strings as (
         pdr.description,
         coalesce(aq.summa_rur, pdr.summa_rur) summa_rur,
         aq.terminal_number,
-        aq.order_number 
+        aq.order_number,
+        aq.hotel_id 
     from
         psb_strings pdr left join aq_all aq on pdr.doc_id = aq.bank_payment_id and pdr.source_id = aq.source_id    
 )
@@ -103,6 +109,8 @@ select
 	pdr.doc_id id,
 	pdr.source_id,
     pdr.id_aq,
+    prd.hotel_id,
+    h.hotel_name,
 	s.source_external_key as account_number,
 	s.source_type, -- bank internal code
     s.source_name,
@@ -144,3 +152,4 @@ select
 from 
 	distrib_payments pdr join
 	{{ ref('src_sources') }} s on pdr.source_id = s.source_id
+    left join {{ source('operate', 'hotels') }} h on pdr.hotel_id = h.id

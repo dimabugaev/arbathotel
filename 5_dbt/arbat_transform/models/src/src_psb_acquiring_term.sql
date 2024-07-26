@@ -1,22 +1,24 @@
 with qr_aq as (
 	select
-		rpn id_aq,
-		operation_type,
-		file_key,
-		device_number terminal_number,
-		device_name,
-		coalesce(order_number,'') order_number,
-		coalesce(description, '') description,
-		to_timestamp(operation_data, 'DD.MM.YYYY HH24:MI:SS')::timestamp operation_data,
-		to_date(processing_data, 'DD.MM.YYYY') processing_data,
-		operation_sum::decimal(18,2) operation_sum,
-		commission::decimal(18,2) commission,
-		to_transaction::decimal(18,2) to_transaction,
-		sum(to_transaction::decimal(18,2)) over (partition by file_key) bank_payment_sum,
-		sum(operation_sum::decimal(18,2)) over (partition by file_key) total_operation_sum,
-		sum(commission::decimal(18,2)) over (partition by file_key) total_commision_sum
+		aq.rpn id_aq,
+		aq.operation_type,
+		aq.file_key,
+		aq.device_number terminal_number,
+		aq.device_name,
+		coalesce(aq.order_number,'') order_number,
+		coalesce(aq.description, '') description,
+		to_timestamp(aq.operation_data, 'DD.MM.YYYY HH24:MI:SS')::timestamp operation_data,
+		to_date(aq.processing_data, 'DD.MM.YYYY') processing_data,
+		aq.operation_sum::decimal(18,2) operation_sum,
+		aq.commission::decimal(18,2) commission,
+		aq.to_transaction::decimal(18,2) to_transaction,
+		d.source_id source_id,
+		d.hotel_id hotel_id,
+		sum(aq.to_transaction::decimal(18,2)) over (partition by aq.file_key) bank_payment_sum,
+		sum(aq.operation_sum::decimal(18,2)) over (partition by aq.file_key) total_operation_sum,
+		sum(aq.commission::decimal(18,2)) over (partition by aq.file_key) total_commision_sum
 	from 
-        {{ source('banks', 'psb_acquiring_term') }}
+        {{ source('banks', 'psb_acquiring_term') }} aq left join {{ source('operate', 'devices') }} d on aq.device_number = d.id 
 )
 ,bank_payments_for_refund as (
 	select
@@ -48,12 +50,13 @@ select
 	max(aq.total_operation_sum) total_operation_sum,
 	max(aq.total_commision_sum) total_commision_sum,
 	max(bp.extracted_commission) extracted_commission,
+	max(aq.source_id) source_id,
+	max(aq.hotel_id) hotel_id,
 	max(bp.id) bank_payment_id,
-	max(bp.source_id) source_id,
 	max(bp.payment_purpose) bank_payment_purpose
 from
 	qr_aq aq left join bank_payments_for_refund	bp 
-		on aq.processing_data = bp.date_transaction and aq.bank_payment_sum = bp.payment_sum --and aq.recipient_name = bp.contragent
+		on aq.processing_data = bp.date_transaction and aq.bank_payment_sum = bp.payment_sum and aq.source_id = bp.source_id
 group by
 	aq.file_key,
 	aq.id_aq,

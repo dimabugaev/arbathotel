@@ -3,7 +3,7 @@ with qr_aq as (
 		aq.rpn id_aq,
 		aq.operation_type,
 		aq.file_key,
-		aq.device_number terminal_number,
+		aq.device_number::int terminal_number,
 		aq.device_name,
 		coalesce(aq.order_number,'') order_number,
 		coalesce(aq.description, '') description,
@@ -18,7 +18,7 @@ with qr_aq as (
 		sum(aq.operation_sum::decimal(18,2)) over (partition by aq.file_key) total_operation_sum,
 		sum(aq.commission::decimal(18,2)) over (partition by aq.file_key) total_commision_sum
 	from 
-        {{ source('banks', 'psb_acquiring_term') }} aq left join {{ source('operate', 'devices') }} d on aq.device_number = d.id 
+        {{ source('banks', 'psb_acquiring_term') }} aq left join {{ source('operate', 'devices') }} d on aq.device_number::int = d.id 
 )
 ,bank_payments_for_refund as (
 	select

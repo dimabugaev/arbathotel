@@ -109,7 +109,7 @@ select
 	pdr.doc_id id,
 	pdr.source_id,
     pdr.id_aq,
-    prd.hotel_id,
+    pdr.hotel_id,
     h.hotel_name,
 	s.source_external_key as account_number,
 	s.source_type, -- bank internal code

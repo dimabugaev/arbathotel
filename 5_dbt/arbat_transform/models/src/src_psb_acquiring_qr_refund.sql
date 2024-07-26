@@ -2,7 +2,7 @@ with refund_aq as (
 	select
 		aq.id_payment_refund id_aq,
 		aq.file_key,
-		aq.terminal_number,
+		aq.terminal_number::int terminal_number,
 		aq.payer_tsp_name device_name,
 		coalesce(aq.order_number,'') order_number,
 		coalesce(aq.about_refund_payment, '') description,
@@ -18,7 +18,7 @@ with refund_aq as (
 		0::decimal(18,2) total_commision_sum,
 		substring(aq.recipient_name FROM '^[^ _]*') recipient_name
 	from
-        {{ source('banks', 'psb_acquiring_qr_refund') }} aq left join {{ source('operate', 'devices') }} d on aq.terminal_number = d.id 
+        {{ source('banks', 'psb_acquiring_qr_refund') }} aq left join {{ source('operate', 'devices') }} d on aq.terminal_number::int = d.id 
 )
 ,bank_payments_for_refund as (
 	select

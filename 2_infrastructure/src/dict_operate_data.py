@@ -67,6 +67,23 @@ def get_hotels() -> list:
     
     return cursor.fetchall()
 
+def get_devices() -> list:
+
+    global connection
+
+    cursor = connection.cursor()
+    
+    cursor.execute("""select 
+                        d.id,
+                        d.hotel_id,
+                        d.source_id
+                      from 
+                        operate.devices d
+                      order by
+                        d.id""")
+    
+    return cursor.fetchall()
+
 def get_employees() -> list:
 
     global connection
@@ -278,6 +295,46 @@ def put_hotels(datastrings: list):
           connection.rollback()
           raise ex        
 
+def put_devices(datastrings: list):
+
+    global connection
+
+    if len(datastrings) > 0:
+        cursor = connection.cursor()
+
+        try:
+          
+          list_of_args = []
+          for newrow in datastrings:
+
+              if (len(str(newrow[0])) == 0 
+                  and len(str(newrow[1])) == 0
+                  and len(str(newrow[2])) == 0):
+                  continue
+              
+
+              list_of_args.append("({}, {}, {})"
+                  .format(my_utility.num_to_query_substr(newrow[0]), #id
+                  my_utility.num_to_query_substr(newrow[1]), #hotel_id
+                  my_utility.num_to_query_substr(newrow[2]))) #source_id      
+                  
+
+          if len(list_of_args) > 0:
+            
+            args_str = ','.join(list_of_args)
+            cursor.execute("""INSERT INTO temp_devices_table_update
+                                (id, hotel_id, source_id)
+                              VALUES """ + args_str + """
+                                on conflict (id) do update
+                                    set 
+                                        hotel_id = EXCLUDED.hotel_id,
+                                        source_id = EXCLUDED.source_id
+                              """)
+
+            connection.commit()
+        except Exception as ex:
+          connection.rollback()
+          raise ex     
 
 def put_employees(datastrings: list):
 
@@ -492,6 +549,9 @@ def get_dict() -> dict:
     if dict_name == 'hotels':
         result["data"] = get_hotels()
 
+    if dict_name == 'devices':
+        result["data"] = get_devices()
+
     if dict_name == 'employees':
         result["data"] = get_employees()
 
@@ -516,6 +576,9 @@ def put_dict() -> dict:
 
     if dict_name == 'hotels':
         put_hotels(datastrings)
+
+    if dict_name == 'devices':
+        put_devices(datastrings)
 
     if dict_name == 'employees':
         put_employees(datastrings)

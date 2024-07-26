@@ -13,6 +13,7 @@ drop table if exists operate.report_items;
 drop table if exists operate.employees;
 drop table if exists operate.sources;
 drop table if exists operate.hotels;
+drop table if exists operate.devices;
 
 
 CREATE TABLE operate.hotels
@@ -32,6 +33,15 @@ CREATE TABLE operate.sources
 	 source_username varchar,
 	 source_password varchar,
 	 source_data_begin date
+);
+
+CREATE TABLE operate.devices
+(
+	 id	int PRIMARY KEY,
+	 hotel_id int NOT null,
+	 source_id int NOT null,  
+	 CONSTRAINT fk_source_devices FOREIGN KEY ( source_id ) REFERENCES operate.sources  ( id ),
+	 CONSTRAINT fk_hotel_devices FOREIGN KEY ( hotel_id ) REFERENCES operate.hotels  ( id )
 );
  
  

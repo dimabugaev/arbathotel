@@ -19,6 +19,8 @@ with banks_payments as (
         contragent_inn,
         contragent,
         total_debt,
+        null hotel_id,
+        '' hotel_name,
         null terminal_number,
         null order_number
     from
@@ -40,6 +42,8 @@ with banks_payments as (
         contragent_inn,
         contragent,
         total_debt,
+        hotel_id,
+        hotel_name,
         terminal_number,
         order_number
     from
@@ -61,6 +65,8 @@ with banks_payments as (
         contragent_inn,
         contragent,
         total_debt,
+        null hotel_id,
+        '' hotel_name,
         null terminal_number,
         null order_number
     from
@@ -81,8 +87,10 @@ select
     bp.contragent_inn,
     bp.contragent,
     bp.total_debt,
-    terminal_number,
-    order_number,
+    bp.hotel_id,
+    bp.hotel_name,
+    bp.terminal_number,
+    bp.order_number,
     ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id, bp.id_aq, bp.out_summ) as sort_as_count_debt
 from
    banks_payments bp join {{ ref('seed_sources_type_id') }} st

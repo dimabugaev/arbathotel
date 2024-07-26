@@ -1,4 +1,4 @@
-{# with aq_qr_refund as (
+with aq_qr_refund as (
     select * from {{ ref('src_psb_acquiring_qr_refund') }} where bank_payment_id is null
 )
 ,aq_qr as (
@@ -7,5 +7,50 @@
 ,aq_term as (
     select * from {{ ref('src_psb_acquiring_term') }} where bank_payment_id is null
 )
-select #}
-
+,aq_all as (
+    select
+        id_aq,  
+        operation_type,
+        terminal_number,
+        order_number,
+        description,
+        operation_data, 
+        operation_sum operation_sum,
+        commission commission,
+        source_id,
+        hotel_id
+    from 
+       aq_term
+    union all
+    select
+        id_aq,  
+        'payment_qr' operation_type,
+        terminal_number,
+        order_number,
+        description,
+        operation_data, 
+        operation_sum,
+        commission,
+        source_id,
+        hotel_id
+    from 
+       aq_qr
+    union all
+    select
+        id_aq,  
+        'refund_qr' operation_type,
+        terminal_number,
+        order_number,
+        description,
+        operation_data, 
+        operation_sum summa_rur,
+        commission,
+        source_id,
+        hotel_id
+    from 
+       aq_qr_refund 
+)
+select
+    *
+from
+    aq_all 

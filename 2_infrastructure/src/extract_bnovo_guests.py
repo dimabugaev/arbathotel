@@ -145,7 +145,7 @@ def update_guests(connection, session, source_id: int, period: date):
         from 
             bnovo_raw.bookings b
         where 
-            b.source_id = %(source_id)s and b.arrival::date <= %(period)s and b.departure::date >= %(departure_from)s   
+            b.source_id = %(source_id)s and b.arrival_date <= %(period)s and b.departure_date >= %(departure_from)s   
     """, {'source_id': source_id, 'period': period, 'departure_from': departure_from})
 
     rows = cursor.fetchall()

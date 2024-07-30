@@ -670,7 +670,8 @@ CREATE TABLE bnovo_raw.bookings
     adults decimal(10,0),
     children decimal(10,0),
     date_update timestamp not null default current_timestamp,
- 
+ 	arrival_date date null,
+	departure_date date null,
 	CONSTRAINT fk_sources_bookings FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
 );
 

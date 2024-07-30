@@ -71,6 +71,16 @@ def get_booking_data_pages_for_update(page_data: dict, period: date) -> dict:
             booking["hotel_id"] = booking["hotel"]["id"]
             booking["adults"] = booking["extra"].get("adults")
             booking["children"] = booking["extra"].get("children")
+            if booking["arrival"]:
+                booking["arrival_date"] = datetime.strptime(booking["arrival"].split()[0], '%Y-%m-%d').date()
+            else:
+                booking["arrival_date"] = None
+            
+            if booking["departure"]:
+                booking["departure_date"] = datetime.strptime(booking["departure"].split()[0], '%Y-%m-%d').date()
+            else:
+                booking["departure_date"] = None
+
             res["bookings"].append(booking)
             res["bookings_id"].append(booking["id"])
             #res["bookings_id_for_guest_request"].append(booking["id"])
@@ -175,7 +185,9 @@ def update_booking(connection, session, source_id: int, period: date, current_da
             "online_warranty_deadline_date": "online_warranty_deadline_date",
             "auto_booking_cancel": "auto_booking_cancel",
             "adults": "adults",
-            "children": "children"
+            "children": "children",
+            "arrival_date": "arrival_date",
+            "departure_date": "departure_date",
         }
     
     if current_day:

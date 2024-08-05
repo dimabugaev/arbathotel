@@ -1,6 +1,7 @@
 import my_utility
 import json
 import requests
+#import httpx
 
 import ssl
 from requests.adapters import HTTPAdapter
@@ -69,6 +70,39 @@ def get_token(conn, client_id, client_secret, refresh_token, certificate, privat
             token = result['access_token']
         conn.commit()
     return token
+
+# def get_token(conn, client_id, client_secret, refresh_token, certificate, private_key, passcode):
+#     #session = requests.Session()
+#     #session = get_session(certificate, private_key, passcode)
+#     url = "https://baas.alfabank.ru/oidc/token"
+
+#     headers = {
+#         "Content-Type": "application/x-www-form-urlencoded",
+#         "Accept": "application/json" 
+#     }
+
+#     payload = {'grant_type': 'refresh_token',
+#             'refresh_token': refresh_token,
+#             'client_id': client_id,
+#             'client_secret': client_secret}
+
+#     token = ''
+
+#     httpx.request('POST', url=url, data=payload, headers=headers, cert=(certificate, private_key, passcode))
+
+#     #with session.post(url, data=payload, cert=(certificate, '4321', private_key)) as response:
+#     response = httpx.request('POST', url=url, data=payload, headers=headers, cert=(certificate, private_key, passcode)) 
+#     result = json.loads(response.text)
+#     #print(result)
+#     with conn.cursor() as cursor:
+#         cursor.execute("""update banks_raw.alfa_params
+#                             set
+#                             refresh_token = %(refresh_token)s 
+#                             where client_id = %(client_id)s
+#                         """, {'client_id': client_id, 'refresh_token': result['refresh_token']})
+#         token = result['access_token']
+#     conn.commit()
+#     return token
 
 def token_for_client_id(conn, tokens_cash, client_id):
 

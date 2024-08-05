@@ -1,3 +1,10 @@
+{{ config(
+    materialized='table',
+    indexes=[
+      {'columns': ['plan_arrival_date', 'plan_departure_date']}
+    ]
+) }}
+
 with raw_bookings as (
     select * from {{ source('bnovo', 'bookings') }}
 )

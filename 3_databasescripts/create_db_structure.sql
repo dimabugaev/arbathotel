@@ -40,8 +40,8 @@ CREATE TABLE operate.devices
 	 id	int PRIMARY KEY,
 	 hotel_id int NOT null,
 	 source_id int NOT null,  
-	 CONSTRAINT fk_source_devices FOREIGN KEY ( source_id ) REFERENCES operate.sources  ( id ),
-	 CONSTRAINT fk_hotel_devices FOREIGN KEY ( hotel_id ) REFERENCES operate.hotels  ( id )
+	 CONSTRAINT fk_source_devices FOREIGN KEY ( source_id ) REFERENCES operate.sources  ( id )
+	 --CONSTRAINT fk_hotel_devices FOREIGN KEY ( hotel_id ) REFERENCES operate.hotels  ( id )
 );
  
  

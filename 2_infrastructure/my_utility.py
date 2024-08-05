@@ -23,7 +23,7 @@ def get_email_and_storage_data():
 #ESC get params to run
 def get_params_to_run_ecs_task_dbt() -> dict:
     #secret_name = 'dev-rds-instance'
-    secret_name = 'develop-db-instance'
+    secret_name = 'productive-db-instance'
     region_name = "eu-central-1"    
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg
@@ -31,7 +31,7 @@ def get_params_to_run_ecs_task_dbt() -> dict:
     client = session.client(service_name='secretsmanager', region_name=region_name)
     secret_value_dict = json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
 
-    secret_name = 'develop-ecs-cluster-data'
+    secret_name = 'productive-ecs-cluster-data'
     secret_value_dict.update(json.loads(client.get_secret_value(SecretId=secret_name)['SecretString']))
 
     return secret_value_dict
@@ -46,8 +46,8 @@ def get_object_s3(bucket_name, object_key):
 #DB
 #connection to data base
 def get_db_connection():
-    secret_name = "develop-db-instance"
-    #secret_name = "productive-db-instance"
+    #secret_name = "develop-db-instance"
+    secret_name = "productive-db-instance"
     region_name = "eu-central-1"
 
     session = boto3.session.Session(profile_name='arbathotelserviceterraformuser')  #for debugg

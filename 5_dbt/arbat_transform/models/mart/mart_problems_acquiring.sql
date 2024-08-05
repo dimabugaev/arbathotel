@@ -43,7 +43,7 @@ with aq_qr_refund as (
         order_number,
         description,
         operation_data, 
-        operation_sum summa_rur,
+        operation_sum,
         commission,
         source_id,
         hotel_id
@@ -51,6 +51,16 @@ with aq_qr_refund as (
        aq_qr_refund 
 )
 select
-    *
+    id_aq,
+    operation_type,
+    terminal_number,
+    order_number,
+    description,
+    operation_data,
+    operation_data::date date_transaction,
+    operation_sum,
+    commission,
+    source_id,
+    hotel_id
 from
     aq_all 

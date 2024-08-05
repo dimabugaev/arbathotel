@@ -56,7 +56,8 @@ select
 	max(bp.payment_purpose) bank_payment_purpose
 from
 	qr_aq aq left join bank_payments_for_refund	bp 
-		on aq.processing_data = bp.date_transaction and aq.bank_payment_sum = bp.payment_sum and aq.source_id = bp.source_id
+		on aq.processing_data = bp.date_transaction and aq.bank_payment_sum = bp.payment_sum 
+		and (aq.source_id = bp.source_id or aq.order_number is not null)
 group by
 	aq.file_key,
 	aq.id_aq,

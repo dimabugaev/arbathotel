@@ -51,6 +51,8 @@ module "lambda_function_plan_to_extract_psb" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.to_plan_extract_psb_zip}"
 
+  timeout     = 180
+
   attach_network_policy = true
 
   attach_policy_statements = true
@@ -86,6 +88,8 @@ module "lambda_function_plan_to_extract_tinkoff" {
 
   create_package         = false
   local_existing_package = "${var.buildpath}${var.to_plan_extract_tinkoff}"
+
+  timeout     = 180
 
   attach_network_policy = true
 

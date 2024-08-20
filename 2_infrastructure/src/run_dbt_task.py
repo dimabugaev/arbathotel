@@ -2,6 +2,12 @@ import my_utility
 import json
 
 def lambda_handler(event, context):
+    #booking-problems-mart-update 
+    #full-update 
+    #all-marts-update
+    transform_mode = event.get('transform_mode')
+    if not transform_mode:
+        return
     try:
         # Create an ECS client
         ecs_client = my_utility.boto3.client('ecs')
@@ -25,7 +31,7 @@ def lambda_handler(event, context):
                     {'name': 'DBT_POSTGRES_USER', 'value': launch_params['username']},
                     {'name': 'DBT_POSTGRES_PASS', 'value': launch_params['password']},
                     {'name': 'DBT_POSTGRES_DBNAME', 'value': launch_params['dbname']},
-                    {'name': 'DBT_TRANSFORM_MODE', 'value': 'booking-problems-mart-update'}
+                    {'name': 'DBT_TRANSFORM_MODE', 'value': transform_mode}
                 ]
             },
         ]

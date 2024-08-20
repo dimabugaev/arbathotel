@@ -246,6 +246,7 @@ select
 	bg.surname,
 	bg.citizenship_name,
 	bg.birthdate,
+	bg.address_free,
 	'https://online.bnovo.ru/booking/guests/' || sb.booking_id || '/#' as guests_link
 from 
 	err_satuses err inner join {{ ref('src_bookings') }} sb on err.booking_id = sb.booking_id

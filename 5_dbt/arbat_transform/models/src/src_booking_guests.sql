@@ -17,6 +17,7 @@ select
     rg.document_type::int,
     rg.document_series,
     rg.document_number,
+    rg.address_free,
     rg.date_update as guest_updated_at,
     bl.date_update as booking_updated_at
 from

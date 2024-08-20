@@ -10,24 +10,24 @@ with selected_bookings as(
 	from
 		{{ ref('src_bookings') }} 
 	where
-		plan_arrival_date::date <= now()::date 
-		and plan_departure_date::date >= (now() - interval '1 DAY')::date
+		arrival_date <= now()::date 
+		and departure_date >= (now() - interval '1 DAY')::date
 		and (status_id = 3 or status_id = 4)   -- Заселен Выехал
-		and plan_departure_date::date - plan_arrival_date::date > 1
+		and departure_date - arrival_date > 1
 ),
 one_days_booking_guests as (
 	select 
 		sb.booking_id,
-		sb.plan_arrival_date::date as arrival_date, 
-		sb.plan_departure_date::date - sb.plan_arrival_date::date,
+		sb.arrival_date as arrival_date, 
+		sb.departure_date - sb.arrival_date,
 		sbg.id as guest_id
 	from
-		public.src_bookings sb inner join public.src_booking_guests sbg on sb.booking_id = sbg.booking_id 
+		{{ ref('src_bookings') }} sb inner join {{ ref('src_booking_guests') }} sbg on sb.booking_id = sbg.booking_id 
 	where
-		sb.plan_arrival_date::date <= now()::date 
-		and sb.plan_departure_date::date >= (now() - interval '1 DAY')::date
+		sb.arrival_date <= now()::date 
+		and sb.departure_date >= (now() - interval '1 DAY')::date
 		and (sb.status_id = 3 or sb.status_id = 4)
-		and sb.plan_departure_date::date - sb.plan_arrival_date::date = 1
+		and sb.departure_date - sb.arrival_date = 1
 ),
 divergence_guests_amount as (
 	select 

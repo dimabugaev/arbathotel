@@ -1,7 +1,8 @@
 {{ config(
     materialized='table',
     indexes=[
-      {'columns': ['plan_arrival_date', 'plan_departure_date']}
+      {'columns': ['plan_arrival_date', 'plan_departure_date']},
+      {'columns': ['arrival_date', 'departure_date']}
     ]
 ) }}
 
@@ -24,6 +25,8 @@ select
     create_date::timestamp as created_at,
     arrival::timestamp as plan_arrival_date,
     departure::timestamp as plan_departure_date,
+    arrival_date as arrival_date,
+    departure_date as departure_date,
     real_arrival::timestamp,
     real_departure::timestamp,
     adults::decimal(10,0),

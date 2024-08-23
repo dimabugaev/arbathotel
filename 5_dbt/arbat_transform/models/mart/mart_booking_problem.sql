@@ -64,7 +64,7 @@ no_applyed as (
 		selected_bookings sb inner join {{ ref('src_booking_guests') }} as sbg 
 			on sb.booking_id = sbg.booking_id
 		inner join {{ source('bnovo', 'temp_no_applyed_guests') }} as nap 
-			on sbg.id = nap.guest_id::int	
+			on sbg.booking_id = nap.booking_id::int and sbg.id = nap.guest_id::int	
 ),
 no_guests_data as (
 	select 

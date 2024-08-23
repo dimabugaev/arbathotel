@@ -782,10 +782,11 @@ CREATE TABLE bnovo_raw.booking_users_link
 CREATE TABLE bnovo_raw.temp_no_applyed_guests
 (
 	source_id int,
+	booking_id varchar,
 	guest_id varchar,
 	
 	CONSTRAINT fk_sources_no_applyed_guests FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
-	CONSTRAINT unique_source_no_applyed_guest UNIQUE (source_id, guest_id)
+	CONSTRAINT unique_source_no_applyed_guest UNIQUE (source_id, booking_id, guest_id)
 );
 
 CREATE TABLE bnovo_raw.ufms_data

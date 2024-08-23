@@ -29,7 +29,7 @@ def get_guests_no_applyed_for_update(guests_data: dict) -> dict:
 
     if guests_data.get("bookings") is not None:
         for guest in guests_data["bookings"]:
-            res["guests_ids"].append(guest["customer"]["id"])
+            res["guests_ids"].append({"booking_id": guest["id"], "guest_id": guest["customer"]["id"]})
 
     return res
 
@@ -191,8 +191,8 @@ def update_guests(connection, session, source_id: int, period: date):
 
     if len(guest_no_applyed_data["guests_ids"]) > 0:
         insert_query = f"""
-                INSERT INTO bnovo_raw.temp_no_applyed_guests (source_id, guest_id) 
-                VALUES {', '.join([f"('{source_id}', "+ str(guest) +")" for guest in guest_no_applyed_data["guests_ids"]])}
+                INSERT INTO bnovo_raw.temp_no_applyed_guests (source_id, booking_id, guest_id) 
+                VALUES {', '.join([f"('{source_id}', "+ str(guest['booking_id']) +", "+ str(guest['guest_id']) +")" for guest in guest_no_applyed_data["guests_ids"]])}
                 ON CONFLICT DO NOTHING;
                 """
         cursor.execute(insert_query)

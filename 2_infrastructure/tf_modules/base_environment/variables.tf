@@ -56,6 +56,12 @@ variable "extract_bnovo_data_zip" {
   type        = string
 }
 
+variable "extract_bnovo_invoices_zip" {
+  description = "Name pakage"
+  default     = "extract_bnovo_invoices.zip"
+  type        = string
+}
+
 variable "extract_bnovo_finance_zip" {
   description = "Name pakage"
   default     = "extract_bnovo_finance.zip"

@@ -52,43 +52,43 @@ module "lambda_function_bnovo_master_data_extract" {
   tags = local.tags
 }
 
-# module "lambda_function_bnovo_invoices_extract" {
-#   source = "terraform-aws-modules/lambda/aws"
-#   #version = "~> 2.0"
+module "lambda_function_bnovo_invoices_extract" {
+  source = "terraform-aws-modules/lambda/aws"
+  #version = "~> 2.0"
 
-#   function_name                     = "${local.prefixname}-bnovo-invoices-extract-lambda"
-#   description                       = "lambda function for extract invoices from open API Bnovo"
-#   handler                           = "extract_bnovo_invoices.lambda_handler"
-#   runtime                           = "python3.8"
-#   cloudwatch_logs_retention_in_days = 1
+  function_name                     = "${local.prefixname}-bnovo-invoices-extract-lambda"
+  description                       = "lambda function for extract invoices from open API Bnovo"
+  handler                           = "extract_bnovo_invoices.lambda_handler"
+  runtime                           = "python3.8"
+  cloudwatch_logs_retention_in_days = 1
 
-#   publish = true
+  publish = true
 
-#   timeout = 600
+  timeout = 600
 
-#   create_package         = false
-#   local_existing_package = "${var.buildpath}${var.extract_bnovo_invoices_zip}"
+  create_package         = false
+  local_existing_package = "${var.buildpath}${var.extract_bnovo_invoices_zip}"
 
-#   attach_network_policy = true
+  attach_network_policy = true
 
-#   attach_policy_statements = true
-#   policy_statements = {
-#     secretsmanager = {
-#       effect    = "Allow",
-#       actions   = ["secretsmanager:GetSecretValue"],
-#       resources = [aws_secretsmanager_secret.secretsRDS.arn]
-#     }
-#   }
+  attach_policy_statements = true
+  policy_statements = {
+    secretsmanager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.secretsRDS.arn]
+    }
+  }
 
-#   environment_variables = {
-#     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
-#   }
+  environment_variables = {
+    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+  }
 
-#   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
-#   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
+  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
-#   tags = local.tags
-# }
+  tags = local.tags
+}
 
 module "lambda_function_bnovo_finance_extract" {
   source = "terraform-aws-modules/lambda/aws"

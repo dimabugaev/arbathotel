@@ -69,6 +69,7 @@ def update_invoice(connection, session, source_id: int):
     first_page_data = get_invoice_data(session)
 
     page_count = first_page_data['pages']['total_pages']
+    #page_count = min(100, page_count)  #limit pages
 
     invoices_ids = []
 
@@ -87,19 +88,19 @@ def update_invoice(connection, session, source_id: int):
         data_page = get_invoice_data_pages_for_update(get_invoice_data(session, current_page))
 
 
-    if (len(invoices_ids) > 0):
+    # if (len(invoices_ids) > 0):
 
-        cursor = connection.cursor()
-        cursor.execute("""
-            DELETE FROM bnovo_raw.invoices
-            WHERE 
-                source_id = %(source_id)s  
-                AND id not in %(invoices_ids)s;
-        """, {'source_id': source_id, 
-            'invoices_ids': tuple(invoices_ids)})
+    #     cursor = connection.cursor()
+    #     cursor.execute("""
+    #         DELETE FROM bnovo_raw.invoices
+    #         WHERE 
+    #             source_id = %(source_id)s  
+    #             AND id not in %(invoices_ids)s;
+    #     """, {'source_id': source_id, 
+    #         'invoices_ids': tuple(invoices_ids)})
         
-        connection.commit()
-        cursor.close()
+    #     connection.commit()
+    #     cursor.close()
 
 
 def export_bills_from_bnovo_to_rds(source_id: int, sid: str = ""):

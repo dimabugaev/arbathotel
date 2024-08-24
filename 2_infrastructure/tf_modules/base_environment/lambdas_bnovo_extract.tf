@@ -64,7 +64,7 @@ module "lambda_function_bnovo_invoices_extract" {
 
   publish = true
 
-  timeout = 120
+  timeout = 500
 
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_invoices_zip}"

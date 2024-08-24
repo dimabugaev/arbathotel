@@ -204,7 +204,7 @@ def export_data_from_bnovo_to_rds(load_invoices = False):
             update_invoice(conn, http_session, row[2])
 
         sid_map[row[2]] = http_session.cookies.get('SID')
-        sid_list.append({'sid': row[2], 'source_id': http_session.cookies.get('SID')})
+        sid_list.append({'source_id': row[2], 'sid': http_session.cookies.get('SID')})
 
 
     cursor.close()

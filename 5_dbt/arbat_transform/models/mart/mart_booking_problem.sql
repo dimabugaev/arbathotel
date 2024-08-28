@@ -67,7 +67,7 @@ no_applyed as (
 			on sbg.booking_id = nap.booking_id::int and sbg.id = nap.guest_id::int	
 ),
 no_guests_data as (
-	select 
+	select distinct
 		sb.booking_id
 	from 
 		selected_bookings sb left join {{ ref('src_booking_guests') }} as sbg 

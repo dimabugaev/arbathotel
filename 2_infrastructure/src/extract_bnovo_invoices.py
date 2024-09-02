@@ -69,7 +69,7 @@ def update_invoice(connection, session, source_id: int):
     first_page_data = get_invoice_data(session)
 
     page_count = first_page_data['pages']['total_pages']
-    page_count = min(100, page_count)  #limit pages
+    page_count = min(10, page_count)  #limit pages
 
     invoices_ids = []
 

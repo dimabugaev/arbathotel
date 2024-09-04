@@ -227,6 +227,7 @@ err_satuses as(
 		one_day_continue_booking
 )
 select
+	{{ dbt_utils.generate_surrogate_key(['sbh.hotel_id', 'sb.booking_id', 'sb.plan_arrival_date', 'sb.plan_departure_date', 'sb.adults', 'sb.children', 'err.err_status_id']) }} as problem_id,
 	sbh.hotel_id,
 	sbh.name as hotel,
 	sb.booking_id,

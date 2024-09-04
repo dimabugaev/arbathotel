@@ -145,7 +145,7 @@ module "lambda_function_bnovo_booking_extract" {
 
   attach_network_policy = true
 
-  timeout = 600
+  timeout = 900
 
   attach_policy_statements = true
   policy_statements = {

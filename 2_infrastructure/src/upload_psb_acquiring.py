@@ -1,3 +1,4 @@
+import requests.auth
 import my_utility
 import xlrd
 import io
@@ -170,14 +171,17 @@ def get_payments(host, payment_id, login, password):
     session = requests.Session()
     url = f"https://{host}/info/options/byid/?id={payment_id}"
 
-    session.headers.update({
-        'Authorization': f'Basic {login}:{password}'
-    })
+    # session.headers.update({
+    #     'Authorization': f'Basic {login}:{password}',
+    #     'Content-Type': 'application/json'
+    # })
 
 
     payment_data = {}
 
-    with session.get(url) as response:
+    # print(f'Basic {login}:{password}')
+    # print(url)
+    with session.get(url, auth=requests.auth.HTTPBasicAuth(login, password)) as response:
         payment_data = json.loads(response.text) 
 
     return payment_data
@@ -207,7 +211,7 @@ def upload_paykeeper_data(connect):
             s.source_name host,
             s.source_username,
             s.source_password,
-            s.source_id 
+            s.id source_id
         from 
             (select 
                 order_number payment_id,

@@ -1,6 +1,8 @@
 import my_utility
 import xlrd
 import io
+import requests
+import json
 
 from openpyxl import load_workbook
 
@@ -162,7 +164,127 @@ def do_qr_refund(cursor, sheet, file_key):
 
     read_xlsx_sheet(cursor, column_mapping, 'id_payment_refund', sheet, 12, 'banks_raw.psb_acquiring_qr_refund', file_key)
 
+########################### HERE I STOPED
+def get_payments(host, payment_id, login, password):
 
+    session = requests.Session()
+    url = f"https://{host}/info/options/byid/?id={payment_id}"
+
+    session.headers.update({
+        'Authorization': f'Basic {login}:{password}'
+    })
+
+
+    payment_data = {}
+
+    with session.get(url) as response:
+        payment_data = json.loads(response.text) 
+
+    return payment_data
+
+def upload_paykeeper_data(connect):
+    update_plan_query = """
+        with max_date_update as (
+            select 
+                max(date_update) last_writed
+            from
+                banks_raw.paykeeper_payments
+        )
+        ,internet_payments as (
+            select
+                contract_name,
+                rpn,
+                order_number,
+                original_sum
+            from
+                banks_raw.psb_acquiring_term
+            where 
+                ((select last_writed from max_date_update) is null 
+                or date_update > (select last_writed from max_date_update)) and order_number is not null
+        ) 
+        select distinct
+            ip.payment_id,
+            s.source_name host,
+            s.source_username,
+            s.source_password,
+            s.source_id 
+        from 
+            (select 
+                order_number payment_id,
+                contract_name
+            from
+                internet_payments
+            union all
+            select
+                pp.id,
+                s.source_external_key 
+            from
+                banks_raw.paykeeper_payments pp join operate.sources s 
+                on pp.orderid is null and pp.source_id = s.id 
+	        ) ip left join operate.sources s on s.source_type = 6 and ip.contract_name = s.source_external_key;
+    """
+
+    cursor = connect.cursor()
+    cursor.execute(update_plan_query)
+    rows = cursor.fetchall()
+    for row in rows:
+        payment_info = get_payments(row[1], row[0], row[2], row[3])
+        update_payment_in_rds(cursor, row[4], row[0], payment_info)
+        connect.commit()
+    cursor.close()
+    return True
+
+
+
+def update_payment_in_rds(cursor, source_id, payment_id, payment_info):
+    payment_map = {
+            'orderid':'orderid',
+            'client_email':'client_email',
+            'cart':'cart',
+            'client_ip':'client_ip',
+            'user_agent':'user_agent',
+            'fop_receipt_key':'fop_receipt_key',
+            'CARD_NUMBER':'card_number',
+            'EXP':'exp',
+            'RRN':'rpn',
+            'INT_REF':'int_ref',
+            'NAME':'name',
+            'APPROVAL_CODE':'approval_code',
+            'RC':'rc',
+            'RCTEXT':'rctext',
+            'MESSAGE':'message',
+            'ACTION':'action',
+            'fop_uuid':'fop_uuid',
+            'fop_tax_comment':'fop_tax_comment',
+            'fop_fpd':'fop_fpd',
+            'fop_receipt_number':'fop_receipt_number',
+            'fop_url':'fop_url',
+            'fop_fn':'fop_fn',
+            'fop_fnd':'fop_fnd',
+            'fop_rnkkt':'fop_rnkkt',
+            'fop_shift_number':'fop_shift_number' 
+        }
+
+    column_names = 'source_id,id'
+    column_values_params = '%s,%s'
+    column_values = [source_id, payment_id]
+    update_assignments = 'date_update = current_timestamp,source_id = EXCLUDED.source_id'
+    for k, v in payment_map:
+        value = payment_info.get(k)
+        if value:
+            column_values.append(value)
+            column_names += f',{v}'
+            column_values_params += ',%s'
+            update_assignments += f',{v} = EXCLUDED.{v}' 
+
+    insert_query = f"""
+            INSERT INTO banks_raw.paykeeper_payments ({column_names})
+            VALUES ({column_values_params})
+            ON CONFLICT (id)
+            DO UPDATE SET {update_assignments};
+        """
+    cursor.execute(insert_query, tuple(column_values))
+    return True
 
 def upload_data_to_rds():
     source_data = my_utility.get_email_and_storage_data()
@@ -172,10 +294,10 @@ def upload_data_to_rds():
     destination_prefix = 'dev/psb-acquiring/done/'
 
     s3_objects = s3client.list_objects_v2(Bucket=source_bucket, Prefix=source_prefix).get('Contents')
+    conn = my_utility.get_db_connection()
 
     if s3_objects is not None:
 
-        conn = my_utility.get_db_connection()
         cursor = conn.cursor()
 
         for s3_object in s3_objects:
@@ -208,9 +330,11 @@ def upload_data_to_rds():
 
         # Закрытие соединений
         cursor.close()
-        conn.close()
     else:
         print('New data is empty')
+
+    upload_paykeeper_data(conn)
+    conn.close()
 
 def lambda_handler(event, context):
     upload_data_to_rds()

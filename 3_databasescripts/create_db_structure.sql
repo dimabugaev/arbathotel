@@ -874,6 +874,43 @@ drop table if exists banks_raw.psb_acquiring_qr_refund;
 drop table if exists banks_raw.alfa_params;
 drop table if exists banks_raw.alfa_payments;
 
+drop table if exists banks_raw.paykeeper_payments;
+
+
+CREATE TABLE banks_raw.paykeeper_payments
+(
+	source_id int,
+	id varchar primary key, --payment id
+	contract_name varchar,
+    orderid varchar,
+    client_email varchar,
+    cart varchar,
+    client_ip varchar,
+    user_agent varchar,
+    fop_receipt_key varchar,
+    card_number varchar,
+    exp varchar,
+    rpn varchar,
+    int_ref varchar,
+    name varchar,
+    approval_code varchar,
+    rc varchar,
+    rctext varchar,
+    message varchar,
+    action varchar,
+    fop_uuid varchar,
+    fop_tax_comment varchar,
+    fop_fpd varchar,
+    fop_receipt_number varchar,
+    fop_url varchar,
+    fop_fn varchar,
+    fop_fnd varchar,
+    fop_rnkkt varchar,
+    fop_shift_number varchar,
+    date_update timestamp not null default current_timestamp,
+    
+    CONSTRAINT fk_sources_psb_docs FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
 
 
 CREATE TABLE banks_raw.psb_docs

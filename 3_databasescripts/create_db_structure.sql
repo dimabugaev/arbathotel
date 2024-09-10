@@ -884,6 +884,7 @@ CREATE TABLE banks_raw.paykeeper_payments
     orderid varchar,
     client_email varchar,
     cart jsonb,
+    refund_1_cart jsonb,
     client_ip varchar,
     user_agent varchar,
     fop_receipt_key varchar,

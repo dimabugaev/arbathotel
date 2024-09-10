@@ -203,8 +203,10 @@ def upload_paykeeper_data(connect):
             from
                 banks_raw.psb_acquiring_term
             where 
-                ((select last_writed from max_date_update) is null 
-                or date_update > (select last_writed from max_date_update)) and order_number is not null
+                order_number not in (select id from banks_raw.paykeeper_payments)
+                --((select last_writed from max_date_update) is null 
+                --or date_update > (select last_writed from max_date_update)) 
+                and order_number is not null
         ) 
         select distinct
             ip.payment_id,
@@ -266,14 +268,15 @@ def update_payment_in_rds(cursor, source_id, payment_id, payment_info):
             'fop_fn':'fop_fn',
             'fop_fnd':'fop_fnd',
             'fop_rnkkt':'fop_rnkkt',
-            'fop_shift_number':'fop_shift_number' 
+            'fop_shift_number':'fop_shift_number',
+            'refund_1_cart':'refund_1_cart' 
         }
 
     column_names = 'source_id,id'
     column_values_params = '%s,%s'
     column_values = [source_id, payment_id]
     update_assignments = 'date_update = current_timestamp,source_id = EXCLUDED.source_id'
-    for k, v in payment_map:
+    for k, v in payment_map.items():
         value = payment_info.get(k)
         if value:
             column_values.append(value)
@@ -287,6 +290,8 @@ def update_payment_in_rds(cursor, source_id, payment_id, payment_info):
             ON CONFLICT (id)
             DO UPDATE SET {update_assignments};
         """
+    # print(insert_query)
+    # print(column_values)
     cursor.execute(insert_query, tuple(column_values))
     return True
 

@@ -71,6 +71,7 @@ def get_booking_data_pages_for_update(page_data: dict, period: date) -> dict:
             booking["hotel_id"] = booking["hotel"]["id"]
             booking["adults"] = booking["extra"].get("adults")
             booking["children"] = booking["extra"].get("children")
+            booking["main_booking_number"] = booking["extra"].get("bnovobook_group_main_booking_number")
             if booking["arrival"]:
                 booking["arrival_date"] = datetime.strptime(booking["arrival"].split()[0], '%Y-%m-%d').date()
             else:
@@ -186,6 +187,7 @@ def update_booking(connection, session, source_id: int, period: date, current_da
             "auto_booking_cancel": "auto_booking_cancel",
             "adults": "adults",
             "children": "children",
+            "main_booking_number": "main_booking_number",
             "arrival_date": "arrival_date",
             "departure_date": "departure_date",
         }

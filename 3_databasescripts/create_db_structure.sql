@@ -669,6 +669,7 @@ CREATE TABLE bnovo_raw.bookings
     auto_booking_cancel varchar,
     adults decimal(10,0),
     children decimal(10,0),
+    main_booking_number varchar,
     date_update timestamp not null default current_timestamp,
  	arrival_date date null,
 	departure_date date null,

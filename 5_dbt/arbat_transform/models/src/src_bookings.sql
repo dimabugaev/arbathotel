@@ -2,7 +2,9 @@
     materialized='table',
     indexes=[
       {'columns': ['plan_arrival_date', 'plan_departure_date']},
-      {'columns': ['arrival_date', 'departure_date']}
+      {'columns': ['arrival_date', 'departure_date']},
+      {'columns': ['booking_number']},
+      {'columns': ['main_booking_number']},
     ]
 ) }}
 
@@ -14,6 +16,7 @@ select
     id::int as booking_id,
     hotel_id::int,
     number as booking_number,
+    coalesce(main_booking_number, number) as main_booking_number,
     group_id::int as group_id,
     prices_services_total::decimal(18,2),
     prices_rooms_total::decimal(18,2),

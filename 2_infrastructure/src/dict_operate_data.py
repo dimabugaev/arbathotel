@@ -29,6 +29,89 @@ def get_date_from_string_to_query(str_date: str) -> str:
 
     return result
 
+def get_booking_problems() -> list:
+
+    global connection
+
+    cursor = connection.cursor()
+    
+    cursor.execute("""select
+                        m.problem_id,
+                        m.hotel_id,
+                        m.hotel,
+                        m.booking_id,
+                        m.booking_number,
+                        m.booking_link,
+                        m.status_id,
+                        m.status_name,
+                        m.plan_arrival_date,
+                        m.plan_departure_date,
+                        m.adults,
+                        m.children,
+                        m.err_status_id,
+                        m.err_status_name,
+                        m.updated_at,
+                        m.guest_id,
+                        m.name,
+                        m.surname,
+                        m.citizenship_name,
+                        m.birthdate,
+                        m.address_free,
+                        m.document_type,
+                        m.document_series,
+                        m.document_number,
+                        m.guests_link
+                    from 
+                        public.mart_booking_problem m left join operate.booking_problems_state s
+                        on m.problem_id = s.id
+                    where 
+                        s.checked is null or not s.checked
+                    order by
+                        m.plan_arrival_date""")
+    
+    return cursor.fetchall()
+
+def put_booking_problems_state(datastrings: list):
+
+    global connection
+
+    if len(datastrings) > 0:
+        cursor = connection.cursor()
+
+        try:
+          
+            list_of_args = []
+            for newrow in datastrings:
+
+                if (len(str(newrow[0])) == 0 
+                    and len(str(newrow[1])) == 0 
+                    and len(str(newrow[2])) == 0 
+                    and len(str(newrow[3])) == 0):
+                    continue
+                
+                list_of_args.append("('{}', {}, {}, '{}')"
+                    .format(newrow[0], #id
+                    "true" if newrow[1] == '1' else "false",         #checked
+                    "true" if newrow[2] == '1' else "false",         #corrected
+                    newrow[3]))        #comment                               
+
+            if len(list_of_args) > 0:
+
+                args_str = ','.join(list_of_args)
+                cursor.execute("""INSERT INTO operate.booking_problems_state
+                                    (id, checked, corrected, comment)
+                                    VALUES """ + args_str  + """
+                                    on conflict (id) do update
+                                        set 
+                                            checked = EXCLUDED.checked,
+                                            corrected = EXCLUDED.corrected,
+                                            comment = EXCLUDED.comment
+                                    """)
+                connection.commit()
+        except Exception as ex:
+            connection.rollback()
+            raise ex
+
 def get_sources() -> list:
 
     global connection
@@ -561,7 +644,22 @@ def get_dict() -> dict:
     if dict_name == 'report_items_setings':
         result["data"] = get_report_settings(source_id)
 
+    return my_utility.get_response(result)
+
+@app.get("/booking_problems")
+def get_dict() -> dict:
+
+    result = {}
+
+    result["data"] = get_booking_problems()
+
     return my_utility.get_response(result)  
+
+@app.post("/booking_problems")
+def put_booking_problems_state() -> dict:
+    datastrings = app.current_event.json_body
+
+    put_sources(datastrings)
 
 
 @app.post("/dict_operate")

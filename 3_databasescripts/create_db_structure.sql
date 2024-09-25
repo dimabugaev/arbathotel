@@ -43,7 +43,14 @@ CREATE TABLE operate.devices
 	 CONSTRAINT fk_source_devices FOREIGN KEY ( source_id ) REFERENCES operate.sources  ( id )
 	 --CONSTRAINT fk_hotel_devices FOREIGN KEY ( hotel_id ) REFERENCES operate.hotels  ( id )
 );
- 
+
+create table operate.booking_problems_state
+(
+	id text primary key,
+	checked boolean,
+	corrected boolean,
+	comment text
+);
  
 CREATE OR REPLACE FUNCTION operate.source_update_trigger_fnc()
   RETURNS trigger AS

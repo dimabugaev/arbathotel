@@ -80,6 +80,20 @@ module "api_gateway" {
       //integration_type   = "LAMBDA_PROXY"
     }
 
+    "GET /booking_problems" = {
+      lambda_arn             = module.lambda_function_dict_operate.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
+    "POST /booking_problems" = {
+      lambda_arn             = module.lambda_function_dict_operate.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
     "POST /report-adr/{source_id}" = {
       lambda_arn             = module.lambda_function_report_bnovo.lambda_function_arn
       payload_format_version = "2.0"

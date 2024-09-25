@@ -60,7 +60,9 @@ def get_booking_problems() -> list:
                         m.document_type,
                         m.document_series,
                         m.document_number,
-                        m.guests_link
+                        m.guests_link,
+                        coalesce(s.comment, '') comment,
+                        coalesce(s.corrected, False) corrected
                     from 
                         public.mart_booking_problem m left join operate.booking_problems_state s
                         on m.problem_id = s.id

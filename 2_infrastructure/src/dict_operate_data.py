@@ -649,7 +649,7 @@ def get_dict() -> dict:
     return my_utility.get_response(result)
 
 @app.get("/booking_problems")
-def get_dict() -> dict:
+def get_booking_problems() -> dict:
 
     result = {}
 
@@ -658,10 +658,10 @@ def get_dict() -> dict:
     return my_utility.get_response(result)  
 
 @app.post("/booking_problems")
-def put_booking_problems_state() -> dict:
+def put_booking_problems() -> dict:
     datastrings = app.current_event.json_body
 
-    put_sources(datastrings)
+    put_booking_problems_state(datastrings)
 
 
 @app.post("/dict_operate")

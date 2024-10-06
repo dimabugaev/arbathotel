@@ -29,7 +29,7 @@ def get_date_from_string_to_query(str_date: str) -> str:
 
     return result
 
-def get_booking_problems() -> list:
+def get_booking_problems_state() -> list:
 
     global connection
 
@@ -653,7 +653,7 @@ def get_booking_problems() -> dict:
 
     result = {}
 
-    result["data"] = get_booking_problems()
+    result["data"] = get_booking_problems_state()
 
     return my_utility.get_response(result)  
 

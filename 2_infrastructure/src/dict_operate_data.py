@@ -66,8 +66,8 @@ def get_booking_problems_state() -> list:
                     from 
                         public.mart_booking_problem m left join operate.booking_problems_state s
                         on m.problem_id = s.id
-                    where 
-                        s.checked is null or not s.checked
+                    --where 
+                    --    s.checked is null or not s.checked
                     order by
                         m.plan_arrival_date""")
     

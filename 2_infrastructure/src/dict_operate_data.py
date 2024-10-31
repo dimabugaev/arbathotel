@@ -145,7 +145,9 @@ def get_hotels() -> list:
     
     cursor.execute("""select 
                         h.id,
-                        h.hotel_name 
+                        h.hotel_name,
+                        h.bnovo_id,
+                        h.synonyms 
                       from 
                         operate.hotels h
                       order by
@@ -338,13 +340,17 @@ def put_hotels(datastrings: list):
           for newrow in datastrings:
 
               if (len(str(newrow[0])) == 0 
-                  and len(str(newrow[1])) == 0):
+                  and len(str(newrow[1])) == 0
+                  and len(str(newrow[2])) == 0
+                  and len(str(newrow[3])) == 0):
                   continue
               
 
-              list_of_args.append("({}, '{}')"
+              list_of_args.append("({}, '{}', '{}', '{}')"
                   .format(my_utility.num_to_query_substr(newrow[0]), #id
-                  newrow[1]))                                        #hotel_name
+                  newrow[1],                                         #hotel_name
+                  newrow[2],                                         #bnovo_id
+                  newrow[3]))                                        #synonyms
                   
 
           if len(list_of_args) > 0:
@@ -353,24 +359,29 @@ def put_hotels(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_hotels_table_update
-                                (id, hotel_name)
+                                (id, hotel_name, bnovo_id, synonyms)
                               VALUES """ + args_str)
             
 
             cursor.execute("""                    
                     UPDATE operate.hotels t
-                        SET hotel_name = u.hotel_name
+                        SET 
+                           hotel_name = u.hotel_name,
+                           bnovo_id = u.bnovo_id,
+                           synonyms = u.synonyms,
                     FROM operate.hotels s
                         INNER JOIN temp_hotels_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.hotel_name
+                        SELECT s.hotel_name, s.bnovo_id, s.synonyms
                         EXCEPT
-                        SELECT u.hotel_name
+                        SELECT u.hotel_name, u.bnovo_id, u.synonyms
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.hotels (hotel_name)
+                    INSERT INTO operate.hotels (hotel_name, bnovo_id, synonyms)
                     SELECT     
-                        hotel_name
+                        hotel_name,
+                        bnovo_id,
+                        synonyms
                     FROM temp_hotels_table_update
                     WHERE
                         id is NULL;

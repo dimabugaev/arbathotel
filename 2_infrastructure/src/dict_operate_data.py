@@ -368,7 +368,7 @@ def put_hotels(datastrings: list):
                         SET 
                            hotel_name = u.hotel_name,
                            bnovo_id = u.bnovo_id,
-                           synonyms = u.synonyms,
+                           synonyms = u.synonyms
                     FROM operate.hotels s
                         INNER JOIN temp_hotels_table_update u ON u.id = s.id
                     WHERE EXISTS (

@@ -102,7 +102,7 @@ with banks_payments as (
         from 
             banks_payments bp join hotel_syn hs on bp.payment_purpose like '%' || hs.synonym || '%'
         where
-            bp.hotel_id is null and bp.out_summ <> 0 and bp.id_aq = ''
+            bp.hotel_id is null and bp.out_summ <> 0 and bp.id_aq = '' 
         group by
             bp.source_id,
             bp.id,

@@ -120,7 +120,7 @@ with psb_strings as (
 select
 	pdr.doc_id id,
 	pdr.source_id,
-    pdr.id_aq,
+    coalesce(pdr.id_aq, ''),
     pdr.booking_id,
     pdr.booking_number,
     pdr.hotel_id,

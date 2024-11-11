@@ -134,11 +134,13 @@ with banks_payments as (
                 hotel_id is null and in_summ <> 0 and id_aq = ''
         ) bp join bnovo_bank_invoices bi 
             on bi.cyrillic_invoice_number = {{ convert_to_cyrillic('upper(bp.key_invoice)') }}
-                and bi.source_id = bp.source_id
+                --and bi.source_id = bp.source_id
     group by
         bp.source_id,
         bp.id,
         bp.id_aq
+    having 
+   		min(bi.booking_id) <> 0
 )
 ,ordinar_in_payment_hotel_info as (
     select distinct

@@ -115,7 +115,7 @@ with psb_strings as (
         aq.booking_id,
         aq.booking_number 
     from
-        psb_strings pdr left join aq_all aq on pdr.doc_id = aq.bank_payment_id and pdr.source_id = aq.source_id    
+        psb_strings pdr left join aq_all aq on pdr.doc_id = aq.bank_payment_id and (pdr.source_id = aq.source_id  or (order_number is not null and order_number <> ''))  
 )
 select
 	pdr.doc_id id,

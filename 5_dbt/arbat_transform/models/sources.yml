@@ -60,3 +60,5 @@ sources:
         identifier: psb_acquiring_qr
       - name: psb_acquiring_qr_refund
         identifier: psb_acquiring_qr_refund
+      - name: paykeeper_payments
+        identifier: paykeeper_payments

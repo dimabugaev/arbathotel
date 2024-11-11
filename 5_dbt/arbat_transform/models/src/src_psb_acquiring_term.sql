@@ -12,13 +12,16 @@ with qr_aq as (
 		aq.operation_sum::decimal(18,2) operation_sum,
 		aq.commission::decimal(18,2) commission,
 		aq.to_transaction::decimal(18,2) to_transaction,
-		d.source_id source_id,
-		d.hotel_id hotel_id,
+		coalesce(d.source_id, iaq.source_id) source_id,
+		coalesce(d.hotel_id, iaq.hotel_id) hotel_id,
+		coalesce(iaq.booking_id, '') booking_id,
+		coalesce(iaq.booking_number, '') booking_number,
 		sum(aq.to_transaction::decimal(18,2)) over (partition by aq.file_key) bank_payment_sum,
 		sum(aq.operation_sum::decimal(18,2)) over (partition by aq.file_key) total_operation_sum,
 		sum(aq.commission::decimal(18,2)) over (partition by aq.file_key) total_commision_sum
 	from 
-        {{ source('banks', 'psb_acquiring_term') }} aq left join {{ source('operate', 'devices') }} d on aq.device_number::int = d.id 
+        {{ source('banks', 'psb_acquiring_term') }} aq left join {{ source('operate', 'devices') }} d on aq.device_number::int = d.id
+		left join {{ ref('calc_bookings_hotels_for_internet_aq') }} iaq on aq.order_number = iaq.order_number
 )
 ,bank_payments_for_refund as (
 	select
@@ -52,6 +55,8 @@ select
 	max(bp.extracted_commission) extracted_commission,
 	max(aq.source_id) source_id,
 	max(aq.hotel_id) hotel_id,
+	max(aq.booking_id) booking_id,
+	max(aq.booking_number) booking_number,
 	max(bp.id) bank_payment_id,
 	max(bp.payment_purpose) bank_payment_purpose
 from

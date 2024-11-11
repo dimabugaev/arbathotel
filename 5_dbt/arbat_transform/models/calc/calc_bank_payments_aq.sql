@@ -22,9 +22,7 @@ with banks_payments as (
         null hotel_id,
         '' hotel_name,
         null terminal_number,
-        null order_number,
-        null booking_id,
-        null booking_number
+        null order_number
     from
         {{ ref('src_bank_tinkoff_payments') }}
     
@@ -47,9 +45,7 @@ with banks_payments as (
         hotel_id,
         hotel_name,
         terminal_number,
-        order_number,
-        booking_id,
-        booking_number
+        order_number
     from
         {{ ref('calc_psb_payments_with_aq') }}
 
@@ -72,9 +68,7 @@ with banks_payments as (
         null hotel_id,
         '' hotel_name,
         null terminal_number,
-        null order_number,
-        null booking_id,
-        null booking_number
+        null order_number
     from
         {{ ref('src_bank_alfa_payments') }}
 )
@@ -97,8 +91,6 @@ select
     bp.hotel_name hotel_name,
     bp.terminal_number,
     bp.order_number,
-    bp.booking_id,
-    bp.booking_number
     ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id, bp.id_aq, bp.out_summ) as sort_as_count_debt
 from
    banks_payments bp join {{ ref('seed_sources_type_id') }} st

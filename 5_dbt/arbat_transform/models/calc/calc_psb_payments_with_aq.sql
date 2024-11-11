@@ -22,7 +22,9 @@ with psb_strings as (
         operation_sum summa_rur,
         bank_payment_id,
         source_id,
-        hotel_id
+        hotel_id,
+        booking_id,
+        booking_number
     from 
        aq_term
     union all
@@ -37,7 +39,9 @@ with psb_strings as (
         commission summa_rur,
         bank_payment_id,
         source_id,
-        hotel_id
+        hotel_id,
+        booking_id,
+        booking_number
     from 
        aq_term 
     union all
@@ -52,7 +56,9 @@ with psb_strings as (
         operation_sum summa_rur,
         bank_payment_id,
         source_id,
-        hotel_id
+        hotel_id,
+        booking_id,
+        booking_number
     from 
        aq_qr
     union all
@@ -67,7 +73,9 @@ with psb_strings as (
         commission summa_rur,
         bank_payment_id,
         source_id,
-        hotel_id
+        hotel_id,
+        booking_id,
+        booking_number
     from 
        aq_qr
     union all
@@ -82,7 +90,9 @@ with psb_strings as (
         operation_sum summa_rur,
         bank_payment_id,
         source_id,
-        hotel_id
+        hotel_id,
+        booking_id,
+        booking_number
     from 
        aq_qr_refund 
 )
@@ -101,7 +111,9 @@ with psb_strings as (
         coalesce(aq.summa_rur, pdr.summa_rur) summa_rur,
         aq.terminal_number,
         aq.order_number,
-        aq.hotel_id 
+        aq.hotel_id,
+        aq.booking_id,
+        aq.booking_number 
     from
         psb_strings pdr left join aq_all aq on pdr.doc_id = aq.bank_payment_id and pdr.source_id = aq.source_id    
 )
@@ -109,6 +121,8 @@ select
 	pdr.doc_id id,
 	pdr.source_id,
     pdr.id_aq,
+    pdr.booking_id,
+    pdr.booking_number,
     pdr.hotel_id,
     h.hotel_name,
 	s.source_external_key as account_number,

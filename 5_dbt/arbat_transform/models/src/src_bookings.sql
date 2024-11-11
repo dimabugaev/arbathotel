@@ -4,6 +4,7 @@
       {'columns': ['plan_arrival_date', 'plan_departure_date']},
       {'columns': ['arrival_date', 'departure_date']},
       {'columns': ['booking_number']},
+      {'columns': ['booking_id']},
       {'columns': ['main_booking_number']},
     ]
 ) }}

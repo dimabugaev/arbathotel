@@ -13,6 +13,8 @@ with refund_aq as (
 		-aq.refund_sum::decimal(18,2) to_transaction,
 		d.source_id source_id,
 		d.hotel_id hotel_id,
+		'' booking_id,
+		'' booking_number,
 		sum(-aq.refund_sum::decimal(18,2)) over (partition by aq.file_key) bank_payment_sum,
 		sum(-aq.refund_sum::decimal(18,2)) over (partition by aq.file_key) total_operation_sum,
 		0::decimal(18,2) total_commision_sum,
@@ -49,6 +51,8 @@ select
 	max(aq.total_commision_sum) total_commision_sum,
 	max(aq.source_id) source_id,
 	max(aq.hotel_id) hotel_id,
+	max(aq.booking_id) booking_id,
+	max(aq.booking_number) booking_number,
 	max(bp.id) bank_payment_id,
 	max(bp.payment_purpose) bank_payment_purpose
 from

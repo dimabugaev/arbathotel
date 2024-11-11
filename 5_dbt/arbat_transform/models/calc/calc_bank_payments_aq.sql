@@ -149,12 +149,12 @@ with banks_payments as (
         t1.id_aq,
         t1.booking_id,
         t2.booking_number,
-        t2.hotel_id,
+        t3.id hotel_id,
         t3.hotel_name
     from 
         booking_data_ordinary_in_payment as t1 
         join {{ ref('src_bookings') }} t2 on t1.booking_id = t2.booking_id    
-        join {{ source('operate', 'hotels') }} t3 on t2.hotel_id = t3.id    
+        join {{ source('operate', 'hotels') }} t3 on t2.hotel_id::text = t3.bnovo_id   
 )
 select
     bp.source_id,

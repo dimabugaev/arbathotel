@@ -13,8 +13,6 @@ with qr_aq as (
 		aq.to_tramsaction::decimal(18,2) to_transaction,
 		d.source_id source_id,
 		d.hotel_id hotel_id,
-		null booking_id,
-		null booking_number,
 		sum(aq.to_tramsaction::decimal(18,2)) over (partition by aq.file_key) bank_payment_sum,
 		sum(aq.operation_sum::decimal(18,2)) over (partition by aq.file_key) total_operation_sum,
 		sum(aq.operation_com::decimal(18,2)) over (partition by aq.file_key) total_commision_sum,
@@ -51,8 +49,6 @@ select
 	max(aq.total_commision_sum) total_commision_sum,
 	max(aq.source_id) source_id,
 	max(aq.hotel_id) hotel_id,
-	max(aq.booking_id) booking_id,
-	max(aq.booking_number) booking_number,
 	max(bp.id) bank_payment_id,	
 	max(bp.payment_purpose) bank_payment_purpose
 from

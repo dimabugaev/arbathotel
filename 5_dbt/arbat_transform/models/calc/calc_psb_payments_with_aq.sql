@@ -57,8 +57,8 @@ with psb_strings as (
         bank_payment_id,
         source_id,
         hotel_id,
-        booking_id,
-        booking_number
+        null,
+        null
     from 
        aq_qr
     union all
@@ -74,8 +74,8 @@ with psb_strings as (
         bank_payment_id,
         source_id,
         hotel_id,
-        booking_id,
-        booking_number
+        null,
+        null
     from 
        aq_qr
     union all
@@ -91,8 +91,8 @@ with psb_strings as (
         bank_payment_id,
         source_id,
         hotel_id,
-        booking_id,
-        booking_number
+        null,
+        null
     from 
        aq_qr_refund 
 )

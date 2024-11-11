@@ -98,7 +98,7 @@ select
     bp.terminal_number,
     bp.order_number,
     bp.booking_id,
-    bp.booking_number
+    bp.booking_number,
     ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id, bp.id_aq, bp.out_summ) as sort_as_count_debt
 from
    banks_payments bp join {{ ref('seed_sources_type_id') }} st

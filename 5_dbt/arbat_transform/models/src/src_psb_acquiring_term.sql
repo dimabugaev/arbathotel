@@ -14,8 +14,8 @@ with qr_aq as (
 		aq.to_transaction::decimal(18,2) to_transaction,
 		coalesce(d.source_id, iaq.source_id) source_id,
 		coalesce(d.hotel_id, iaq.hotel_id) hotel_id,
-		coalesce(iaq.booking_id, '') booking_id,
-		coalesce(iaq.booking_number, '') booking_number,
+		iaq.booking_id booking_id,
+		iaq.booking_number booking_number,
 		sum(aq.to_transaction::decimal(18,2)) over (partition by aq.file_key) bank_payment_sum,
 		sum(aq.operation_sum::decimal(18,2)) over (partition by aq.file_key) total_operation_sum,
 		sum(aq.commission::decimal(18,2)) over (partition by aq.file_key) total_commision_sum

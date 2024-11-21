@@ -97,7 +97,6 @@ module "nat" {
   source  = "int128/nat-instance/aws"
   version = "2.1.0"
   #version = "~> 4.0"
-
   key_name = "arbat-developer-key"
 
   name                        = "main-nat"

@@ -191,9 +191,9 @@ def update_guests(connection, session, source_id: int, period: date):
         guest_data_raw = get_booking_guests(session, row[0])
         guest_data = get_guests_data_for_update(guest_data_raw)
 
-        user_data = get_users_data_for_update(guest_data_raw)
-        booking_notes_data = get_booking_notes_for_update(guest_data_raw)
-        cancel_reasons_data = get_cancel_reasons_for_update(guest_data_raw)
+        user_data = get_users_data_for_update(guest_data_raw["booking"])
+        booking_notes_data = get_booking_notes_for_update(guest_data_raw["booking"])
+        cancel_reasons_data = get_cancel_reasons_for_update(guest_data_raw["booking"])
 
 
         if len(user_data["users"]) > 0:

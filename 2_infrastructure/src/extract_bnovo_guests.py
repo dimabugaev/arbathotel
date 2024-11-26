@@ -196,7 +196,7 @@ def update_guests(connection, session, source_id: int, period: date):
         cancel_reasons_data = get_cancel_reasons_for_update(guest_data_raw["booking"])
 
 
-        if len(user_data["users"]) > 0:
+        if user_data["users"][0]["id"]:
             insert_query = f"""
             INSERT INTO bnovo_raw.booking_users_link (source_id, booking_id, user_id) 
             VALUES {', '.join([f"('{source_id}', '{row[0]}', "+ str(user["id"]) +")" for user in user_data["users"]])}

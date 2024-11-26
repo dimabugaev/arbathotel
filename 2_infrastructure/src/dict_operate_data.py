@@ -74,6 +74,19 @@ def get_booking_problems_state() -> list:
     
     return cursor.fetchall()
 
+def get_canceled_booking_state() -> list:
+
+    global connection
+
+    cursor = connection.cursor()
+    
+    cursor.execute("""select
+                        *
+                    from 
+                        public.mart_canceled_bookings""")
+    
+    return cursor.fetchall()
+
 def put_booking_problems_state(datastrings: list):
 
     global connection
@@ -674,6 +687,15 @@ def put_booking_problems() -> dict:
     datastrings = app.current_event.json_body
 
     put_booking_problems_state(datastrings)
+
+@app.get("/cancel_bookings")
+def get_cancel_bookings() -> dict:
+
+    result = {}
+
+    result["data"] = get_canceled_booking_state()
+
+    return my_utility.get_response(result) 
 
 
 @app.post("/dict_operate")

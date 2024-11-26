@@ -10,8 +10,15 @@ with selected_bookings as(
 	from
 		{{ ref('src_bookings') }} 
 	where
-		arrival_date <= now()::date 
-		and departure_date >= (now() - interval '1 DAY')::date
+		arrival_date <= now()::date
+		and departure_date >= 
+        case 
+            when extract(dow from now()) = 1 then -- Если сегодня понедельник
+                (now() - interval '3 days')::date -- Берем пятницу
+            else 
+                (now() - interval '1 day')::date -- Иначе берем вчера
+        end 
+		--and departure_date >= (now() - interval '1 DAY')::date
 		and (status_id = 3 or status_id = 4)   -- Заселен Выехал
 		and departure_date - arrival_date > 1
 ),
@@ -24,8 +31,15 @@ one_days_booking_guests as (
 	from
 		{{ ref('src_bookings') }} sb inner join {{ ref('src_booking_guests') }} sbg on sb.booking_id = sbg.booking_id 
 	where
-		sb.arrival_date <= now()::date 
-		and sb.departure_date >= (now() - interval '1 DAY')::date
+		sb.arrival_date <= now()::date
+		and sb.departure_date >= 
+        case 
+            when extract(dow from now()) = 1 then -- Если сегодня понедельник
+                (now() - interval '3 days')::date -- Берем пятницу
+            else 
+                (now() - interval '1 day')::date -- Иначе берем вчера
+        end 
+		--and sb.departure_date >= (now() - interval '1 DAY')::date
 		and (sb.status_id = 3 or sb.status_id = 4)
 		and sb.departure_date - sb.arrival_date = 1
 ),

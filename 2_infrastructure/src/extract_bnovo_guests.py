@@ -200,7 +200,7 @@ def update_guests(connection, session, source_id: int, period: date):
             insert_query = f"""
             INSERT INTO bnovo_raw.booking_users_link (source_id, booking_id, user_id) 
             VALUES {', '.join([f"('{source_id}', '{row[0]}', "+ str(user["id"]) +")" for user in user_data["users"]])}
-            ON CONFLICT DO UPDATE SET user_id = EXCLUDED.user_id;
+            ON CONFLICT (source_id, booking_id) DO UPDATE SET user_id = EXCLUDED.user_id;
             """
             cursor.execute(insert_query)
 
@@ -210,7 +210,7 @@ def update_guests(connection, session, source_id: int, period: date):
             insert_query = f"""
             INSERT INTO bnovo_raw.booking_cancel_reason_link (source_id, booking_id, cancel_reason_id) 
             VALUES {', '.join([f"('{source_id}', '{row[0]}', "+ str(cancel_reason["id"]) +")" for cancel_reason in cancel_reasons_data["cancel_reasons"]])}
-            ON CONFLICT DO UPDATE SET cancel_reason_id = EXCLUDED.cancel_reason_id;
+            ON CONFLICT (source_id, booking_id) DO UPDATE SET cancel_reason_id = EXCLUDED.cancel_reason_id;
             """
             cursor.execute(insert_query)
 

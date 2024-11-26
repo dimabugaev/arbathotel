@@ -797,7 +797,7 @@ CREATE TABLE bnovo_raw.booking_cancel_reason_link
 	date_update timestamp not null default current_timestamp,
 	
 	CONSTRAINT fk_sources_booking_cancel_reason_link FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
-	CONSTRAINT unique_source_booking_cancel_reason UNIQUE (source_id, booking_id, cancel_reason_id)
+	CONSTRAINT unique_source_booking_cancel_reason UNIQUE (source_id, booking_id)
 );
 
 CREATE TABLE bnovo_raw.users

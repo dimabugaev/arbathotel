@@ -37,6 +37,16 @@ sources:
         identifier: guests
       - name: booking_guests_link
         identifier: booking_guests_link
+      - name: cancel_reasons
+        identifier: cancel_reasons
+      - name: booking_cancel_reason_link
+        identifier: booking_cancel_reason_link
+      - name: users
+        identifier: users
+      - name: booking_users_link
+        identifier: booking_users_link
+      - name: booking_notes
+        identifier: booking_notes
       - name: temp_no_applyed_guests
         identifier: temp_no_applyed_guests
       - name: ufms_data

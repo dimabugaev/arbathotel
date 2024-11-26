@@ -432,6 +432,11 @@ drop table if exists bnovo_raw.ufms_data;
 drop table if exists bnovo_raw.load_bookings_by_period;
 drop table if exists bnovo_raw.users;
 drop table if exists bnovo_raw.booking_users_link;
+drop table if exists bnovo_raw.cancel_reasons;
+drop table if exists bnovo_raw.booking_cancel_reason_link;
+drop table if exists bnovo_raw.booking_notes;
+
+
 
 
 CREATE TABLE bnovo_raw.items
@@ -757,6 +762,42 @@ CREATE TABLE bnovo_raw.booking_guests_link
 	
 	CONSTRAINT fk_sources_booking_guests_link FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
 	CONSTRAINT unique_source_booking_guest UNIQUE (source_id, booking_id, guest_id)
+);
+
+CREATE TABLE bnovo_raw.booking_notes
+(
+	source_id int,
+	id varchar primary key,
+	booking_id varchar,
+	user_id varchar,
+	name varchar,
+	description varchar,
+	date_update timestamp not null default current_timestamp,
+	
+	CONSTRAINT fk_sources_booking_notes FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
+
+CREATE TABLE bnovo_raw.cancel_reasons
+(
+	source_id int,
+	id varchar,
+    name varchar,
+    hotel_id varchar,
+    date_update timestamp not null default current_timestamp,
+    
+	CONSTRAINT fk_sources_cancel_reasons FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
+CREATE TABLE bnovo_raw.booking_cancel_reason_link
+(
+	source_id int,
+	booking_id varchar,
+	cancel_reason_id varchar,
+	date_update timestamp not null default current_timestamp,
+	
+	CONSTRAINT fk_sources_booking_cancel_reason_link FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id ),
+	CONSTRAINT unique_source_booking_cancel_reason UNIQUE (source_id, booking_id, cancel_reason_id)
 );
 
 CREATE TABLE bnovo_raw.users

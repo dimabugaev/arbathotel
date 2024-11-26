@@ -49,6 +49,29 @@ def get_guests_data_for_update(guests_data: dict) -> dict:
 
     return res
 
+def get_booking_notes_for_update(guests_data: dict) -> dict:
+    
+    res = {}
+    res["booking_notes"] = []
+    res["booking_notes_ids"] = []
+
+    for booking_note in guests_data["booking_notes"]:
+        res["booking_notes"].append(booking_note)
+        res["booking_notes_ids"].append(booking_note["id"])
+
+    return res
+
+def get_cancel_reasons_for_update(guests_data: dict) -> dict:
+    
+    res = {}
+    res["cancel_reasons"] = []
+    res["cancel_reasons_ids"] = []
+
+    res["cancel_reasons"].append(guests_data["cancel_reason"])
+    res["cancel_reasons_ids"].append(guests_data["cancel_reason"]["id"])
+
+    return res
+
 def get_users_data_for_update(guests_data: dict) -> dict:
     
     res = {}
@@ -63,6 +86,20 @@ def get_users_data_for_update(guests_data: dict) -> dict:
 
 def update_guests(connection, session, source_id: int, period: date):
     
+    booking_notes_map = {            
+	        "id": "id",
+            "booking_id": "booking_id",
+            "user_id": "user_id",
+            "name": "name",
+            "description": "description"
+        }
+
+    cancel_reasons_map = {            
+	        "id": "id",
+            "name": "name",
+            "hotel_id": "hotel_id"
+        }
+
     users_map = {            
 	        "id": "id",
             "username": "username",
@@ -154,17 +191,38 @@ def update_guests(connection, session, source_id: int, period: date):
         guest_data_raw = get_booking_guests(session, row[0])
         guest_data = get_guests_data_for_update(guest_data_raw)
 
-        # user_data = get_users_data_for_update(guest_data_raw)
+        user_data = get_users_data_for_update(guest_data_raw)
+        booking_notes_data = get_booking_notes_for_update(guest_data_raw)
+        cancel_reasons_data = get_cancel_reasons_for_update(guest_data_raw)
 
-        # if len(user_data["users"]) > 0:
-        #     insert_query = f"""
-        #     INSERT INTO bnovo_raw.booking_users_link (source_id, booking_id, user_id) 
-        #     VALUES {', '.join([f"('{source_id}', '{row[0]}', "+ str(user["id"]) +")" for user in user_data["users"]])}
-        #     ON CONFLICT DO UPDATE SET user_id = EXCLUDED.user_id;
-        #     """
-        #     cursor.execute(insert_query)
 
-        #     my_utility.update_dim_raw(connection, user_data["users"], "users"+uuid.uuid4().hex, "bnovo_raw.users", users_map, source_id)    
+        if len(user_data["users"]) > 0:
+            insert_query = f"""
+            INSERT INTO bnovo_raw.booking_users_link (source_id, booking_id, user_id) 
+            VALUES {', '.join([f"('{source_id}', '{row[0]}', "+ str(user["id"]) +")" for user in user_data["users"]])}
+            ON CONFLICT DO UPDATE SET user_id = EXCLUDED.user_id;
+            """
+            cursor.execute(insert_query)
+
+            my_utility.update_dim_raw(connection, user_data["users"], "users"+uuid.uuid4().hex, "bnovo_raw.users", users_map, source_id)
+
+        if len(cancel_reasons_data["cancel_reasons"]) > 0:
+            insert_query = f"""
+            INSERT INTO bnovo_raw.booking_cancel_reason_link (source_id, booking_id, cancel_reason_id) 
+            VALUES {', '.join([f"('{source_id}', '{row[0]}', "+ str(cancel_reason["id"]) +")" for cancel_reason in cancel_reasons_data["cancel_reasons"]])}
+            ON CONFLICT DO UPDATE SET cancel_reason_id = EXCLUDED.cancel_reason_id;
+            """
+            cursor.execute(insert_query)
+
+            my_utility.update_dim_raw(connection, cancel_reasons_data["cancel_reasons"], "cancel_reasons"+uuid.uuid4().hex, "bnovo_raw.cancel_reasons", cancel_reasons_map, source_id)    
+
+        if len(booking_notes_data["booking_notes"]) > 0:
+            
+            delete_query = "DELETE FROM bnovo_raw.booking_notes WHERE booking_id = %(booking_id)s and id NOT IN %(booking_notes_ids)s;"
+            cursor.execute(delete_query, {'booking_id': row[0], 'booking_notes_ids': tuple(booking_notes_data["booking_notes_ids"])})
+
+            my_utility.update_dim_raw(connection, booking_notes_data["booking_notes"], "booking_notes"+uuid.uuid4().hex, "bnovo_raw.booking_notes", booking_notes_map, source_id)    
+
 
         if len(guest_data["guests"]) < 1:
             #connection.commit()

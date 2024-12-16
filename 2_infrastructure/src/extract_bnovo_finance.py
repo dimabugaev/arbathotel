@@ -268,7 +268,8 @@ def export_finance_from_bnovo_to_rds(source_id: int, period: date, sid: str = ""
 
 def lambda_handler(event, context):
 
-    sid = event['sid']
+    #sid = event['sid']
+    sid = ''
     source_id = event['source_id']
     period = date(event['year'], event['month'], 1)
     export_finance_from_bnovo_to_rds(source_id, period, sid)

@@ -24,7 +24,8 @@ with banks_payments as (
         null terminal_number,
         null order_number,
         null booking_id,
-        null booking_number
+        null booking_number,
+        null budget_item
     from
         {{ ref('src_bank_tinkoff_payments') }}
     
@@ -49,7 +50,8 @@ with banks_payments as (
         terminal_number,
         order_number,
         booking_id,
-        booking_number
+        booking_number,
+        budget_item
     from
         {{ ref('calc_psb_payments_with_aq') }}
 
@@ -74,7 +76,8 @@ with banks_payments as (
         null terminal_number,
         null order_number,
         null booking_id,
-        null booking_number
+        null booking_number,
+        null budget_item
     from
         {{ ref('src_bank_alfa_payments') }}
 )
@@ -162,6 +165,7 @@ select
     bp.id_aq,
     bp.account_number,
     bp.source_name,
+    bp.budget_item,
     st.type_id,
     st.type_name,
     bp.date_transaction,

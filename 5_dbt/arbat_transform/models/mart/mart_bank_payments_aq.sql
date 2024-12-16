@@ -25,5 +25,6 @@ select
     order_number,
     booking_id,
     booking_number,
+    budget_item,
     sort_as_count_debt
 from {{ ref('calc_bank_payments_aq') }}

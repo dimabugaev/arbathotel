@@ -103,14 +103,14 @@ def get_data_pages_for_update(page_data: dict, period: date) -> dict:
     res["payments_records_id"] = []
 
     for payment in page_data["payments"]:
-        str_n = 0
-        for payment_record in payment["extra"]["payment_records"]:
-            str_n += 1
-            payment_record["id"] = payment["id"] + str(str_n)
-            payment_record["payment_id"] = payment["id"]
-            payment_record["period_month"] = date_begin
-            res["payment_records"].append(payment_record)
-            res["payments_records_id"].append(payment_record["id"]) 
+        # str_n = 0
+        # for payment_record in payment["extra"]["payment_records"]:
+        #     str_n += 1
+        #     payment_record["id"] = payment["id"] + str(str_n)
+        #     payment_record["payment_id"] = payment["id"]
+        #     payment_record["period_month"] = date_begin
+        #     res["payment_records"].append(payment_record)
+        #     res["payments_records_id"].append(payment_record["id"]) 
 
         payment["period_month"] = date_begin
         res["payments"].append(payment)
@@ -187,10 +187,10 @@ def update_finance(connection, session, source_id: int, period: date, supplier_i
     while True:
 
         my_utility.update_dim_raw(connection, data_page["payments"], "payments", "bnovo_raw.payments", payments_map, source_id)
-        my_utility.update_dim_raw(connection, data_page["payment_records"], "payment_records", "bnovo_raw.payment_records", payment_records_map, source_id)
+        #my_utility.update_dim_raw(connection, data_page["payment_records"], "payment_records", "bnovo_raw.payment_records", payment_records_map, source_id)
 
         payment_ids.extend(data_page["payments_id"])
-        payment_record_ids.extend(data_page["payments_records_id"])
+        #payment_record_ids.extend(data_page["payments_records_id"])
 
         current_page += 1
         if current_page > page_count:

@@ -254,6 +254,7 @@ module "lambda_function_dict_operate" {
   handler                           = "dict_operate_data.lambda_handler"
   runtime                           = "python3.8"
   cloudwatch_logs_retention_in_days = 1
+  timeout                           = 20
 
   publish = true
 

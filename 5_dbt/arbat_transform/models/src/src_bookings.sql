@@ -12,32 +12,36 @@
 with raw_bookings as (
     select * from {{ source('bnovo', 'bookings') }}
 )
+,created_users_ids as (
+    select * from {{ source('bnovo', 'booking_users_link') }}
+)
 select
-    source_id,
-    id::int as booking_id,
-    hotel_id::int,
-    number as booking_number,
-    coalesce(main_booking_number, number) as main_booking_number,
-    group_id::int as group_id,
-    prices_services_total::decimal(18,2),
-    prices_rooms_total::decimal(18,2),
-    provided_total::decimal(18,2),
-    payments_total::decimal(18,2),
-    status_id::int as status_id,
-    status_name,
-    name contact_name,
-    surname contact_surname,
-    phone contact_phone,
-    cancel_date::timestamp as cancel_date,
-    create_date::timestamp as created_at,
-    arrival::timestamp as plan_arrival_date,
-    departure::timestamp as plan_departure_date,
-    arrival_date as arrival_date,
-    departure_date as departure_date,
-    real_arrival::timestamp,
-    real_departure::timestamp,
-    adults::decimal(10,0),
-    children::decimal(10,0),
-    date_update as updated_at
+    rb.source_id,
+    rb.id::int as booking_id,
+    rb.hotel_id::int,
+    rb.number as booking_number,
+    coalesce(rb.main_booking_number, number) as main_booking_number,
+    rb.group_id::int as group_id,
+    rb.prices_services_total::decimal(18,2),
+    rb.prices_rooms_total::decimal(18,2),
+    rb.provided_total::decimal(18,2),
+    rb.payments_total::decimal(18,2),
+    rb.status_id::int as status_id,
+    rb.status_name,
+    rb.name contact_name,
+    rb.surname contact_surname,
+    rb.phone contact_phone,
+    rb.cancel_date::timestamp as cancel_date,
+    rb.create_date::timestamp as created_at,
+    rb.arrival::timestamp as plan_arrival_date,
+    rb.departure::timestamp as plan_departure_date,
+    rb.arrival_date as arrival_date,
+    rb.departure_date as departure_date,
+    rb.real_arrival::timestamp,
+    rb.real_departure::timestamp,
+    rb.adults::decimal(10,0),
+    rb.children::decimal(10,0),
+    rb.date_update as updated_at,
+    cu.user_id
 from
-    raw_bookings
+    raw_bookings rb left join created_users_ids cu on rb.source_id = cu.source_id and rb.id = cu.booking_id

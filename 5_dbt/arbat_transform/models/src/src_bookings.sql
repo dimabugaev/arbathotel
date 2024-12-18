@@ -26,6 +26,8 @@ select
     rb.prices_rooms_total::decimal(18,2),
     rb.provided_total::decimal(18,2),
     rb.payments_total::decimal(18,2),
+    rb.prices_services_total::decimal(18,2),
+    rb.prices_rooms_total::decimal(18,2),
     rb.status_id::int as status_id,
     rb.status_name,
     rb.name contact_name,

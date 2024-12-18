@@ -87,6 +87,19 @@ def get_canceled_booking_state() -> list:
     
     return cursor.fetchall()
 
+def get_users_sales_state() -> list:
+
+    global connection
+
+    cursor = connection.cursor()
+    
+    cursor.execute("""select
+                        *
+                    from 
+                        public.mart_users_sales""")
+    
+    return cursor.fetchall()
+
 def put_booking_problems_state(datastrings: list):
 
     global connection
@@ -694,6 +707,15 @@ def get_cancel_bookings() -> dict:
     result = {}
 
     result["data"] = get_canceled_booking_state()
+
+    return my_utility.get_response(result) 
+
+@app.get("/users_sales")
+def get_cancel_bookings() -> dict:
+
+    result = {}
+
+    result["data"] = get_users_sales_state()
 
     return my_utility.get_response(result) 
 

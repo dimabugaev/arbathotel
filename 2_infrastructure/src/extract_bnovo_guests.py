@@ -14,6 +14,15 @@ def get_booking_guests(session, booking_id: str):
 
     return my_utility.get_response_text_json(session, url)
 
+def get_act_supplier(session, supplier_id: str):
+
+    items = {}
+    url = "https://online.bnovo.ru/suppliers/get/{}/".format(supplier_id) 
+
+    print(url)
+
+    return my_utility.get_response_text_json(session, url)
+
 def get_no_applyed_guests(session):
     items = {}
     url = "https://online.bnovo.ru/ufms/register/" 
@@ -46,6 +55,18 @@ def get_guests_data_for_update(guests_data: dict) -> dict:
 
         res["guests"].append(guest)
         res["guests_ids"].append(guest["id"])
+
+    return res
+
+def get_acts_for_update(guests_data: dict) -> dict:
+    
+    res = {}
+    res["acts"] = []
+    res["acts_ids"] = []
+
+    for act in guests_data["delivery_acts"]:
+        res["acts"].append(act)
+        res["acts_ids"].append(act["id"])
 
     return res
 
@@ -83,9 +104,40 @@ def get_users_data_for_update(guests_data: dict) -> dict:
 
     return res
 
+def get_supplier_for_update(supplier_data: dict) -> dict:
+    
+    res = {}
+    res["suppliers"] = []
+    res["suppliers_ids"] = []
+
+    res["suppliers"].append(supplier_data["data"]["supplier"])
+    res["suppliers_ids"].append(supplier_data["data"]["supplier"]["id"])
+
+    return res
+
 
 def update_guests(connection, session, source_id: int, period: date):
     
+    acts_map = {            
+            "id": "id",
+            "number": "number",
+            "hotel_id": "hotel_id",
+            "booking_id": "booking_id",
+            "booking_number": "booking_number",
+            "supplier_id": "supplier_id",
+            "supplier": "supplier",
+            "hotel_supplier_id": "hotel_supplier_id",
+            "hotel_supplier": "hotel_supplier",
+            "amount": "amount",
+            "create_date": "create_date",
+            "act_date": "act_date",
+            "invoice_id": "invoice_id",
+            "services": "services",
+            "customer_id": "customer_id",
+            "supplier_type_id": "supplier_type_id",
+            "customer_name": "customer_name"
+        }
+
     booking_notes_map = {            
 	        "id": "id",
             "booking_id": "booking_id",
@@ -114,6 +166,38 @@ def update_guests(connection, session, source_id: int, period: date):
             "last_notifications_view_date": "last_notifications_view_date" 
         }
      
+    supplier_map = {
+        "id": "id",
+        "hotel_id": "hotel_id",
+        "name": "name",
+        "law_name": "law_name",
+        "email": "email",
+        "phone": "phone",
+        "fax": "fax",
+        "site": "site",
+        "country_id": "country_id",
+        "country_name": "country_name",
+        "city": "city",
+        "address": "address",
+        "law_address": "law_address",
+        "inn": "inn",
+        "kpp": "kpp",
+        "account": "account",
+        "correspondent_account": "correspondent_account",
+        "bik": "bik",
+        "bank": "bank",
+        "ogrn": "ogrn",
+        "ceo": "ceo",
+        "accountant": "accountant",
+        "comments": "comments",
+        "is_agency": "is_agency",
+        "commission": "commission",
+        "not_pay_commission": "not_pay_commission",
+        "deleted": "deleted",
+        "tmp_is_message": "tmp_is_message",
+        "finance_supplier_id": "finance_supplier_id",
+        "finance_contractor_id": "finance_contractor_id"
+    }
 
     guests_map = {            
 	        "id": "id",
@@ -194,6 +278,7 @@ def update_guests(connection, session, source_id: int, period: date):
         user_data = get_users_data_for_update(guest_data_raw["booking"])
         booking_notes_data = get_booking_notes_for_update(guest_data_raw["booking"])
         cancel_reasons_data = get_cancel_reasons_for_update(guest_data_raw["booking"])
+        acts_data = get_acts_for_update(guest_data_raw["booking"])
 
 
         if user_data["users"][0]["id"]:
@@ -222,6 +307,17 @@ def update_guests(connection, session, source_id: int, period: date):
             cursor.execute(delete_query, {'booking_id': row[0], 'booking_notes_ids': tuple(booking_notes_data["booking_notes_ids"])})
 
             my_utility.update_dim_raw(connection, booking_notes_data["booking_notes"], "booking_notes"+uuid.uuid4().hex, "bnovo_raw.booking_notes", booking_notes_map, source_id)    
+
+        if len(acts_data["acts"]) > 0:
+            
+            delete_query = "DELETE FROM bnovo_raw.acts WHERE booking_id = %(booking_id)s and id NOT IN %(acts_ids)s;"
+            cursor.execute(delete_query, {'booking_id': row[0], 'acts_ids': tuple(acts_data["acts_ids"])})
+
+            my_utility.update_dim_raw(connection, acts_data["acts"], "acts"+uuid.uuid4().hex, "bnovo_raw.acts", acts_map, source_id)
+
+            for act in acts_data["acts"]:
+                supplier_data = get_supplier_for_update(get_act_supplier(session, act["supplier_id"]))
+                my_utility.update_dim_raw(connection, supplier_data["suppliers"], "suppliers"+uuid.uuid4().hex, "bnovo_raw.suppliers_outher", supplier_map, source_id) 
 
 
         if len(guest_data["guests"]) < 1:

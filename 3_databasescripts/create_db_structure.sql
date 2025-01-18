@@ -499,6 +499,45 @@ CREATE TABLE bnovo_raw.suppliers
 	CONSTRAINT fk_sources_suppliers FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
 );
 
+CREATE TABLE bnovo_raw.suppliers_outher
+(
+	source_id int,
+	id varchar,
+	hotel_id varchar,
+	name varchar,
+	law_name varchar,
+    email varchar,
+	phone varchar,
+    fax varchar,
+    site varchar,
+    country_id varchar,
+    country_name varchar,
+    city varchar,
+	address varchar,
+	law_address varchar,
+	inn varchar,
+	kpp varchar,
+	account varchar,
+	correspondent_account varchar,
+	bik varchar,
+	bank varchar,
+	ogrn varchar,
+	ceo varchar,
+    accountant varchar,
+    comments varchar,
+    is_agency varchar,
+    commission varchar,
+    not_pay_commission varchar,
+    deleted varchar,
+    tmp_is_message varchar,
+    finance_supplier_id varchar,
+    finance_contractor_id varchar,
+	date_update timestamp not null default current_timestamp,
+
+	 
+	CONSTRAINT fk_sources_suppliers_outher FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
 CREATE TABLE bnovo_raw.total_balance
 (
 	source_id int,

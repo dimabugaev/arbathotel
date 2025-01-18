@@ -948,6 +948,32 @@ CREATE TABLE bnovo_raw.invoices
 	CONSTRAINT fk_sources_invoices FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
 );
 
+
+CREATE TABLE bnovo_raw.acts
+(
+	source_id int,
+	id varchar,
+    number varchar,
+    hotel_id varchar,
+    booking_id varchar,
+    booking_number varchar,
+    supplier_id varchar,
+    supplier varchar,
+    hotel_supplier_id varchar,
+    hotel_supplier varchar,
+    amount varchar,
+    create_date varchar,
+    act_date varchar,
+    invoice_id varchar,
+    services jsonb,
+    customer_id varchar,
+    supplier_type_id varchar,
+    customer_name varchar,
+    date_update timestamp not null default current_timestamp,
+ 
+	CONSTRAINT fk_sources_acts FOREIGN KEY ( source_id ) REFERENCES operate.sources ( id )
+);
+
 create schema if not exists banks_raw;
 
 drop table if exists banks_raw.psb_docs_rows;

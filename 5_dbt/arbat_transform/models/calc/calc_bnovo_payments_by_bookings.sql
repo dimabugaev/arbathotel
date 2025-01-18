@@ -2,7 +2,7 @@ with bnovo_payments_booking as (
     select
         *
     from
-        {{ ref('src_bnovo_payments_booking') }}
+        {{ ref('src_bnovo_payments') }}
 ),
 payments_no_group as (
     select

@@ -65,6 +65,7 @@ def get_acts_for_update(guests_data: dict) -> dict:
     res["acts_ids"] = []
 
     for act in guests_data["delivery_acts"]:
+        act["services"] = json.dumps(act["services"])
         res["acts"].append(act)
         res["acts_ids"].append(act["id"])
 
@@ -313,31 +314,31 @@ def update_guests(connection, session, source_id: int, period: date):
             delete_query = "DELETE FROM bnovo_raw.acts WHERE booking_id = %(booking_id)s and id NOT IN %(acts_ids)s;"
             cursor.execute(delete_query, {'booking_id': row[0], 'acts_ids': tuple(acts_data["acts_ids"])})
 
-            #my_utility.update_dim_raw(connection, acts_data["acts"], "acts"+uuid.uuid4().hex, "bnovo_raw.acts", acts_map, source_id)
+            my_utility.update_dim_raw(connection, acts_data["acts"], "acts"+uuid.uuid4().hex, "bnovo_raw.acts", acts_map, source_id)
 
             for act in acts_data["acts"]:
 
-                column_names = 'source_id'
-                column_values_params = '%s'
-                column_values = [source_id]
-                update_assignments = 'date_update = current_timestamp,source_id = EXCLUDED.source_id'
-                for k, v in acts_map.items():
-                    value = act.get(k)
-                    if value:
-                        column_values.append(value)
-                        column_names += f',{v}'
-                        column_values_params += ',%s'
-                        update_assignments += f',{v} = EXCLUDED.{v}' 
+                # column_names = 'source_id'
+                # column_values_params = '%s'
+                # column_values = [source_id]
+                # update_assignments = 'date_update = current_timestamp,source_id = EXCLUDED.source_id'
+                # for k, v in acts_map.items():
+                #     value = act.get(k)
+                #     if value:
+                #         column_values.append(value)
+                #         column_names += f',{v}'
+                #         column_values_params += ',%s'
+                #         update_assignments += f',{v} = EXCLUDED.{v}' 
 
-                insert_query = f"""
-                        INSERT INTO bnovo_raw.acts ({column_names})
-                        VALUES ({column_values_params})
-                        ON CONFLICT (id)
-                        DO UPDATE SET {update_assignments};
-                    """
-                # print(insert_query)
-                # print(column_values)
-                cursor.execute(insert_query, tuple(column_values))
+                # insert_query = f"""
+                #         INSERT INTO bnovo_raw.acts ({column_names})
+                #         VALUES ({column_values_params})
+                #         ON CONFLICT (id)
+                #         DO UPDATE SET {update_assignments};
+                #     """
+                # # print(insert_query)
+                # # print(column_values)
+                # cursor.execute(insert_query, tuple(column_values))
 
                 supplier_data = get_supplier_for_update(get_act_supplier(session, act["supplier_id"]))
                 my_utility.update_dim_raw(connection, supplier_data["suppliers"], "suppliers"+uuid.uuid4().hex, "bnovo_raw.suppliers_outher", supplier_map, source_id) 

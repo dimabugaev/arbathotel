@@ -24,6 +24,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Terraform Install
+        uses: hashicorp/setup-terraform@v3
+
       - name: Build zip
         run: |
           cd 2_infrastructure/

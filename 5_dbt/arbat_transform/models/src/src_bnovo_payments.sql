@@ -1,6 +1,9 @@
 {{
   config(
 	materialized = 'table',
+    indexes=[
+      {'columns': ['booking_id']},
+    ]
 	)
 }}
 with raw_payments as (
@@ -38,7 +41,7 @@ select
                 p.amount::decimal(18,2)
             else
                 0	
-	    end) OVER (partition by p.source_id ORDER BY p.paid_date, p.id) + COALESCE(s.source_income_debt,0) AS total_debt
+	    end) OVER (partition by p.source_id ORDER BY p.paid_date::timestamp, p.id::int) + COALESCE(s.source_income_debt,0) AS total_debt
 from 
     raw_payments p join
 	{{ ref('src_sources') }} s on p.source_id = s.source_id

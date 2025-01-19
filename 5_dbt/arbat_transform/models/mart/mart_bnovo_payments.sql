@@ -2,6 +2,7 @@
   config(
 	materialized = 'table',
     indexes=[
+      {'columns': ['payment_id']},
       {'columns': ['paid_date']},
     ]
 	)
@@ -23,6 +24,9 @@ bnovo_hotels as (
     select * from {{ ref('src_bnovo_hotels') }}
 )
 select
+    p.source_id,
+    p.source_name,
+    p.payment_id,
     p.supplier_id supplier_id,
     s.name supplier_name,
     p.hotel_id hotel_id,
@@ -38,6 +42,7 @@ select
     b.plan_departure_date plan_departure_date,
     --event
     p.reason reason,
+    p.type_id type_id,
     pt.type_name payment_type,
     p.payer_name payer_name,
     p.user_id,

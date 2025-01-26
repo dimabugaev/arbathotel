@@ -71,7 +71,7 @@ where
 		ds.source_id,
 		ds.hotel_name,
         ds.source_name,
-		ds.day_in_period as date_transaction,
+		ds.day_in_period as paid_date,
 		saldo.total_debt
 	from 
 		date_source_series ds left join saldo_as_is saldo on ds.source_id = saldo.source_id and ds.day_in_period = saldo.paid_day
@@ -79,17 +79,17 @@ where
 select
 	source_id,
 	hotel_name,
-	date_transaction,
+	paid_date,
     source_name,
 	--total_debt,	
-	first_value(total_debt) over(partition by source_id, gr order by date_transaction) total_debt
+	first_value(total_debt) over(partition by source_id, gr order by paid_date) total_debt
 	from 
 		(select 
 			source_id
 			,hotel_name
-			,date_transaction
+			,paid_date
             ,source_name
 			,total_debt
-			,sum(case when total_debt is not null then 1 end) over (partition by source_id order by date_transaction) gr
+			,sum(case when total_debt is not null then 1 end) over (partition by source_id order by paid_date) gr
 		from 
 			debt_by_date_series) t

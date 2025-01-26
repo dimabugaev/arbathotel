@@ -48,7 +48,13 @@ select
     p.payer_name payer_name,
     p.user_id,
     p.user_name,
-    'https://online.bnovo.ru/booking/general/' || p.booking_id || '/?ref=booking' as booking_link
+    case
+        when p.booking_id = 0 then
+            ''
+        else
+            'https://online.bnovo.ru/booking/general/' || p.booking_id || '/?ref=booking'
+    end as booking_link,
+    ROW_NUMBER() OVER (ORDER BY p.source_id, p.paid_date, bp.payment_id) as sort_as_count_debt
 from
     src_bnovo_payments p left join bnovo_hotels h on p.hotel_id = h.hotel_id
     left join src_bookings b on p.booking_id = b.booking_id 

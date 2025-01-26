@@ -9,6 +9,9 @@
 with raw_payments as (
     select * from {{ source('bnovo', 'payments') }}
 )
+,raw_items as (
+    select * from {{ source('bnovo', 'items') }}
+)
 select
     p.source_id,
     s.source_name,
@@ -20,6 +23,9 @@ select
     p.external_supplier_id as supplier_id,
     p.name as payer_name,
     p.type_id::int as type_id,
+    p.item_id::int as item_id,
+    i.type_id::int as item_type_id,
+    i.name as item_name,
     p.amount::decimal(18,2) as sum_payment,
     p.paid_date::timestamp as paid_date,
     p.create_date::timestamp as create_date,
@@ -45,3 +51,4 @@ select
 from 
     raw_payments p join
 	{{ ref('src_sources') }} s on p.source_id = s.source_id
+  left join raw_items i on p.item_id = i.id and p.source_id = i.source_id

@@ -40,7 +40,8 @@ select
     b.booking_number booking_number,
     b.plan_arrival_date plan_arrival_date,
     b.plan_departure_date plan_departure_date,
-    --event
+    p.item_id,
+    p.item_name,
     p.reason reason,
     p.type_id type_id,
     pt.type_name payment_type,

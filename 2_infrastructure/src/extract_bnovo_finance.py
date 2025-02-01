@@ -57,7 +57,7 @@ def update_balance(connection, source_id: int, period: date, supplier_id: str, f
         from 
             bnovo_raw.payments pr
             inner join bnovo_raw.suppliers s on 
-                (pr.hotel_supplier_id = s.finance_supplier_id and s.finance_supplier_id = %(supplier_id)s and 
+                (pr.supplier_id = s.finance_supplier_id and s.finance_supplier_id = %(supplier_id)s and 
                     pr.type_id = '2' AND pr.period_month = %(period)s AND pr.source_id = %(source_id)s);   
     """, {'source_id': source_id, 'period': my_utility.get_begin_month_by_date(period), 
             'supplier_id': supplier_id})

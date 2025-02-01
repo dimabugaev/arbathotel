@@ -107,7 +107,8 @@ module "lambda_function_bnovo_finance_extract" {
 
   attach_network_policy = true
 
-  timeout = 600
+  timeout     = 900
+  memory_size = 512
 
   attach_policy_statements = true
   policy_statements = {
@@ -145,7 +146,8 @@ module "lambda_function_bnovo_booking_extract" {
 
   attach_network_policy = true
 
-  timeout = 900
+  timeout     = 900
+  memory_size = 512
 
   attach_policy_statements = true
   policy_statements = {

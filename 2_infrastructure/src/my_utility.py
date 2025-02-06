@@ -200,7 +200,9 @@ def get_response_text_json(session, request_url, count=10):
             elif response.status_code == 200:
                 return json.loads(response.text)
             else:
+                print(response.status_code)
                 print(response.headers)
+                print(response)
                 break
 
     raise ValueError('-- Faild to get request -- ' + request_url)

@@ -213,7 +213,7 @@ module "lambda_function_alfa_extract" {
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_alfa_account_zip}"
 
-  timeout = 60
+  timeout = 180
 
   attach_network_policy = true
 

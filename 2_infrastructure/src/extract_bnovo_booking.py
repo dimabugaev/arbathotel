@@ -351,14 +351,14 @@ def export_booking_from_bnovo_to_rds(source_id: int, period: date, sid: str = ""
 
         http_session = None
 
-        if len(sid) == 0:
-            session_cred = my_utility.get_binovo_cred(conn, source_id)
-            if session_cred['username'] is None:
-                print('Credentions is absent!!')
-                return False
-            http_session = my_utility.get_autorized_http_session_bnovo(session_cred['username'], session_cred['password'])
-        else:
-            http_session = my_utility.get_http_session_bnovo_by_sid(sid)
+        #if len(sid) == 0:
+        session_cred = my_utility.get_binovo_cred(conn, source_id)
+        if session_cred['username'] is None:
+            print('Credentions is absent!!')
+            return False
+        http_session = my_utility.get_autorized_http_session_bnovo(session_cred['username'], session_cred['password'])
+        #else:
+        #    http_session = my_utility.get_http_session_bnovo_by_sid(sid)
 
         
 

@@ -197,6 +197,10 @@ def get_response_text_json(session, request_url, count=10):
                 print('too many requests')
                 print('sleep ' + str(i*i+1))
                 time.sleep(i*i+1)
+            elif response.status_code == 504:
+                print('504 error try repeat')
+                print('sleep ' + str(i*i+1))
+                time.sleep(i*i+1)
             elif response.status_code == 200:
                 return json.loads(response.text)
             else:

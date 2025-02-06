@@ -117,7 +117,7 @@ def get_supplier_for_update(supplier_data: dict) -> dict:
     return res
 
 
-def update_guests(connection, session, source_id: int, period: date):
+def update_guests(connection, session, source_id: int, period: date, just_acts: bool):
     
     acts_map = {            
             "id": "id",
@@ -261,14 +261,46 @@ def update_guests(connection, session, source_id: int, period: date):
     departure_from = period - timedelta(days=1)
 
     cursor = connection.cursor()
-    cursor.execute("""
+
+    just_acts_id_for_companyes = """
+        with quarters as (
+            select 
+                (date_trunc('quarter', current_date) - interval '3 months')::date AS prev_q_start
+        )
+        ,ids as (select booking_id, group_id 
+        from bnovo_raw.invoices
+        where create_date::date >= (select prev_q_start from quarters)
+        and create_date::date <= current_date
+            and supplier_id <> '0'
+            and source_id = %(source_id)s)
         select 
-            b.id 
+            id 
         from 
-            bnovo_raw.bookings b
+            bnovo_raw.bookings
         where 
-            b.source_id = %(source_id)s and b.arrival_date <= %(period)s and b.departure_date >= %(departure_from)s   
-    """, {'source_id': source_id, 'period': period, 'departure_from': departure_from})
+            source_id = %(source_id)s and (
+            group_id in (select group_id from ids where group_id <> '0')
+            )
+        union 	
+        select
+            booking_id
+        from
+            ids
+        where 
+            booking_id <> '0';
+    """
+
+    if just_acts:
+        cursor.execute(just_acts_id_for_companyes, {'source_id': source_id,})
+    else: 
+        cursor.execute("""
+            select 
+                b.id 
+            from 
+                bnovo_raw.bookings b
+            where 
+                b.source_id = %(source_id)s and b.arrival_date <= %(period)s and b.departure_date >= %(departure_from)s   
+        """, {'source_id': source_id, 'period': period, 'departure_from': departure_from})
 
     rows = cursor.fetchall()
     guest_ids = []
@@ -392,7 +424,7 @@ def update_guests(connection, session, source_id: int, period: date):
     #     cursor.close()
 
 
-def export_guests_from_bnovo_to_rds(source_id: int, sid: str = ""):
+def export_guests_from_bnovo_to_rds(source_id: int, sid: str = "", just_acts: bool = False):
     
     with my_utility.get_db_connection() as conn:
         cursor = conn.cursor()
@@ -411,7 +443,7 @@ def export_guests_from_bnovo_to_rds(source_id: int, sid: str = ""):
 
         period = datetime.now(pytz.timezone('Europe/Moscow')).date()
 
-        update_guests(conn, http_session, source_id, period)
+        update_guests(conn, http_session, source_id, period, just_acts)
 
         cursor.close()
         return True
@@ -421,5 +453,6 @@ def lambda_handler(event, context):
 
     sid = event['sid']
     source_id = event['source_id']
+    just_acts = False if event.get['acts'] is None else True
     
-    export_guests_from_bnovo_to_rds(source_id, sid)
+    export_guests_from_bnovo_to_rds(source_id, sid, just_acts)

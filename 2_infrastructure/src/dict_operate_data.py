@@ -87,6 +87,29 @@ def get_canceled_booking_state() -> list:
     
     return cursor.fetchall()
 
+
+def get_company_acts_state(inn, date_month) -> list:
+    global connection
+
+    format = '%Y-%m-%d'
+
+    cursor = connection.cursor()
+    
+    cursor.execute(""" select
+                            a.*,
+                            s.inn,
+                            h."name" 
+                        from 
+                            bnovo_raw.acts a 
+                            join bnovo_raw.suppliers s on a.hotel_supplier_id = s.id 
+                            join bnovo_raw.hotels h on a.hotel_id = h.id
+                        where 
+                            supplier_id <> '0' and
+                            date_trunc('month', a.create_date::date) = %(date_month)s
+                            and s.inn = %(inn)s""", {'date_month': datetime.strptime(date_month, format), 'inn': inn})
+    
+    return cursor.fetchall()
+
 def get_users_sales_state() -> list:
 
     global connection
@@ -716,6 +739,14 @@ def get_cancel_bookings() -> dict:
     result = {}
 
     result["data"] = get_users_sales_state()
+
+    return my_utility.get_response(result)
+
+@app.get("/company-act/<inn>/<date_month>")
+def get_company_acts(inn: str, date_month: str) -> dict:
+    result = {}
+
+    result["data"] = get_company_acts_state(inn, date_month)
 
     return my_utility.get_response(result) 
 

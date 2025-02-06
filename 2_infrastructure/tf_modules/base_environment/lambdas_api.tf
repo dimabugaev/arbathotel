@@ -122,6 +122,13 @@ module "api_gateway" {
       //integration_type   = "LAMBDA_PROXY"
     }
 
+    "GET /company-act/{inn}/{date_month}" = {
+      lambda_arn             = module.lambda_function_dict_operate.lambda_function_arn
+      payload_format_version = "2.0"
+      authorization_type     = "NONE"
+      //integration_type   = "LAMBDA_PROXY"
+    }
+
     #"$default" = {
     #  lambda_arn = module.lambda_function_employees_reports.lambda_function_arn
     #}

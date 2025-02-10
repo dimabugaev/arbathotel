@@ -453,6 +453,6 @@ def lambda_handler(event, context):
 
     sid = event['sid']
     source_id = event['source_id']
-    just_acts = False if event.get['acts'] is None else True
+    just_acts = False if event.get('acts') is None else True
     
     export_guests_from_bnovo_to_rds(source_id, sid, just_acts)

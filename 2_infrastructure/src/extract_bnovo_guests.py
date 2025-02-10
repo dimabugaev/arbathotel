@@ -265,7 +265,7 @@ def update_guests(connection, session, source_id: int, period: date, just_acts: 
     just_acts_id_for_companyes = """
         with quarters as (
             select 
-                (date_trunc('quarter', current_date) - interval '3 months')::date AS prev_q_start
+                (date_trunc('month', current_date) - interval '1 months')::date AS prev_q_start
         )
         ,ids as (select booking_id, group_id 
         from bnovo_raw.invoices

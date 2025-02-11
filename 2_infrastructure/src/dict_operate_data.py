@@ -96,15 +96,28 @@ def get_company_acts_state(inn, date_month) -> list:
     cursor = connection.cursor()
     
     cursor.execute(""" select
-                            a.*,
+                            a.id,
+                            a.number,
+                            a.booking_id,
+                            a.act_date,
+                            a.services,
                             s.inn,
-                            h."name" 
+                            s."name", 
+                            h."name",
+                            i."number",
+                            i.create_date,
+                            i.deadline_date,
+                            i.amount,
+                            i.vat, 
+                            i.amount_nds 
                         from 
                             bnovo_raw.acts a 
-                            join bnovo_raw.suppliers s on a.hotel_supplier_id = s.id 
+                            join bnovo_raw.suppliers_outher s on a.supplier_id = s.id
+                            join bnovo_raw.suppliers s_in on a.hotel_supplier_id = s_in.id
                             join bnovo_raw.hotels h on a.hotel_id = h.id
+                            join bnovo_raw.invoices i on a.source_id = i.source_id and a.invoice_id = i.id 
                         where 
-                            supplier_id <> '0' and
+                            a.supplier_id <> '0' and
                             date_trunc('month', a.create_date::date) = %(date_month)s
                             and s.inn = %(inn)s""", {'date_month': datetime.strptime(date_month, format), 'inn': inn})
     

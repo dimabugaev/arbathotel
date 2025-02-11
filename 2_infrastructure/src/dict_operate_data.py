@@ -119,7 +119,7 @@ def get_company_acts_state(inn, date_month) -> list:
                         where 
                             a.supplier_id <> '0' and
                             date_trunc('month', a.create_date::date) = %(date_month)s
-                            and s.inn = %(inn)s""", {'date_month': datetime.strptime(date_month, format), 'inn': inn})
+                            and s_in.inn = %(inn)s""", {'date_month': datetime.strptime(date_month, format), 'inn': inn})
     
     return cursor.fetchall()
 

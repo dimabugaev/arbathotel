@@ -109,7 +109,15 @@ def get_company_acts_state(inn, date_month) -> list:
                             i.deadline_date,
                             i.amount,
                             i.vat, 
-                            i.amount_nds 
+                            i.amount_nds,
+                            case 
+                                when s_in.inn = '772002597911' then 
+                                    '40802810302160003841'
+                                when s_in.inn = '772002937212' then
+                                    '40802810702870009502'
+                                else
+                                    ''
+                            end bank_account 
                         from 
                             bnovo_raw.acts a 
                             join bnovo_raw.suppliers_outher s on a.supplier_id = s.id

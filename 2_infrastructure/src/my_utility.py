@@ -188,26 +188,32 @@ def get_autorized_http_session_bnovo(username, password):
 
 def get_response_text_json(session, request_url, count=10):
     for i in range(count):
-        with session.get(request_url) as response:
-            if response is None:    
-                print('-- returned NULL ... delay and repeat attempt # ' + (i+1))
-                print('sleep ' + str(i*i+1))
-                time.sleep(i*i+1)
-            elif response.status_code == 429:
-                print('too many requests')
-                print('sleep ' + str(i*i+1))
-                time.sleep(i*i+1)
-            elif response.status_code == 504:
-                print('504 error try repeat')
-                print('sleep ' + str(i*i+1))
-                time.sleep(i*i+1)
-            elif response.status_code == 200:
-                return json.loads(response.text)
-            else:
-                print(response.status_code)
-                print(response.headers)
-                print(response)
-                break
+        time.sleep(0.1)
+        try:
+            with session.get(request_url) as response:
+                if response is None:    
+                    print('-- returned NULL ... delay and repeat attempt # ' + (i+1))
+                    print('sleep ' + str(i*i+1))
+                    time.sleep(i*i+1)
+                elif response.status_code == 429:
+                    print('too many requests')
+                    print('sleep ' + str(i*i+1))
+                    time.sleep(i*i+1)
+                elif response.status_code == 504:
+                    print('504 error try repeat')
+                    print('sleep ' + str(i*i+1))
+                    time.sleep(i*i+1)
+                elif response.status_code == 200:
+                    return json.loads(response.text)
+                else:
+                    print(response.status_code)
+                    print(response.headers)
+                    print(response)
+                    break
+        except Exception as e:
+            print(f"Catched exeption try again {e}")
+            time.sleep(i*i+1)
+            
 
     raise ValueError('-- Faild to get request -- ' + request_url)
 

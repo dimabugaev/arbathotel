@@ -3,7 +3,8 @@
 test*
 __pycache__
 *.jar
-cert*
 alpha_dev
 paykeeper_dev
+.DS_Store
+logs
 

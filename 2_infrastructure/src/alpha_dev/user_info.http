@@ -1,2 +1,0 @@
-GET https://sandbox.alfabank.ru/oidc/userinfo HTTP/1.1
-accept: application/json

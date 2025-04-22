@@ -1,6 +1,7 @@
 import my_utility
 import json
 import requests
+import time
 #import httpx
 
 import ssl
@@ -57,18 +58,28 @@ def get_token(conn, client_id, client_secret, refresh_token, certificate, privat
 
     token = ''
 
-    #with session.post(url, data=payload, cert=(certificate, '4321', private_key)) as response:
-    with session.post(url, data=payload) as response:
-        result = json.loads(response.text)
-        #print(result)
-        with conn.cursor() as cursor:
-            cursor.execute("""update banks_raw.alfa_params
-                              set
-                                refresh_token = %(refresh_token)s 
-                              where client_id = %(client_id)s
-                           """, {'client_id': client_id, 'refresh_token': result['refresh_token']})
-            token = result['access_token']
-        conn.commit()
+    MAX_RETRIES = 5
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            #with session.post(url, data=payload, cert=(certificate, '4321', private_key)) as response:
+            with session.post(url, data=payload) as response:
+                result = json.loads(response.text)
+                #print(result)
+                with conn.cursor() as cursor:
+                    cursor.execute("""update banks_raw.alfa_params
+                                    set
+                                        refresh_token = %(refresh_token)s 
+                                    where client_id = %(client_id)s
+                                """, {'client_id': client_id, 'refresh_token': result['refresh_token']})
+                    token = result['access_token']
+                conn.commit()
+                break
+        except requests.exceptions.RequestException as e:
+            print(f"Attempt {attempt} failed: {e}")
+            if attempt == MAX_RETRIES:
+                raise
+            time.sleep(2 ** attempt)
+            
     return token
 
 # def get_token(conn, client_id, client_secret, refresh_token, certificate, private_key, passcode):

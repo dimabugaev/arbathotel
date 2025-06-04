@@ -15,6 +15,7 @@ sources:
       - name: devices
         identifier: devices
   
+  
   - name: bnovo
     schema: bnovo_raw
     loaded_at_field: date_update

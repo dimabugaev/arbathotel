@@ -57,9 +57,9 @@ module "db" {
 
   # All available versions: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts
   engine               = "postgres"
-  engine_version       = "14.11"
+  engine_version       = "14.17"
   family               = "postgres14" # DB parameter group
-  major_engine_version = "14.11"      # DB option group
+  major_engine_version = "14.17"      # DB option group
   instance_class       = "db.t3.micro"
 
   auto_minor_version_upgrade = false

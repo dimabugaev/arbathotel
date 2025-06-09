@@ -265,7 +265,7 @@ module "lambda_function_psb_extract_java-tire-1" {
     key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
   }
 
-  timeout     = 180
+  timeout     = 600
   memory_size = 512
 
   attach_network_policy = true
@@ -318,7 +318,7 @@ module "lambda_function_psb_extract_java_tire_2" {
     key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
   }
 
-  timeout     = 180
+  timeout     = 600
   memory_size = 512
 
   attach_network_policy = true
@@ -371,7 +371,7 @@ module "lambda_function_psb_extract_java_tire_3" {
     key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
   }
 
-  timeout     = 180
+  timeout     = 600
   memory_size = 512
 
   attach_network_policy = true

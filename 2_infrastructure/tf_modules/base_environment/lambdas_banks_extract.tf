@@ -246,6 +246,7 @@ module "lambda_function_alfa_extract" {
   tags = local.tags
 }
 
+
 module "lambda_function_psb_extract_java-tire-1" {
   source = "terraform-aws-modules/lambda/aws"
   #version = "~> 2.0"

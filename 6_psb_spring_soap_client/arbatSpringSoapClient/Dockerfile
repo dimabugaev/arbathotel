@@ -4,17 +4,10 @@ FROM amazoncorretto:8
 # Set working directory
 WORKDIR /app
 
-# Install Maven 3.8.6 (newer version)
+# Install Maven from repository
 RUN yum update -y && \
-    yum install -y wget && \
-    wget -O /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && \
-    tar -xzf /tmp/maven.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.8.6 /opt/maven && \
-    rm /tmp/maven.tar.gz && \
+    yum install -y maven && \
     yum clean all
-
-# Set Maven environment
-ENV PATH=/opt/maven/bin:$PATH
 
 # Copy Maven files
 COPY pom.xml .

@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://olws.jur.app.psbank.ru" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://olws.jur.app.psbank.ru" xmlns:intf="http://olws.jur.app.psbank.ru" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://doc.ent.psbank.ru" xmlns:tns2="http://soap.appbase.psbank.ru" xmlns:tns3="http://srv.psbank.ru" xmlns:tns4="http://ent.psbank.ru" xmlns:tns5="http://xmlbean.auth.ent.psbank.ru" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://doc.ent.psbank.ru" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="PConst"><sequence><element name="code" nillable="true" type="xsd:string"/><element name="id" type="xsd:int"/><element name="name" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="DocStatus"><complexContent><extension base="tns1:PConst"><sequence/></extension></complexContent></complexType><complexType name="DocType"><complexContent><extension base="tns1:PConst"><sequence/></extension></complexContent></complexType><complexType name="DocHeader"><sequence><element name="bankWorkId" type="xsd:long"/><element name="date" nillable="true" type="xsd:dateTime"/><element name="firstSigned" type="xsd:boolean"/><element name="id" type="xsd:long"/><element name="numberDoc" nillable="true" type="xsd:string"/><element name="reciever" nillable="true" type="xsd:string"/><element name="secondSigned" type="xsd:boolean"/><element name="status" nillable="true" type="tns1:DocStatus"/><element name="summa" nillable="true" type="xsd:decimal"/><element name="thirdSigned" type="xsd:boolean"/><element name="type" nillable="true" type="tns1:DocType"/></sequence></complexType><complexType name="ExtractRow"><sequence><element name="KB" nillable="true" type="xsd:string"/><element name="PO" nillable="true" type="xsd:string"/><element name="account" nillable="true" type="xsd:string"/><element name="contragent" nillable="true" type="xsd:string"/><element name="contragentINN" nillable="true" type="xsd:string"/><element name="conversion" nillable="true" type="xsd:decimal"/><element name="debit" type="xsd:boolean"/><element name="description" nillable="true" type="xsd:string"/><element name="doc" nillable="true" type="tns1:DocHeader"/><element name="outerAccount" nillable="true" type="xsd:string"/><element name="summaRUR" nillable="true" type="xsd:decimal"/></sequence></complexType><complexType name="Exctract"><sequence><element name="account" nillable="true" type="xsd:string"/><element name="accountDescription" nillable="true" type="xsd:string"/><element name="bankName" nillable="true" type="xsd:string"/><element name="conversionIn" nillable="true" type="xsd:decimal"/><element name="conversionOut" nillable="true" type="xsd:decimal"/><element name="currency" nillable="true" type="xsd:string"/><element name="debit" type="xsd:boolean"/><element name="exctractRows" nillable="true" type="impl:ArrayOf_tns4_ExtractRow"/><element name="from" nillable="true" type="xsd:dateTime"/><element name="inSaldo" nillable="true" type="xsd:decimal"/><element name="saldoInDate" nillable="true" type="xsd:dateTime"/><element name="to" nillable="true" type="xsd:dateTime"/></sequence></complexType></schema><schema targetNamespace="http://srv.psbank.ru" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SrvException"><sequence><element name="message" nillable="true" type="xsd:string"/></sequence></complexType></schema><schema targetNamespace="http://soap.appbase.psbank.ru" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SrvSOAPException"><complexContent><extension base="tns3:SrvException"><sequence/></extension></complexContent></complexType><complexType name="AuthSOAPException"><complexContent><extension base="tns2:SrvSOAPException"><sequence/></extension></complexContent></complexType></schema><schema targetNamespace="http://ent.psbank.ru" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="Account"><sequence><element name="budget" type="xsd:boolean"/><element name="code" nillable="true" type="xsd:string"/><element name="depNum" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="Client"><sequence><element name="INN" nillable="true" type="xsd:string"/><element name="KPP" nillable="true" type="xsd:string"/><element name="OKPO" nillable="true" type="xsd:string"/><element name="accounts" nillable="true" type="impl:ArrayOf_tns1_Account"/><element name="displayName" nillable="true" type="xsd:string"/><element name="email" nillable="true" type="xsd:string"/><element name="fullName" nillable="true" type="xsd:string"/><element name="id" type="xsd:long"/><element name="name" nillable="true" type="xsd:string"/><element name="needThirdSign" type="xsd:boolean"/></sequence></complexType><complexType name="Filial"><sequence><element name="description" nillable="true" type="xsd:string"/><element name="id" type="xsd:int"/><element name="name" nillable="true" type="xsd:string"/><element name="status" type="xsd:int"/></sequence></complexType><complexType name="UserInfo"><sequence><element name="address" nillable="true" type="xsd:string"/><element name="prevAddress" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="AppAttribytes"><sequence/></complexType></schema><schema targetNamespace="http://olws.jur.app.psbank.ru" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="ArrayOf_tns1_Account"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns4:Account[]"/></restriction></complexContent></complexType><complexType name="ArrayOf_tns5_PSB2PermissionBean"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns5:PSB2PermissionBean[]"/></restriction></complexContent></complexType><complexType name="ArrayOf_tns5_AclEntryBean"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns5:AclEntryBean[]"/></restriction></complexContent></complexType><complexType name="ArrayOf_tns4_ExtractRow"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:ExtractRow[]"/></restriction></complexContent></complexType><complexType name="ArrayOf_tns1_Client"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns4:Client[]"/></restriction></complexContent></complexType><complexType name="ArrayOf_tns1_Filial"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns4:Filial[]"/></restriction></complexContent></complexType></schema><schema targetNamespace="http://xmlbean.auth.ent.psbank.ru" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="PSB2PermissionBean"><sequence><element name="displayName" nillable="true" type="xsd:string"/><element name="id" type="xsd:int"/><element name="name" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="PrincipalBean"><sequence><element name="displayName" nillable="true" type="xsd:string"/><element name="id" type="xsd:int"/><element name="name" nillable="true" type="xsd:string"/><element name="type" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="AclEntryBean"><sequence><element name="negative" type="xsd:boolean"/><element name="permission" nillable="true" type="impl:ArrayOf_tns5_PSB2PermissionBean"/><element name="principal" nillable="true" type="tns5:PrincipalBean"/></sequence></complexType><complexType name="AclBean"><sequence><element name="aclEntries" nillable="true" type="impl:ArrayOf_tns5_AclEntryBean"/><element name="name" nillable="true" type="xsd:string"/><element name="negAclEntries" nillable="true" type="impl:ArrayOf_tns5_AclEntryBean"/><element name="owner" nillable="true" type="tns5:PrincipalBean"/></sequence></complexType><complexType name="AuthEntryBean"><sequence><element name="certId" nillable="true" type="xsd:integer"/><element name="id" type="xsd:int"/><element name="name" nillable="true" type="xsd:string"/><element name="type" type="xsd:int"/><element name="user" nillable="true" type="tns5:PrincipalBean"/></sequence></complexType><complexType name="PermissionForAuthBean"><sequence><element name="acl" nillable="true" type="tns5:AclBean"/><element name="filial" nillable="true" type="tns4:Filial"/><element name="owner" nillable="true" type="tns5:AuthEntryBean"/><element name="serverB64Cert" nillable="true" type="xsd:string"/></sequence></complexType></schema></wsdl:types>
+  <wsdl:message name="getClientsResponse">
+    <wsdl:part name="getClientsReturn" type="impl:ArrayOf_tns1_Client">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setUrlRequest">
+    <wsdl:part name="inUrl" type="xsd:string">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="initAppRefResponse">
+    <wsdl:part name="initAppRefReturn" type="xsd:anyType">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SrvException">
+    <wsdl:part name="fault" type="tns3:SrvException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserInfoResponse">
+    <wsdl:part name="getUserInfoReturn" type="tns4:UserInfo">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setUIResponse">
+    <wsdl:part name="setUIReturn" type="xsd:int">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getPermissionRequest">
+    <wsdl:part name="filial_id" type="xsd:int">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAttribytesRequest">
+    <wsdl:part name="filial_id" type="xsd:int">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setUrlFromContainerResponse">
+  </wsdl:message>
+  <wsdl:message name="getFiliasResponse">
+    <wsdl:part name="getFiliasReturn" type="impl:ArrayOf_tns1_Filial">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getPermissionResponse">
+    <wsdl:part name="getPermissionReturn" type="tns5:PermissionForAuthBean">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="AuthSOAPException">
+    <wsdl:part name="fault" type="tns2:AuthSOAPException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="initIfaceRequest">
+    <wsdl:part name="url" type="xsd:string">
+    </wsdl:part>
+    <wsdl:part name="appCtx" type="xsd:string">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setUrlFromContainerRequest">
+    <wsdl:part name="envUrlName" type="xsd:string">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getExctractResponse">
+    <wsdl:part name="getExctractReturn" type="tns1:Exctract">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setUrlResponse">
+  </wsdl:message>
+  <wsdl:message name="destroyIfaceRequest">
+  </wsdl:message>
+  <wsdl:message name="setCtxFromContainerRequest">
+    <wsdl:part name="envCtxName" type="xsd:string">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="initIfaceResponse">
+  </wsdl:message>
+  <wsdl:message name="initAppRefRequest">
+    <wsdl:part name="url" type="xsd:string">
+    </wsdl:part>
+    <wsdl:part name="appCtx" type="xsd:string">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAttribytesResponse">
+    <wsdl:part name="getAttribytesReturn" type="tns4:AppAttribytes">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SrvSOAPException">
+    <wsdl:part name="fault" type="tns2:SrvSOAPException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserInfoRequest">
+  </wsdl:message>
+  <wsdl:message name="getExctractRequest">
+    <wsdl:part name="account" type="xsd:string">
+    </wsdl:part>
+    <wsdl:part name="dateFrom" type="xsd:string">
+    </wsdl:part>
+    <wsdl:part name="dateTo" type="xsd:string">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setCtxResponse">
+  </wsdl:message>
+  <wsdl:message name="setCtxFromContainerResponse">
+  </wsdl:message>
+  <wsdl:message name="setCtxRequest">
+    <wsdl:part name="inCtx" type="xsd:string">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getClientsRequest">
+  </wsdl:message>
+  <wsdl:message name="destroyIfaceResponse">
+  </wsdl:message>
+  <wsdl:message name="getFiliasRequest">
+  </wsdl:message>
+  <wsdl:message name="setUIRequest">
+    <wsdl:part name="ui" type="xsd:string">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="OLWS">
+    <wsdl:operation name="initAppRef" parameterOrder="url appCtx">
+      <wsdl:input message="impl:initAppRefRequest" name="initAppRefRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:initAppRefResponse" name="initAppRefResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getClients">
+      <wsdl:input message="impl:getClientsRequest" name="getClientsRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getClientsResponse" name="getClientsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getExctract" parameterOrder="account dateFrom dateTo">
+      <wsdl:input message="impl:getExctractRequest" name="getExctractRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getExctractResponse" name="getExctractResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:SrvException" name="SrvException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="setUrl" parameterOrder="inUrl">
+      <wsdl:input message="impl:setUrlRequest" name="setUrlRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:setUrlResponse" name="setUrlResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setUrlFromContainer" parameterOrder="envUrlName">
+      <wsdl:input message="impl:setUrlFromContainerRequest" name="setUrlFromContainerRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:setUrlFromContainerResponse" name="setUrlFromContainerResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setCtx" parameterOrder="inCtx">
+      <wsdl:input message="impl:setCtxRequest" name="setCtxRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:setCtxResponse" name="setCtxResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setCtxFromContainer" parameterOrder="envCtxName">
+      <wsdl:input message="impl:setCtxFromContainerRequest" name="setCtxFromContainerRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:setCtxFromContainerResponse" name="setCtxFromContainerResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFilias">
+      <wsdl:input message="impl:getFiliasRequest" name="getFiliasRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getFiliasResponse" name="getFiliasResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:AuthSOAPException" name="AuthSOAPException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="setUI" parameterOrder="ui">
+      <wsdl:input message="impl:setUIRequest" name="setUIRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:setUIResponse" name="setUIResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:SrvSOAPException" name="SrvSOAPException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPermission" parameterOrder="filial_id">
+      <wsdl:input message="impl:getPermissionRequest" name="getPermissionRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getPermissionResponse" name="getPermissionResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:AuthSOAPException" name="AuthSOAPException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getAttribytes" parameterOrder="filial_id">
+      <wsdl:input message="impl:getAttribytesRequest" name="getAttribytesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getAttribytesResponse" name="getAttribytesResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="destroyIface">
+      <wsdl:input message="impl:destroyIfaceRequest" name="destroyIfaceRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:destroyIfaceResponse" name="destroyIfaceResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="initIface" parameterOrder="url appCtx">
+      <wsdl:input message="impl:initIfaceRequest" name="initIfaceRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:initIfaceResponse" name="initIfaceResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserInfo">
+      <wsdl:input message="impl:getUserInfoRequest" name="getUserInfoRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getUserInfoResponse" name="getUserInfoResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:SrvSOAPException" name="SrvSOAPException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="OLWSSoapBinding" type="impl:OLWS">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="initAppRef">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="initAppRefRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="initAppRefResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getClients">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getClientsRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getClientsResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getExctract">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getExctractRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getExctractResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="SrvException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="setUrl">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="setUrlRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="setUrlResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setUrlFromContainer">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="setUrlFromContainerRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="setUrlFromContainerResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setCtx">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="setCtxRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="setCtxResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setCtxFromContainer">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="setCtxFromContainerRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="setCtxFromContainerResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFilias">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getFiliasRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getFiliasResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="AuthSOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="setUI">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="setUIRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="setUIResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="SrvSOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPermission">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getPermissionRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getPermissionResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="AuthSOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getAttribytes">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getAttribytesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getAttribytesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="destroyIface">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="destroyIfaceRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="destroyIfaceResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="initIface">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="initIfaceRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="initIfaceResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserInfo">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getUserInfoRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://soap.appbase.psbank.ru" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getUserInfoResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="SrvSOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://olws.jur.app.psbank.ru" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="OLWSService">
+    <wsdl:port binding="impl:OLWSSoapBinding" name="OLWS">
+      <wsdlsoap:address location="https://online.payment.ru:9443/OLWSWM/services/OLWS"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

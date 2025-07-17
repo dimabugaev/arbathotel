@@ -111,6 +111,12 @@ variable "run_dbt_task_zip" {
   default     = "run_dbt_task.zip"
   type        = string
 }
+
+variable "run_soap_task_zip" {
+  description = "Name pakage"
+  default     = "run_soap_task.zip"
+  type        = string
+}
 #==BANKS
 variable "to_plan_extract_psb_zip" {
   description = "Name pakage"

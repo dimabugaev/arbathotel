@@ -7,4 +7,7 @@ alpha_dev
 paykeeper_dev
 .DS_Store
 logs
+*.pfx
+target/
+7_psb_python_soap_client/
 

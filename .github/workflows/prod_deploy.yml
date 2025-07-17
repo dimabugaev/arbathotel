@@ -53,6 +53,7 @@ jobs:
           cp src/extract_bnovo_ufms.py build/
           cp src/run_dbt_task.py build/
           cp src/to_plan_extract_frequently_bnovo.py build/
+          cp src/run_soap_task.py build/
           cd build
           zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py employees_reports_data.py 
           zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py dict_operate_data.py 
@@ -74,6 +75,7 @@ jobs:
           zip -r extract_bnovo_guests.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_guests.py
           zip -r extract_bnovo_ufms.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_ufms.py
           zip -r run_dbt_task.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py run_dbt_task.py
+          zip -r run_soap_task.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py run_soap_task.py
           zip -r to_plan_extract_frequently_bnovo.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_frequently_bnovo.py   
           cd ../
           ls build/
@@ -120,7 +122,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, Tag, and Push Image to Amazon ECR
+      - name: Build, Tag, and Push DBT Image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: productive-ecr-repo
@@ -128,3 +130,12 @@ jobs:
           cd 5_dbt/arbat_transform
           docker build -f dockerfile -t $ECR_REGISTRY/$REPOSITORY:dbt-arbat-transform-latest .
           docker push $ECR_REGISTRY/$REPOSITORY:dbt-arbat-transform-latest
+
+      - name: Build, Tag, and Push Java SOAP Image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: productive-ecr-repo
+        run: |
+          cd 6_psb_spring_soap_client/arbatSpringSoapClient
+          docker build -f Dockerfile -t $ECR_REGISTRY/$REPOSITORY:java-soap-client-latest .
+          docker push $ECR_REGISTRY/$REPOSITORY:java-soap-client-latest

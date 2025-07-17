@@ -4,12 +4,23 @@ FROM amazoncorretto:8
 # Set working directory
 WORKDIR /app
 
+# Install Maven 3.8.6 (newer version)
+RUN yum update -y && \
+    yum install -y wget && \
+    wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && \
+    tar -xzf apache-maven-3.8.6-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.8.6 /opt/maven && \
+    echo 'export PATH=$PATH:/opt/maven/bin' >> /etc/profile && \
+    echo 'export PATH=$PATH:/opt/maven/bin' >> ~/.bashrc && \
+    rm apache-maven-3.8.6-bin.tar.gz && \
+    yum clean all
+
+# Set Maven environment
+ENV PATH=$PATH:/opt/maven/bin
+
 # Copy Maven files
 COPY pom.xml .
 COPY src ./src
-
-# Install Maven
-RUN yum install -y maven
 
 # Build the application
 RUN mvn clean package -DskipTests

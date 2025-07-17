@@ -7,16 +7,14 @@ WORKDIR /app
 # Install Maven 3.8.6 (newer version)
 RUN yum update -y && \
     yum install -y wget && \
-    wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && \
-    tar -xzf apache-maven-3.8.6-bin.tar.gz -C /opt && \
+    wget -O /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && \
+    tar -xzf /tmp/maven.tar.gz -C /opt && \
     ln -s /opt/apache-maven-3.8.6 /opt/maven && \
-    echo 'export PATH=$PATH:/opt/maven/bin' >> /etc/profile && \
-    echo 'export PATH=$PATH:/opt/maven/bin' >> ~/.bashrc && \
-    rm apache-maven-3.8.6-bin.tar.gz && \
+    rm /tmp/maven.tar.gz && \
     yum clean all
 
 # Set Maven environment
-ENV PATH=$PATH:/opt/maven/bin
+ENV PATH=/opt/maven/bin:$PATH
 
 # Copy Maven files
 COPY pom.xml .

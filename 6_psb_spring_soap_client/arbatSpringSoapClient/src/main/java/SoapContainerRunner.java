@@ -1,3 +1,4 @@
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ru.psbank.app.jur.olws.OLWS;
 import ru.psbank.app.jur.olws.OLWSServiceLocator;
@@ -85,7 +86,7 @@ public class SoapContainerRunner {
         }
 
         try {
-            DataService.setSslContext(certName, certKey, new SimpleLogger());
+            DataService.setSslContext(certName, certKey, new ConsoleLogger());
 
             OLWSServiceLocator serviceLocator = new OLWSServiceLocator();
             OLWS olws = serviceLocator.getOLWS(new URL(psbSOAPServ));
@@ -116,7 +117,7 @@ public class SoapContainerRunner {
                                     if (account_obj.getCode().equals(account)) {
                                         System.out.println("-- MATCH --");
                                         Exctract exctract = olws.getExctract(account, dateFrom, dateTo);
-                                        DataService.updateData(source_id, exctract, new SimpleLogger());
+                                        DataService.updateData(source_id, exctract, new ConsoleLogger());
                                     }
                                 }
                             }
@@ -134,10 +135,16 @@ public class SoapContainerRunner {
         System.out.println("SOAP task completed successfully");
     }
     
-    // Simple logger implementation for container environment
-    private static class SimpleLogger {
+    // Console logger implementation that implements LambdaLogger interface
+    private static class ConsoleLogger implements LambdaLogger {
+        @Override
         public void log(String message) {
             System.out.println(message);
+        }
+        
+        @Override
+        public void log(byte[] message) {
+            System.out.println(new String(message));
         }
     }
 } 

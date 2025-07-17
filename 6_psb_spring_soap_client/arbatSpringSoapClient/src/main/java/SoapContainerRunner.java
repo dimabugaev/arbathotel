@@ -38,9 +38,9 @@ public class SoapContainerRunner {
         System.out.println("datefrom: " + dateFrom);
         System.out.println("dateto: " + dateTo);
 
-        String certName;
-        String certKey;
-        String account;
+        String certName = null;
+        String certKey = null;
+        String account = null;
 
         System.setProperty("org.apache.axis.components.logger.LogFactory",
                 "org.apache.axis.components.logger.SimpleLogFactory");
@@ -60,12 +60,18 @@ public class SoapContainerRunner {
                 System.out.println("-- CERT FILE for account "+ account +" is "+ certKey + " --");
             }else {
                 System.out.println("-- Error CREDENTIALS is empty --");
-                throw new SQLException();
+                throw new SQLException("No credentials found for source_id: " + source_id);
             }
         } catch (SQLException | JsonProcessingException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             System.err.println("-- ERROR with attempt to get BANK CREDENTIALS--");
+            System.exit(1);
+        }
+
+        // Check if credentials were obtained successfully
+        if (certName == null || certKey == null || account == null) {
+            System.err.println("-- ERROR: Failed to obtain credentials --");
             System.exit(1);
         }
 

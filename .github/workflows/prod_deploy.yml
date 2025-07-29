@@ -131,11 +131,11 @@ jobs:
           docker build -f dockerfile -t $ECR_REGISTRY/$REPOSITORY:dbt-arbat-transform-latest .
           docker push $ECR_REGISTRY/$REPOSITORY:dbt-arbat-transform-latest
 
-      - name: Build, Tag, and Push Java SOAP Image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: productive-ecr-repo
-        run: |
-          cd 6_psb_spring_soap_client/arbatSpringSoapClient
-          docker build -f Dockerfile -t $ECR_REGISTRY/$REPOSITORY:java-soap-client-latest .
-          docker push $ECR_REGISTRY/$REPOSITORY:java-soap-client-latest
+      # - name: Build, Tag, and Push Java SOAP Image to Amazon ECR
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     REPOSITORY: productive-ecr-repo
+      #   run: |
+      #     cd 6_psb_spring_soap_client/arbatSpringSoapClient
+      #     docker build -f Dockerfile -t $ECR_REGISTRY/$REPOSITORY:java-soap-client-latest .
+      #     docker push $ECR_REGISTRY/$REPOSITORY:java-soap-client-latest

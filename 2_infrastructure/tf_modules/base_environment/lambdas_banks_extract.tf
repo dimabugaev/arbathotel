@@ -253,18 +253,14 @@ module "lambda_function_psb_extract_java-tire-1" {
 
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-1"
   description                       = "lambda function for extract Payment data from open API PSB"
-  handler                           = "MySoapClient::handleRequest"
-  runtime                           = "java8.al2"
+  package_type                      = "Image"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
   create_package = false
 
-  s3_existing_package = {
-    bucket = "arbat-hotel-additional-data"
-    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
-  }
+  image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
 
   timeout     = 600
   memory_size = 512
@@ -306,18 +302,14 @@ module "lambda_function_psb_extract_java_tire_2" {
 
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-2"
   description                       = "lambda function for extract Payment data from open API PSB"
-  handler                           = "MySoapClient::handleRequest"
-  runtime                           = "java8.al2"
+  package_type                      = "Image"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
   create_package = false
 
-  s3_existing_package = {
-    bucket = "arbat-hotel-additional-data"
-    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
-  }
+  image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
 
   timeout     = 600
   memory_size = 512
@@ -359,18 +351,14 @@ module "lambda_function_psb_extract_java_tire_3" {
 
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-3"
   description                       = "lambda function for extract Payment data from open API PSB"
-  handler                           = "MySoapClient::handleRequest"
-  runtime                           = "java8.al2"
+  package_type                      = "Image"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
   create_package = false
 
-  s3_existing_package = {
-    bucket = "arbat-hotel-additional-data"
-    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
-  }
+  image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
 
   timeout     = 600
   memory_size = 512

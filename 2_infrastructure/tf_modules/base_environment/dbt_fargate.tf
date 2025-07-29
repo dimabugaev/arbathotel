@@ -95,49 +95,49 @@ resource "aws_ecs_task_definition" "dbt_task" {
     EOF
 }
 
-resource "aws_ecs_task_definition" "soap_task" {
-  family                   = "${local.prefixname}-soap-task"
-  execution_role_arn       = aws_iam_role.iam_ecs_service_role.arn
-  task_role_arn            = aws_iam_role.iam_ecs_service_role.arn
-  cpu                      = 1024
-  memory                   = 2048
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  tags                     = local.tags
+# resource "aws_ecs_task_definition" "soap_task" {
+#   family                   = "${local.prefixname}-soap-task"
+#   execution_role_arn       = aws_iam_role.iam_ecs_service_role.arn
+#   task_role_arn            = aws_iam_role.iam_ecs_service_role.arn
+#   cpu                      = 1024
+#   memory                   = 2048
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   tags                     = local.tags
 
-  container_definitions = <<EOF
-    [
-    {
-        "name": "soap-container",
-        "image": "${aws_ecr_repository.repo_dbt.repository_url}:java-soap-client-latest",
-        "cpu": 1024,
-        "memory": 2048,
-        "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-            "awslogs-region": "${var.aws_region}",
-            "awslogs-group": "${aws_cloudwatch_log_group.log_for_ecs_cluster.name}",
-            "awslogs-stream-prefix": "ecs"
-        }
-        },
-        "environment": [
-          {
-            "name": "source_id",
-            "value": "$${source_id}"
-          },
-          {
-            "name": "datefrom",
-            "value": "$${datefrom}"
-          },
-          {
-            "name": "dateto",
-            "value": "$${dateto}"
-          }
-        ]
-    }
-    ]
-    EOF
-}
+#   container_definitions = <<EOF
+#     [
+#     {
+#         "name": "soap-container",
+#         "image": "${aws_ecr_repository.repo_dbt.repository_url}:java-soap-client-latest",
+#         "cpu": 1024,
+#         "memory": 2048,
+#         "logConfiguration": {
+#         "logDriver": "awslogs",
+#         "options": {
+#             "awslogs-region": "${var.aws_region}",
+#             "awslogs-group": "${aws_cloudwatch_log_group.log_for_ecs_cluster.name}",
+#             "awslogs-stream-prefix": "ecs"
+#         }
+#         },
+#         "environment": [
+#           {
+#             "name": "source_id",
+#             "value": "$${source_id}"
+#           },
+#           {
+#             "name": "datefrom",
+#             "value": "$${datefrom}"
+#           },
+#           {
+#             "name": "dateto",
+#             "value": "$${dateto}"
+#           }
+#         ]
+#     }
+#     ]
+#     EOF
+# }
 
 module "ecs_task_security_group" {
   source = "terraform-aws-modules/security-group/aws"
@@ -163,7 +163,6 @@ resource "aws_secretsmanager_secret_version" "secretsECS" {
    {
     "ecs-cluster": "${aws_ecs_cluster.ecs_cluster.arn}",
     "ecs-dbt-task-definition": "${aws_ecs_task_definition.dbt_task.arn}",
-    "ecs-soap-task-definition": "${aws_ecs_task_definition.soap_task.arn}",
     "ecs-task-private-subnet": "${data.terraform_remote_state.common.outputs.private_subnets[0]}",
     "ecs-task-security-group": "${module.ecs_task_security_group.security_group_id}"
    }
@@ -219,62 +218,62 @@ module "lambda_function_run_dbt_task" {
   tags = local.tags
 }
 
-module "lambda_function_run_soap_task" {
-  source = "terraform-aws-modules/lambda/aws"
-  #version = "~> 2.0"
+# module "lambda_function_run_soap_task" {
+#   source = "terraform-aws-modules/lambda/aws"
+#   #version = "~> 2.0"
 
-  function_name                     = "${local.prefixname}-run_soap_task"
-  description                       = "lambda function for running soap task"
-  handler                           = "run_soap_task.lambda_handler"
-  runtime                           = "python3.8"
-  cloudwatch_logs_retention_in_days = 1
+#   function_name                     = "${local.prefixname}-run_soap_task"
+#   description                       = "lambda function for running soap task"
+#   handler                           = "run_soap_task.lambda_handler"
+#   runtime                           = "python3.8"
+#   cloudwatch_logs_retention_in_days = 1
 
-  publish = true
+#   publish = true
 
-  timeout = 600
+#   timeout = 600
 
-  create_package         = false
-  local_existing_package = "${var.buildpath}${var.run_soap_task_zip}"
+#   create_package         = false
+#   local_existing_package = "${var.buildpath}${var.run_soap_task_zip}"
 
-  attach_network_policy = true
+#   attach_network_policy = true
 
-  attach_policy_statements = true
-  policy_statements = {
-    secretsmanager = {
-      effect    = "Allow",
-      actions   = ["secretsmanager:GetSecretValue"],
-      resources = [aws_secretsmanager_secret.secretsRDS.arn, aws_secretsmanager_secret.secretsECS.arn]
-    },
-    esc_cluster = {
-      effect    = "Allow",
-      actions   = ["ecs:RunTask"],
-      resources = [aws_ecs_task_definition.soap_task.arn]
-    },
-    pass_role = {
-      effect    = "Allow",
-      actions   = ["iam:PassRole"],
-      resources = [aws_iam_role.iam_ecs_service_role.arn]
-    },
-    s3_read = {
-      effect    = "Allow",
-      actions   = ["s3:GetObject"],
-      resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
-    },
-    s3_bucket_read = {
-      effect    = "Allow",
-      actions   = ["s3:ListBucket"],
-      resources = ["arn:aws:s3:::arbat-hotel-additional-data"]
-    }
-  }
+#   attach_policy_statements = true
+#   policy_statements = {
+#     secretsmanager = {
+#       effect    = "Allow",
+#       actions   = ["secretsmanager:GetSecretValue"],
+#       resources = [aws_secretsmanager_secret.secretsRDS.arn, aws_secretsmanager_secret.secretsECS.arn]
+#     },
+#     esc_cluster = {
+#       effect    = "Allow",
+#       actions   = ["ecs:RunTask"],
+#       resources = [aws_ecs_task_definition.soap_task.arn]
+#     },
+#     pass_role = {
+#       effect    = "Allow",
+#       actions   = ["iam:PassRole"],
+#       resources = [aws_iam_role.iam_ecs_service_role.arn]
+#     },
+#     s3_read = {
+#       effect    = "Allow",
+#       actions   = ["s3:GetObject"],
+#       resources = ["arn:aws:s3:::arbat-hotel-additional-data/psb-cert/*"]
+#     },
+#     s3_bucket_read = {
+#       effect    = "Allow",
+#       actions   = ["s3:ListBucket"],
+#       resources = ["arn:aws:s3:::arbat-hotel-additional-data"]
+#     }
+#   }
 
-  environment_variables = {
-    RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
-    ECS_SECRET = aws_secretsmanager_secret.secretsECS.name
-  }
+#   environment_variables = {
+#     RDS_SECRET = aws_secretsmanager_secret.secretsRDS.name
+#     ECS_SECRET = aws_secretsmanager_secret.secretsECS.name
+#   }
 
-  vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
-  vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.ecs_task_security_group.security_group_id]
+#   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
+#   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.ecs_task_security_group.security_group_id]
 
-  tags = local.tags
-}
+#   tags = local.tags
+# }
 

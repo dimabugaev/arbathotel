@@ -253,17 +253,23 @@ module "lambda_function_psb_extract_java-tire-1" {
 
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-1"
   description                       = "lambda function for extract Payment data from open API PSB"
-  package_type                      = "Image"
+  #package_type                      = "Image"
+  handler                           = "MySoapClient::handleRequest"
+  runtime                           = "java8.al2"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
   create_package = false
 
-  image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
+  #image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
+  s3_existing_package = {
+    bucket = "arbat-hotel-additional-data"
+    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
+  }
 
   timeout     = 600
-  memory_size = 512
+  memory_size = 1024
 
   attach_network_policy = true
 
@@ -302,17 +308,23 @@ module "lambda_function_psb_extract_java_tire_2" {
 
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-2"
   description                       = "lambda function for extract Payment data from open API PSB"
-  package_type                      = "Image"
+    #package_type                      = "Image"
+  handler                           = "MySoapClient::handleRequest"
+  runtime                           = "java8.al2"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
   create_package = false
 
-  image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
+  #image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
+  s3_existing_package = {
+    bucket = "arbat-hotel-additional-data"
+    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
+  }
 
   timeout     = 600
-  memory_size = 512
+  memory_size = 1024
 
   attach_network_policy = true
 
@@ -351,17 +363,23 @@ module "lambda_function_psb_extract_java_tire_3" {
 
   function_name                     = "${local.prefixname}-psb-extract-lambda-tire-3"
   description                       = "lambda function for extract Payment data from open API PSB"
-  package_type                      = "Image"
+    #package_type                      = "Image"
+  handler                           = "MySoapClient::handleRequest"
+  runtime                           = "java8.al2"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
 
   create_package = false
 
-  image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
+  #image_uri = "${aws_ecr_repository.repo_dbt.repository_url}:psb_soap_client"
+  s3_existing_package = {
+    bucket = "arbat-hotel-additional-data"
+    key    = "java_lambda_artifacts/arbatSpringSoapClient-1.0-SNAPSHOT.jar"
+  }
 
   timeout     = 600
-  memory_size = 512
+  memory_size = 1024
 
   attach_network_policy = true
 

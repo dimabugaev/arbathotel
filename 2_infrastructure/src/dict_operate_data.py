@@ -301,6 +301,55 @@ def get_report_items() -> list:
     
     return cursor.fetchall()
 
+def get_budget_items() -> list:
+
+    global connection
+
+    cursor = connection.cursor()
+    
+    cursor.execute("""select 
+                        bi.id,
+                        bi.perfix,
+                        bi.item_name,
+                        bi.perfix || ' - ' || bi.item_name as full_name,
+                        bi.section,
+                        bi.subcategory,
+                        bi.category 
+                      from 
+                        operate.budget_items bi
+                      order by
+                        bi.id""")
+    
+    return cursor.fetchall()
+
+def get_contragents() -> list:
+
+    global connection
+
+    cursor = connection.cursor()
+    
+    cursor.execute("""select 
+                        co.id,
+                        co.contragent_name,
+                        co.inner_name,
+                        co.inn,
+                        co.account_number,
+                        bi_in.id as income_budget_item_id,
+                        bi_in.perfix || ' - ' || bi_in.item_name as income_budget_item_name,
+                        bi_out.id as outcome_budget_item_id,
+                        bi_out.perfix || ' - ' || bi_out.item_name as outcome_budget_item_name,
+                        h.id as hotel_id,
+                        h.hotel_name 
+                      from 
+                        operate.contragents co
+                        left join operate.budget_items bi_in on co.income_budget_item_id = bi_in.id
+                        left join operate.budget_items bi_out on co.outcome_budget_item_id = bi_out.id
+                        left join operate.hotels h on co.hotel_id = h.id
+                      order by
+                        co.id""")
+    
+    return cursor.fetchall()
+
 def get_report_settings(source_id : str) -> list:
 
     global connection
@@ -586,6 +635,167 @@ def put_employees(datastrings: list):
           connection.rollback()
           raise ex
 
+def put_budget_items(datastrings: list):
+
+    global connection
+
+    if len(datastrings) > 0:
+        cursor = connection.cursor()
+
+        try:
+          
+          list_of_args = []
+          for newrow in datastrings:
+              
+                        # bi.id,
+                        # bi.perfix,
+                        # bi.item_name,
+                        # bi.section,
+                        # bi.subcategory,
+                        # bi.category 
+
+              if (len(str(newrow[0])) == 0 
+                  and len(str(newrow[1])) == 0
+                  and len(str(newrow[2])) == 0
+                  and len(str(newrow[3])) == 0
+                  and len(str(newrow[4])) == 0
+                  and len(str(newrow[5])) == 0):
+                  continue
+              
+              list_of_args.append("({}, '{}', '{}', '{}', '{}', '{}')"
+                  .format(my_utility.num_to_query_substr(newrow[0]), #id
+                  newrow[1],                                         #perfix
+                  newrow[2],                                         #item_name
+                  newrow[3],                                         #section
+                  newrow[4],                                         #subcategory
+                  newrow[5]))                                        #category
+
+          if len(list_of_args) > 0:
+            cursor.execute("""DROP TABLE IF EXISTS temp_budget_items_table_update""")
+            cursor.execute("""CREATE TEMP TABLE temp_budget_items_table_update AS SELECT * FROM operate.budget_items WHERE false""")
+
+            args_str = ','.join(list_of_args)
+            cursor.execute("""INSERT INTO temp_budget_items_table_update
+                                (id, perfix, item_name, section, subcategory, category)
+                              VALUES """ + args_str)
+            
+
+            cursor.execute("""
+                    
+                    UPDATE operate.budget_items t
+                        SET perfix = u.perfix,
+                            item_name = u.item_name,
+                            section = u.section,
+                            subcategory = u.subcategory,
+                            category = u.category
+                    FROM operate.budget_items s
+                        INNER JOIN temp_budget_items_table_update u ON u.id = s.id
+                    WHERE EXISTS (
+                        SELECT s.perfix, s.item_name, s.section, s.subcategory, s.category
+                        EXCEPT
+                        SELECT u.perfix, u.item_name, u.section, u.subcategory, u.category
+                        ) and t.id = s.id;
+
+                    INSERT INTO operate.budget_items (perfix, item_name, section, subcategory, category)
+                    SELECT     
+                        perfix, 
+                        item_name, 
+                        section, 
+                        subcategory, 
+                        category
+                    FROM temp_budget_items_table_update
+                    WHERE
+                        id is NULL;
+                    """)
+
+            connection.commit()
+        except Exception as ex:
+          connection.rollback()
+          raise ex
+
+def put_contragents(datastrings: list):
+
+    global connection
+
+    if len(datastrings) > 0:
+        cursor = connection.cursor()
+
+        try:
+          
+          list_of_args = []
+          for newrow in datastrings:
+              
+                        # co.id,
+                        # co.contragent_name,
+                        # co.inner_name,
+                        # co.inn,
+                        # co.account_number,
+                        # co.income_budget_item_id,
+                        # co.outcome_budget_item_id,
+                        # co.hotel_id 
+
+              if (len(str(newrow[0])) == 0 
+                  and len(str(newrow[1])) == 0
+                  and len(str(newrow[2])) == 0
+                  and len(str(newrow[3])) == 0):
+                  continue
+              
+              list_of_args.append("({}, '{}', '{}', '{}', '{}', {}, {}, {})"
+                  .format(my_utility.num_to_query_substr(newrow[0]), #id
+                  newrow[1],                                         #contragent_name
+                  newrow[2],                                         #inner_name
+                  newrow[3],                                         #inn
+                  newrow[4],                                         #account_number
+                  my_utility.num_to_query_substr(newrow[5]),         #income_budget_item_id
+                  my_utility.num_to_query_substr(newrow[6]),         #outcome_budget_item_id
+                  my_utility.num_to_query_substr(newrow[7])))        #hotel_id
+
+          if len(list_of_args) > 0:
+            cursor.execute("""DROP TABLE IF EXISTS temp_contragents_table_update""")
+            cursor.execute("""CREATE TEMP TABLE temp_contragents_table_update AS SELECT * FROM operate.contragents WHERE false""")
+
+            args_str = ','.join(list_of_args)
+            cursor.execute("""INSERT INTO temp_contragents_table_update
+                                (id, contragent_name, inner_name, inn, account_number, income_budget_item_id, outcome_budget_item_id, hotel_id)
+                              VALUES """ + args_str)
+            
+
+            cursor.execute("""
+                    
+                    UPDATE operate.contragents t
+                        SET contragent_name = u.contragent_name,
+                            inner_name = u.inner_name,
+                            inn = u.inn,
+                            account_number = u.account_number,
+                            income_budget_item_id = u.income_budget_item_id,
+                            outcome_budget_item_id = u.outcome_budget_item_id,
+                            hotel_id = u.hotel_id
+                    FROM operate.contragents s
+                        INNER JOIN temp_contragents_table_update u ON u.id = s.id
+                    WHERE EXISTS (
+                        SELECT s.contragent_name, s.inner_name, s.inn, s.account_number, s.income_budget_item_id, s.outcome_budget_item_id, s.hotel_id
+                        EXCEPT
+                        SELECT u.contragent_name, u.inner_name, u.inn, u.account_number, u.income_budget_item_id, u.outcome_budget_item_id, u.hotel_id
+                        ) and t.id = s.id;
+
+                    INSERT INTO operate.contragents (contragent_name, inner_name, inn, account_number, income_budget_item_id, outcome_budget_item_id, hotel_id)
+                    SELECT     
+                        contragent_name, 
+                        inner_name, 
+                        inn, 
+                        account_number, 
+                        income_budget_item_id, 
+                        outcome_budget_item_id, 
+                        hotel_id
+                    FROM temp_contragents_table_update
+                    WHERE
+                        id is NULL;
+                    """)
+
+            connection.commit()
+        except Exception as ex:
+          connection.rollback()
+          raise ex
 
 def put_report_items(datastrings: list):
 
@@ -746,6 +956,12 @@ def get_dict() -> dict:
     if dict_name == 'report_items_setings':
         result["data"] = get_report_settings(source_id)
 
+    if dict_name == 'budget_items':
+        result["data"] = get_budget_items()
+
+    if dict_name == 'contragents':
+        result["data"] = get_contragents()
+
     return my_utility.get_response(result)
 
 @app.get("/booking_problems")
@@ -814,6 +1030,12 @@ def put_dict() -> dict:
 
     if dict_name == 'report_items_setings':
         put_report_items_setings(datastrings)
+
+    if dict_name == 'budget_items':
+        put_budget_items(datastrings)
+
+    if dict_name == 'contragents':
+        put_contragents(datastrings)
 
 def lambda_handler(event, context):
     print({'event': event, 'context': context})

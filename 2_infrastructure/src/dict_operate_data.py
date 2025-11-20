@@ -311,7 +311,6 @@ def get_budget_items() -> list:
                         bi.id,
                         bi.perfix,
                         bi.item_name,
-                        bi.perfix || ' - ' || bi.item_name as full_name,
                         bi.section,
                         bi.subcategory,
                         bi.category 

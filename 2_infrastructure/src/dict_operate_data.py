@@ -333,17 +333,11 @@ def get_contragents() -> list:
                         co.inner_name,
                         co.inn,
                         co.account_number,
-                        bi_in.id as income_budget_item_id,
-                        bi_in.perfix || ' - ' || bi_in.item_name as income_budget_item_name,
-                        bi_out.id as outcome_budget_item_id,
-                        bi_out.perfix || ' - ' || bi_out.item_name as outcome_budget_item_name,
-                        h.id as hotel_id,
-                        h.hotel_name 
+                        co.income_budget_item_id,
+                        co.outcome_budget_item_id,
+                        co.hotel_id
                       from 
                         operate.contragents co
-                        left join operate.budget_items bi_in on co.income_budget_item_id = bi_in.id
-                        left join operate.budget_items bi_out on co.outcome_budget_item_id = bi_out.id
-                        left join operate.hotels h on co.hotel_id = h.id
                       order by
                         co.id""")
     

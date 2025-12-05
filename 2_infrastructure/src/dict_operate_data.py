@@ -335,14 +335,16 @@ def get_contragents() -> list:
                         co.account_number,
                         co.income_budget_item_id,
                         co.outcome_budget_item_id,
-                        co.hotel_id,
-                        bi.item_name as income_budget_item_name,
-                        bo.item_name as outcome_budget_item_name,
-                        h.hotel_name
+                        co.hotel_id
+                        --,
+                        --bi.item_name as income_budget_item_name,
+                        --bo.item_name as outcome_budget_item_name,
+                        --h.hotel_name
                       from 
-                        operate.contragents co left join operate.budget_items bi on co.income_budget_item_id = bi.id
-                        left join operate.budget_items bo on co.outcome_budget_item_id = bo.id
-                        left join operate.hotels h on co.hotel_id = h.id
+                        operate.contragents co 
+                        --left join operate.budget_items bi on co.income_budget_item_id = bi.id
+                        --left join operate.budget_items bo on co.outcome_budget_item_id = bo.id
+                        --left join operate.hotels h on co.hotel_id = h.id
                       order by
                         co.id""")
     

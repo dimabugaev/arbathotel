@@ -27,6 +27,12 @@ with psb_strings as (
         booking_number,
         case 
             when order_number is not null and order_number <> '' then
+                6
+            else 
+                5
+        end as budget_item_id,
+        case 
+            when order_number is not null and order_number <> '' then
                 '10140 - Он-лайн оплата'
             else 
                 '10130 - Карты'
@@ -50,6 +56,12 @@ with psb_strings as (
         booking_number,
         case 
             when order_number is not null and order_number <> '' then
+                132
+            else 
+                61
+        end as budget_item_id,
+        case 
+            when order_number is not null and order_number <> '' then
                 '6140 - Интернет-эквайринг'
             else 
                 '6130 - Комиссия по картам'
@@ -71,6 +83,7 @@ with psb_strings as (
         hotel_id,
         null,
         null,
+        5,
         '10130 - Карты'
     from 
        aq_qr
@@ -89,6 +102,7 @@ with psb_strings as (
         hotel_id,
         null,
         null,
+        61,
         '6130 - Комиссия по картам'
     from 
        aq_qr
@@ -105,6 +119,7 @@ with psb_strings as (
         bank_payment_id,
         source_id,
         hotel_id,
+        null,
         null,
         null,
         null
@@ -129,6 +144,7 @@ with psb_strings as (
         aq.hotel_id,
         aq.booking_id,
         aq.booking_number,
+        aq.budget_item_id,
         aq.budget_item 
     from
         psb_strings pdr left join aq_all aq on pdr.doc_id = aq.bank_payment_id and (pdr.source_id = aq.source_id  or (order_number is not null and order_number <> ''))  
@@ -140,6 +156,7 @@ select
     pdr.booking_id,
     pdr.booking_number,
     pdr.hotel_id,
+    pdr.budget_item_id,
     pdr.budget_item,
     h.hotel_name,
 	s.source_external_key as account_number,

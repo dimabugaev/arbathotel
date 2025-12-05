@@ -14,6 +14,10 @@ sources:
         identifier: hotels
       - name: devices
         identifier: devices
+      - name: contragents
+        identifier: contragents
+      - name: budget_items
+        identifier: budget_items
   
   
   - name: bnovo

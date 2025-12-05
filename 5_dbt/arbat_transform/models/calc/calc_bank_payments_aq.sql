@@ -18,6 +18,7 @@ with banks_payments as (
         payment_purpose,
         contragent_inn,
         contragent,
+        contragent_account,
         total_debt,
         null hotel_id,
         '' hotel_name,
@@ -25,6 +26,7 @@ with banks_payments as (
         null order_number,
         null booking_id,
         null booking_number,
+        null budget_item_id,
         null budget_item
     from
         {{ ref('src_bank_tinkoff_payments') }}
@@ -44,6 +46,7 @@ with banks_payments as (
         payment_purpose,
         contragent_inn,
         contragent,
+        contragent_account,
         total_debt,
         hotel_id,
         hotel_name,
@@ -51,6 +54,7 @@ with banks_payments as (
         order_number,
         booking_id,
         booking_number,
+        budget_item_id,
         budget_item
     from
         {{ ref('calc_psb_payments_with_aq') }}
@@ -70,6 +74,7 @@ with banks_payments as (
         payment_purpose,
         contragent_inn,
         contragent,
+        contragent_account,
         total_debt,
         null hotel_id,
         '' hotel_name,
@@ -77,6 +82,7 @@ with banks_payments as (
         null order_number,
         null booking_id,
         null booking_number,
+        null budget_item_id,
         null budget_item
     from
         {{ ref('src_bank_alfa_payments') }}
@@ -159,13 +165,29 @@ with banks_payments as (
         join {{ ref('src_bookings') }} t2 on t1.booking_id = t2.booking_id    
         join {{ source('operate', 'hotels') }} t3 on t2.hotel_id::text = t3.bnovo_id   
 )
+,contragent_data as (
+    select
+        co.id,
+        co.contragent_name,
+        co.inner_name,
+        co.inn,
+        co.account_number,
+        co.income_budget_item_id,
+        co.income_budget_item_name,
+        co.outcome_budget_item_id,
+        co.outcome_budget_item_name,
+        co.hotel_id,
+        h.hotel_name
+    from {{ ref('src_contragents') }} co left join {{ source('operate', 'hotels') }} h on co.hotel_id = h.id
+)
 select
     bp.source_id,
     bp.id,
     bp.id_aq,
     bp.account_number,
     bp.source_name,
-    bp.budget_item,
+    coalesce(bp.budget_item_id, case when bp.in_summ = 0 then cd.outcome_budget_item_id else cd.income_budget_item_id end) budget_item_id,
+    coalesce(bp.budget_item, case when bp.in_summ = 0 then cd.outcome_budget_item_name else cd.income_budget_item_id end) budget_item,
     st.type_id,
     st.type_name,
     bp.date_transaction,
@@ -174,9 +196,10 @@ select
     bp.payment_purpose,
     bp.contragent_inn,
     bp.contragent,
+    bp.contragent_account,
     bp.total_debt,
-    coalesce(hi2.hotel_id, hi.hotel_id, bp.hotel_id) hotel_id,
-    coalesce(hi2.hotel_name, hi.hotel_name, bp.hotel_name) hotel_name,
+    coalesce(hi2.hotel_id, hi.hotel_id, bp.hotel_id, cd.hotel_id) hotel_id,
+    coalesce(hi2.hotel_name, hi.hotel_name, bp.hotel_name, cd.hotel_name) hotel_name,
     bp.terminal_number,
     bp.order_number,
     coalesce(hi2.booking_id, bp.booking_id) booking_id,
@@ -192,3 +215,5 @@ from
    on bp.source_type = st.type_id 
    left join out_payment_hotel_info hi on bp.source_id = hi.source_id and bp.id = hi.id and bp.id_aq = hi.id_aq
    left join ordinar_in_payment_hotel_info hi2 on bp.source_id = hi2.source_id and bp.id = hi2.id and bp.id_aq = hi2.id_aq
+   left join contragent_data cd on ((cd.account_number is not null and cd.account_number <> '') and bp.contragent_account = cd.account_number) 
+   or ((cd.account_number is null or cd.account_number = '') and bp.contragent_inn = cd.inn)

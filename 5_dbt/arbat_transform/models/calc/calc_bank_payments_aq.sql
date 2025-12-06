@@ -187,7 +187,7 @@ select
     bp.account_number,
     bp.source_name,
     coalesce(bp.budget_item_id, case when bp.in_summ = 0 then cd.outcome_budget_item_id else cd.income_budget_item_id end) budget_item_id,
-    coalesce(bp.budget_item, case when bp.in_summ = 0 then cd.outcome_budget_item_name else cd.income_budget_item_id end) budget_item,
+    coalesce(bp.budget_item, case when bp.in_summ = 0 then cd.outcome_budget_item_name else cd.income_budget_item_name end) budget_item,
     st.type_id,
     st.type_name,
     bp.date_transaction,

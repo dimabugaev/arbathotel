@@ -12,8 +12,10 @@ with contragents as (
         co.inn,
         co.account_number,
         co.income_budget_item_id,
+        bi.perfix as income_budget_item_perfix,
         bi.item_name as income_budget_item_name,
         co.outcome_budget_item_id,
+        bo.perfix as outcome_budget_item_perfix,
         bo.item_name as outcome_budget_item_name,
         co.hotel_id,
         row_number() over (partition by co.inn, co.account_number order by co.id) as row_number

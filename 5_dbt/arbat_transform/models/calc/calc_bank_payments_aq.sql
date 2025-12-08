@@ -26,8 +26,8 @@ with banks_payments as (
         null order_number,
         null booking_id,
         null booking_number,
-        null budget_item_id,
-        null budget_item
+        null budget_item_id--,
+        --null budget_item
     from
         {{ ref('src_bank_tinkoff_payments') }}
     
@@ -54,8 +54,8 @@ with banks_payments as (
         order_number,
         booking_id,
         booking_number,
-        budget_item_id,
-        budget_item
+        budget_item_id--,
+        --budget_item
     from
         {{ ref('calc_psb_payments_with_aq') }}
 
@@ -82,10 +82,13 @@ with banks_payments as (
         null order_number,
         null booking_id,
         null booking_number,
-        null budget_item_id,
-        null budget_item
+        null budget_item_id--,
+        --null budget_item
     from
         {{ ref('src_bank_alfa_payments') }}
+)
+,budget_items as (
+    select * from {{ source('operate', 'budget_items') }}
 )
 ,hotel_syn as (
     select 
@@ -189,7 +192,7 @@ select
     bp.account_number,
     bp.source_name,
     coalesce(bp.budget_item_id, case when bp.in_summ = 0 then cd.outcome_budget_item_id else cd.income_budget_item_id end) budget_item_id,
-    coalesce(bp.budget_item_id, case when bp.in_summ = 0 then cd.outcome_budget_item_perfix else cd.income_budget_item_perfix end) budget_item_perfix,
+    coalesce(bi.perfix, case when bp.in_summ = 0 then cd.outcome_budget_item_perfix else cd.income_budget_item_perfix end) budget_item_perfix,
     coalesce(bp.budget_item, case when bp.in_summ = 0 then cd.outcome_budget_item_name else cd.income_budget_item_name end) budget_item,
     st.type_id,
     st.type_name,
@@ -216,7 +219,8 @@ select
     ROW_NUMBER() OVER (ORDER BY bp.source_id, bp.date_transaction, bp.id, bp.id_aq, bp.out_summ) as sort_as_count_debt
 from
    banks_payments bp join {{ ref('seed_sources_type_id') }} st
-   on bp.source_type = st.type_id 
+   on bp.source_type = st.type_id
+   left join budget_items bi on bp.budget_item_id = bi.id 
    left join out_payment_hotel_info hi on bp.source_id = hi.source_id and bp.id = hi.id and bp.id_aq = hi.id_aq
    left join ordinar_in_payment_hotel_info hi2 on bp.source_id = hi2.source_id and bp.id = hi2.id and bp.id_aq = hi2.id_aq
    left join contragent_data cd on ((cd.account_number is not null and cd.account_number <> '') and bp.contragent_account = cd.account_number) 

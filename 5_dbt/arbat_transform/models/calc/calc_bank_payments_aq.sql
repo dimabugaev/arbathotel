@@ -96,7 +96,7 @@ with banks_payments as (
         t1.hotel_name,
         trim(synonym) AS synonym
     from {{ source('operate', 'hotels') }} t1,
-        LATERAL unnest(string_to_array(t1.synonyms, ',')) AS synonym
+        LATERAL unnest(string_to_array(t1.synonyms, ';')) AS synonym
 )
 ,out_payment_hotel_info as (
     select

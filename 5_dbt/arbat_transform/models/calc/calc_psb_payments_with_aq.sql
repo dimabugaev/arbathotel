@@ -33,9 +33,9 @@ with psb_strings as (
         end as budget_item_id,
         case 
             when order_number is not null and order_number <> '' then
-                '10140 - Он-лайн оплата'
+                'Он-лайн оплата'
             else 
-                '10130 - Карты'
+                'Карты'
         end as budget_item
     from 
        aq_term
@@ -62,9 +62,9 @@ with psb_strings as (
         end as budget_item_id,
         case 
             when order_number is not null and order_number <> '' then
-                '6140 - Интернет-эквайринг'
+                'Интернет-эквайринг'
             else 
-                '6130 - Комиссия по картам'
+                'Комиссия по картам'
         end as budget_item
     from 
        aq_term 
@@ -84,7 +84,7 @@ with psb_strings as (
         null,
         null,
         5,
-        '10130 - Карты'
+        'Карты'
     from 
        aq_qr
     union all
@@ -103,7 +103,7 @@ with psb_strings as (
         null,
         null,
         61,
-        '6130 - Комиссия по картам'
+        'Комиссия по картам'
     from 
        aq_qr
     union all

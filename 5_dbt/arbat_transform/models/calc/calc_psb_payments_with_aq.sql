@@ -134,6 +134,12 @@ with psb_strings as (
         pdr.row_date,
         coalesce(aq.debit, pdr.debit) debit,
         pdr.outer_account,
+        case 
+            when pdr.outer_account = '' or pdr.outer_account is null then
+                pdr.account
+            else
+                pdr.outer_account
+        end as contragent_account,
         pdr.kb,
         pdr.contragent_inn,
         pdr.contragent,
@@ -165,7 +171,7 @@ select
 	pdr.row_date date_doc,
 	pdr.row_date date_transaction,
 	not pdr.debit as income,
-	pdr.outer_account as contragent_account,
+	pdr.contragent_account as contragent_account,
 	pdr.kb as contragent_bic,
 	'' contragent_bank,
 	pdr.contragent_inn as contragent_inn,

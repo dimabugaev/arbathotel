@@ -21,7 +21,7 @@ select
     bp.contragent_account,
     bp.contragent_inner_name,
     bp.total_debt,
-    bp.total_debt,
+    bp.hotel_id,
     h.hotel_name hotel_name,
     bp.terminal_number,
     bp.order_number,

@@ -331,6 +331,7 @@ module "lambda_function_extract_bnovo_ufms" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   tags = local.tags
 }

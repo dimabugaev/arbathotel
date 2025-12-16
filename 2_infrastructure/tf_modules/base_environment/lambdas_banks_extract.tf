@@ -43,7 +43,7 @@ module "lambda_function_plan_to_extract_psb" {
   function_name                     = "${local.prefixname}-plan-to-extract-psb"
   description                       = "lambda function for planing to launch extract PAYMENTS data from open API PSB"
   handler                           = "to_plan_extract_psb.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -71,6 +71,8 @@ module "lambda_function_plan_to_extract_psb" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -81,7 +83,7 @@ module "lambda_function_plan_to_extract_tinkoff" {
   function_name                     = "${local.prefixname}-plan-to-extract-tinkoff"
   description                       = "lambda function for planing to launch extract PAYMENTS data from open API TIMKOFF"
   handler                           = "to_plan_extract_tinkoff.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -109,6 +111,8 @@ module "lambda_function_plan_to_extract_tinkoff" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -119,7 +123,7 @@ module "lambda_function_plan_to_extract_alfa" {
   function_name                     = "${local.prefixname}-plan-to-extract-alfa"
   description                       = "lambda function for planing to launch extract PAYMENTS data from open API ALFA"
   handler                           = "to_plan_extract_alfa.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -157,6 +161,8 @@ module "lambda_function_plan_to_extract_alfa" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -167,7 +173,7 @@ module "lambda_function_tinkoff_extract" {
   function_name                     = "${local.prefixname}-tinkoff-extract-lambda"
   description                       = "lambda function for extract Payment data from open API TINKOFF"
   handler                           = "extract_tinkoff_account.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -195,6 +201,8 @@ module "lambda_function_tinkoff_extract" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -205,7 +213,7 @@ module "lambda_function_alfa_extract" {
   function_name                     = "${local.prefixname}-alfa-extract-lambda"
   description                       = "lambda function for extract Payment data from open API ALFA"
   handler                           = "extract_alfa_account.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -242,6 +250,8 @@ module "lambda_function_alfa_extract" {
 
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
+
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   tags = local.tags
 }
@@ -421,7 +431,7 @@ module "lambda_function_extract_email_reports" {
   function_name                     = "${local.prefixname}-extract-email-reports-lambda"
   description                       = "lambda function for extract EMAIL reports and put them into S3"
   handler                           = "extract_email_reports_data.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -455,6 +465,8 @@ module "lambda_function_extract_email_reports" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -466,7 +478,7 @@ module "lambda_function_upload_psb_acquiring" {
   function_name                     = "${local.prefixname}-upload-psb-acquiring-lambda"
   description                       = "lambda function for upload acquiring PSB data from xls S3 to RDS"
   handler                           = "upload_psb_acquiring.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -510,6 +522,8 @@ module "lambda_function_upload_psb_acquiring" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -520,7 +534,7 @@ module "lambda_function_upload_ucb_account" {
   function_name                     = "${local.prefixname}-upload-ucs-account-lambda"
   description                       = "lambda function for upload UCP payment data from csv S3 to RDS"
   handler                           = "upload_ucb_account.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -563,6 +577,8 @@ module "lambda_function_upload_ucb_account" {
 
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.banks_extract_security_group.security_group_id]
+
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   tags = local.tags
 }

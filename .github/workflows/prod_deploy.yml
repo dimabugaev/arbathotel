@@ -55,28 +55,28 @@ jobs:
           cp src/to_plan_extract_frequently_bnovo.py build/
           cp src/run_soap_task.py build/
           cd build
-          zip -r employees_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py employees_reports_data.py 
-          zip -r dict_operate_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py dict_operate_data.py 
-          zip -r api_report_bnovo.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ aws_lambda_powertools/ pytz/ typing_extensions.py my_utility.py api_report_bnovo.py 
-          zip -r extract_bnovo_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_data.py
-          zip -r extract_bnovo_finance.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_finance.py
-          zip -r extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_booking.py
-          zip -r extract_bnovo_invoices.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_invoices.py
-          zip -r extract_tinkoff_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_tinkoff_account.py
-          zip -r extract_alfa_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_alfa_account.py
-          zip -r extract_email_reports_data.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_email_reports_data.py 
-          zip -r upload_psb_acquiring.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ xlrd/ openpyxl/ et_xmlfile/ pytz/ typing_extensions.py my_utility.py upload_psb_acquiring.py  
-          zip -r upload_ucb_account.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py upload_ucb_account.py
-          zip -r to_plan_extract_bnovo_fin.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_bnovo_fin.py
-          zip -r to_plan_extract_psb.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_psb.py
-          zip -r to_plan_extract_tinkoff.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_tinkoff.py
-          zip -r to_plan_extract_alfa.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_alfa.py
-          zip -r to_plan_extract_bnovo_booking.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_bnovo_booking.py
-          zip -r extract_bnovo_guests.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_guests.py
-          zip -r extract_bnovo_ufms.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py extract_bnovo_ufms.py
-          zip -r run_dbt_task.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py run_dbt_task.py
-          zip -r run_soap_task.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py run_soap_task.py
-          zip -r to_plan_extract_frequently_bnovo.zip psycopg2/ requests/ charset_normalizer/ certifi/ idna/ urllib3/ pytz/ typing_extensions.py my_utility.py to_plan_extract_frequently_bnovo.py   
+          zip -r employees_reports_data.zip my_utility.py employees_reports_data.py 
+          zip -r dict_operate_data.zip my_utility.py dict_operate_data.py 
+          zip -r api_report_bnovo.zip my_utility.py api_report_bnovo.py 
+          zip -r extract_bnovo_data.zip my_utility.py extract_bnovo_data.py
+          zip -r extract_bnovo_finance.zip my_utility.py extract_bnovo_finance.py
+          zip -r extract_bnovo_booking.zip my_utility.py extract_bnovo_booking.py
+          zip -r extract_bnovo_invoices.zip my_utility.py extract_bnovo_invoices.py
+          zip -r extract_tinkoff_account.zip my_utility.py extract_tinkoff_account.py
+          zip -r extract_alfa_account.zip my_utility.py extract_alfa_account.py
+          zip -r extract_email_reports_data.zip my_utility.py extract_email_reports_data.py 
+          zip -r upload_psb_acquiring.zip my_utility.py upload_psb_acquiring.py  
+          zip -r upload_ucb_account.zip my_utility.py upload_ucb_account.py
+          zip -r to_plan_extract_bnovo_fin.zip my_utility.py to_plan_extract_bnovo_fin.py
+          zip -r to_plan_extract_psb.zip my_utility.py to_plan_extract_psb.py
+          zip -r to_plan_extract_tinkoff.zip my_utility.py to_plan_extract_tinkoff.py
+          zip -r to_plan_extract_alfa.zip my_utility.py to_plan_extract_alfa.py
+          zip -r to_plan_extract_bnovo_booking.zip my_utility.py to_plan_extract_bnovo_booking.py
+          zip -r extract_bnovo_guests.zip my_utility.py extract_bnovo_guests.py
+          zip -r extract_bnovo_ufms.zip my_utility.py extract_bnovo_ufms.py
+          zip -r run_dbt_task.zip my_utility.py run_dbt_task.py
+          zip -r run_soap_task.zip my_utility.py run_soap_task.py
+          zip -r to_plan_extract_frequently_bnovo.zip my_utility.py to_plan_extract_frequently_bnovo.py   
           cd ../
           ls build/
 

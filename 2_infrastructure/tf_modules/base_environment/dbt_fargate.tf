@@ -176,7 +176,7 @@ module "lambda_function_run_dbt_task" {
   function_name                     = "${local.prefixname}-run_dbt_task"
   description                       = "lambda function for runing dbt task"
   handler                           = "run_dbt_task.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -214,6 +214,8 @@ module "lambda_function_run_dbt_task" {
 
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.ecs_task_security_group.security_group_id]
+
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   tags = local.tags
 }

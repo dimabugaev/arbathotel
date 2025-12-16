@@ -172,7 +172,7 @@ module "lambda_function_report_bnovo" {
   function_name                     = "${local.prefixname}-report-bnovo-lambda"
   description                       = "lambda function for redirect queries to bnovo"
   handler                           = "api_report_bnovo.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -201,6 +201,8 @@ module "lambda_function_report_bnovo" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.lambda_api_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   allowed_triggers = {
     AllowExecutionFromAPIGateway = {
       service    = "apigateway"
@@ -217,7 +219,7 @@ module "lambda_function_employees_reports" {
   function_name                     = "${local.prefixname}-reports-operations-lambda"
   description                       = "lambda function for support to work operations reports"
   handler                           = "employees_reports_data.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -244,6 +246,8 @@ module "lambda_function_employees_reports" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.lambda_api_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   allowed_triggers = {
     AllowExecutionFromAPIGateway = {
       service    = "apigateway"
@@ -259,7 +263,7 @@ module "lambda_function_dict_operate" {
   function_name                     = "${local.prefixname}-dict-operations-lambda"
   description                       = "lambda function for support to operations with dictionary"
   handler                           = "dict_operate_data.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
   timeout                           = 20
 
@@ -285,6 +289,8 @@ module "lambda_function_dict_operate" {
 
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.lambda_api_security_group.security_group_id]
+
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   allowed_triggers = {
     AllowExecutionFromAPIGateway = {

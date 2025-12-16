@@ -21,7 +21,7 @@ module "lambda_function_bnovo_master_data_extract" {
   function_name                     = "${local.prefixname}-bnovo-extract-lambda"
   description                       = "lambda function for extract data from open API Bnovo"
   handler                           = "extract_bnovo_data.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -49,6 +49,8 @@ module "lambda_function_bnovo_master_data_extract" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -59,7 +61,7 @@ module "lambda_function_bnovo_invoices_extract" {
   function_name                     = "${local.prefixname}-bnovo-invoices-extract-lambda"
   description                       = "lambda function for extract invoices from open API Bnovo"
   handler                           = "extract_bnovo_invoices.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -87,6 +89,8 @@ module "lambda_function_bnovo_invoices_extract" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -97,7 +101,7 @@ module "lambda_function_bnovo_finance_extract" {
   function_name                     = "${local.prefixname}-bnovo-finance-extract-lambda"
   description                       = "lambda function for extract FINANCE data from open API Bnovo"
   handler                           = "extract_bnovo_finance.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -126,6 +130,8 @@ module "lambda_function_bnovo_finance_extract" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -136,7 +142,7 @@ module "lambda_function_bnovo_booking_extract" {
   function_name                     = "${local.prefixname}-bnovo-booking-extract-lambda"
   description                       = "lambda function for extract BOOKING and INVOICES data from open API Bnovo"
   handler                           = "extract_bnovo_booking.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -165,6 +171,8 @@ module "lambda_function_bnovo_booking_extract" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
+
   tags = local.tags
 }
 
@@ -175,7 +183,7 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
   function_name                     = "${local.prefixname}-plan-to-extract-bnovo-fin"
   description                       = "lambda function for planing to launch extract FINANCE data from open API Bnovo"
   handler                           = "to_plan_extract_bnovo_fin.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -203,6 +211,7 @@ module "lambda_function_plan_to_extract_bnovo_fin" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   tags = local.tags
 }
@@ -214,7 +223,7 @@ module "lambda_function_plan_to_extract_bnovo_booking" {
   function_name                     = "${local.prefixname}-plan-to-extract-bnovo-booking"
   description                       = "lambda function for planing to launch extract BOOKING data from open API Bnovo"
   handler                           = "to_plan_extract_bnovo_booking.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -242,6 +251,7 @@ module "lambda_function_plan_to_extract_bnovo_booking" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   tags = local.tags
 }
@@ -253,7 +263,7 @@ module "lambda_function_extract_bnovo_guests" {
   function_name                     = "${local.prefixname}-extract-bnovo-guests"
   description                       = "lambda function to launch extract GUESTS data from open API Bnovo"
   handler                           = "extract_bnovo_guests.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -281,6 +291,7 @@ module "lambda_function_extract_bnovo_guests" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   tags = local.tags
 }
@@ -292,7 +303,7 @@ module "lambda_function_extract_bnovo_ufms" {
   function_name                     = "${local.prefixname}-extract-bnovo-ufms"
   description                       = "lambda function extract sent data to UFMS from open API Bnovo"
   handler                           = "extract_bnovo_ufms.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -331,7 +342,7 @@ module "lambda_function_plan_to_extract_frequently_bnovo" {
   function_name                     = "${local.prefixname}-plan-to-extract-frequently-bnovo"
   description                       = "lambda function for planing frequently extract data from Bnovo"
   handler                           = "to_plan_extract_frequently_bnovo.lambda_handler"
-  runtime                           = "python3.8"
+  runtime                           = "python3.10"
   cloudwatch_logs_retention_in_days = 1
 
   publish = true
@@ -359,6 +370,7 @@ module "lambda_function_plan_to_extract_frequently_bnovo" {
   vpc_subnet_ids         = data.terraform_remote_state.common.outputs.private_subnets
   vpc_security_group_ids = [data.terraform_remote_state.common.outputs.sg_access_to_secretsmanager, module.bnovo_extract_security_group.security_group_id]
 
+  layers = [data.terraform_remote_state.common.outputs.lambda_layer_common_arn]
 
   tags = local.tags
 }

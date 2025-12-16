@@ -18,6 +18,10 @@ output "database_subnet_group" {
   value = aws_db_subnet_group.default.id
 }
 
+output "lambda_layer_common_arn" {
+  value = module.lambda_layer_common.layer_arn
+}
+
 #This group for inbound  
 output "sg_ssh_proxy" {
   value = module.nat.sg_id

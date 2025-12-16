@@ -209,7 +209,17 @@ def get_sources() -> list:
 
     cursor = connection.cursor()
     
-    cursor.execute("""select 
+    cursor.execute("""
+                    with sources_cards_assignments as (
+                            select 
+                                ca.id,
+                                ca.card_source_id,
+                                ca.report_source_id,
+                                co.id as contragent_id
+                            from operate.card_assignments ca left join operate.contragents co on ca.report_source_id = co.source_id
+                            where ca.end_date is null
+                        )
+                    select 
                         s.id,
                         s.source_name,
                         s.source_type, 
@@ -217,9 +227,11 @@ def get_sources() -> list:
                         s.source_income_debt::FLOAT,
                         s.source_username,
                         s.source_password,
-                        s.source_data_begin 
+                        s.source_data_begin,
+                        sca.contragent_id,
+                        s.is_hidden
                       from 
-                        operate.sources s
+                        operate.sources s left join sources_cards_assignments sca on s.id = sca.card_source_id
                       order by
                         s.id""")
     
@@ -235,7 +247,8 @@ def get_hotels() -> list:
                         h.id,
                         h.hotel_name,
                         h.bnovo_id,
-                        h.synonyms 
+                        h.synonyms,
+                        h.is_hidden
                       from 
                         operate.hotels h
                       order by
@@ -313,11 +326,31 @@ def get_budget_items() -> list:
                         bi.item_name,
                         bi.section,
                         bi.subcategory,
-                        bi.category 
+                        bi.category,
+                        bi.is_hidden
                       from 
                         operate.budget_items bi
                       order by
                         bi.id""")
+    
+    return cursor.fetchall()
+
+def get_card_assignments() -> list:
+
+    global connection
+
+    cursor = connection.cursor()
+    
+    cursor.execute("""select 
+                        s.id,
+                        s.card_source_id,
+                        s.report_source_id, 
+                        s.start_date,
+                        s.end_date
+                      from 
+                        operate.card_assignments s
+                      order by
+                        s.id""")
     
     return cursor.fetchall()
 
@@ -335,7 +368,9 @@ def get_contragents() -> list:
                         co.account_number,
                         co.income_budget_item_id,
                         co.outcome_budget_item_id,
-                        co.hotel_id
+                        co.hotel_id,
+                        co.source_id,
+                        co.is_hidden
                         --,
                         --bi.item_name as income_budget_item_name,
                         --bo.item_name as outcome_budget_item_name,
@@ -405,7 +440,7 @@ def put_sources(datastrings: list):
                   and len(str(newrow[7])) == 0):
                   continue
               
-              list_of_args.append("({}, '{}', {}, '{}', {}, '{}', '{}', {})"
+              list_of_args.append("({}, '{}', {}, '{}', {}, '{}', '{}', {}, {})"
                   .format(my_utility.num_to_query_substr(newrow[0]), #id
                   newrow[1],                                         #source_name
                   my_utility.num_to_query_substr(newrow[2]),         #source_type
@@ -413,7 +448,8 @@ def put_sources(datastrings: list):
                   my_utility.num_to_query_substr(newrow[4]),         #source_income_debt
                   newrow[5],                                         #source_username
                   newrow[6],                                         #source_password
-                  get_date_from_string_to_query(newrow[7])))         #source_data_begin                               
+                  get_date_from_string_to_query(newrow[7]),          #source_data_begin 
+                  newrow[8]))                                        #is_hidden                               
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_source_table_update""")
@@ -463,6 +499,73 @@ def put_sources(datastrings: list):
           connection.rollback()
           raise ex
 
+def put_card_assignments(datastrings: list):
+
+    global connection
+
+    if len(datastrings) > 0:
+        cursor = connection.cursor()
+
+        try:
+          
+          list_of_args = []
+          for newrow in datastrings:
+
+              if (len(str(newrow[0])) == 0 
+                  and len(str(newrow[1])) == 0
+                  and len(str(newrow[2])) == 0
+                  and len(str(newrow[3])) == 0):
+                  continue
+              
+
+              list_of_args.append("({}, {}, {}, {}, {})"
+                  .format(my_utility.num_to_query_substr(newrow[0]), #id
+                  my_utility.num_to_query_substr(newrow[1]),         #card_source_id
+                  my_utility.num_to_query_substr(newrow[2]),         #report_source_id
+                  get_date_from_string_to_query(newrow[3]),          #start_date
+                  get_date_from_string_to_query(newrow[4])))         #end_date
+                  
+
+          if len(list_of_args) > 0:
+            cursor.execute("""DROP TABLE IF EXISTS temp_card_assignments_table_update""")
+            cursor.execute("""CREATE TEMP TABLE temp_card_assignments_table_update AS SELECT * FROM operate.card_assignments WHERE false""")
+
+            args_str = ','.join(list_of_args)
+            cursor.execute("""INSERT INTO temp_card_assignments_table_update
+                                (id, card_source_id, report_source_id, start_date, end_date)
+                              VALUES """ + args_str)
+            
+
+            cursor.execute("""                    
+                    UPDATE operate.card_assignments t
+                        SET 
+                           card_source_id = u.card_source_id,
+                           report_source_id = u.report_source_id,
+                           start_date = u.start_date,
+                           end_date = u.end_date
+                    FROM operate.card_assignments s
+                        INNER JOIN temp_card_assignments_table_update u ON u.id = s.id
+                    WHERE EXISTS (
+                        SELECT s.card_source_id, s.report_source_id, s.start_date, s.end_date
+                        EXCEPT
+                        SELECT u.card_source_id, u.report_source_id, u.start_date, u.end_date
+                        ) and t.id = s.id;
+
+                    INSERT INTO operate.card_assignments (card_source_id, report_source_id, start_date, end_date)
+                    SELECT     
+                        card_source_id,
+                        report_source_id,
+                        start_date,
+                        end_date
+                    FROM temp_card_assignments_table_update
+                    WHERE
+                        id is NULL;
+                    """)
+
+            connection.commit()
+        except Exception as ex:
+          connection.rollback()
+          raise ex      
 
 def put_hotels(datastrings: list):
 
@@ -483,11 +586,12 @@ def put_hotels(datastrings: list):
                   continue
               
 
-              list_of_args.append("({}, '{}', '{}', '{}')"
+              list_of_args.append("({}, '{}', '{}', '{}', {})"
                   .format(my_utility.num_to_query_substr(newrow[0]), #id
                   newrow[1],                                         #hotel_name
                   newrow[2],                                         #bnovo_id
-                  newrow[3]))                                        #synonyms
+                  newrow[3],                                         #synonyms
+                  newrow[4]))                                        #is_hidden
                   
 
           if len(list_of_args) > 0:
@@ -662,13 +766,14 @@ def put_budget_items(datastrings: list):
                   and len(str(newrow[5])) == 0):
                   continue
               
-              list_of_args.append("({}, '{}', '{}', '{}', '{}', '{}')"
+              list_of_args.append("({}, '{}', '{}', '{}', '{}', '{}', {})"
                   .format(my_utility.num_to_query_substr(newrow[0]), #id
                   newrow[1],                                         #perfix
                   newrow[2],                                         #item_name
                   newrow[3],                                         #section
                   newrow[4],                                         #subcategory
-                  newrow[5]))                                        #category
+                  newrow[5],                                         #category
+                  newrow[6]))                                        #is_hidden
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_budget_items_table_update""")
@@ -732,7 +837,9 @@ def put_contragents(datastrings: list):
                         # co.account_number,
                         # co.income_budget_item_id,
                         # co.outcome_budget_item_id,
-                        # co.hotel_id 
+                        # co.hotel_id
+                        # co.source_id
+                        # co.is_hidden
 
               if (len(str(newrow[0])) == 0 
                   and len(str(newrow[1])) == 0
@@ -740,7 +847,7 @@ def put_contragents(datastrings: list):
                   and len(str(newrow[3])) == 0):
                   continue
               
-              list_of_args.append("({}, '{}', '{}', '{}', '{}', {}, {}, {})"
+              list_of_args.append("({}, '{}', '{}', '{}', '{}', {}, {}, {}, {}, {})"
                   .format(my_utility.num_to_query_substr(newrow[0]), #id
                   newrow[1],                                         #contragent_name
                   newrow[2],                                         #inner_name
@@ -748,7 +855,9 @@ def put_contragents(datastrings: list):
                   newrow[4],                                         #account_number
                   my_utility.num_to_query_substr(newrow[5]),         #income_budget_item_id
                   my_utility.num_to_query_substr(newrow[6]),         #outcome_budget_item_id
-                  my_utility.num_to_query_substr(newrow[7])))        #hotel_id
+                  my_utility.num_to_query_substr(newrow[7]),         #hotel_id
+                  my_utility.num_to_query_substr(newrow[8]),         #source_id
+                  newrow[9]))                                        #is_hidden
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_contragents_table_update""")
@@ -944,6 +1053,9 @@ def get_dict() -> dict:
     if dict_name == 'hotels':
         result["data"] = get_hotels()
 
+    if dict_name == 'card_assignments':
+        result["data"] = get_card_assignments()
+
     if dict_name == 'devices':
         result["data"] = get_devices()
 
@@ -1018,6 +1130,9 @@ def put_dict() -> dict:
 
     if dict_name == 'hotels':
         put_hotels(datastrings)
+
+    if dict_name == 'card_assignments':
+        put_card_assignments(datastrings)
 
     if dict_name == 'devices':
         put_devices(datastrings)

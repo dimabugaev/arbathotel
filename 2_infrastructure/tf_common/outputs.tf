@@ -19,7 +19,7 @@ output "database_subnet_group" {
 }
 
 output "lambda_layer_common_arn" {
-  value = module.lambda_layer_common.layer_arn
+  value = module.lambda_layer_common.lambda_layer_arn
 }
 
 #This group for inbound  

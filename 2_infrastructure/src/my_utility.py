@@ -190,7 +190,7 @@ def get_response_text_json(session, request_url, count=10):
     for i in range(count):
         time.sleep(0.1)
         try:
-            with session.get(request_url) as response:
+            with session.get(request_url, timeout=(5, 20)) as response:
                 if response is None:    
                     print('-- returned NULL ... delay and repeat attempt # ' + (i+1))
                     print('sleep ' + str(i*i+1))

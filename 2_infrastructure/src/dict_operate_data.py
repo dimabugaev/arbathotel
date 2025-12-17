@@ -457,7 +457,7 @@ def put_sources(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_source_table_update
-                                (id, source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin)
+                                (id, source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin, is_hidden)
                               VALUES """ + args_str)
             
 
@@ -470,16 +470,17 @@ def put_sources(datastrings: list):
                             source_income_debt = u.source_income_debt,
                             source_username = u.source_username,
                             source_password = u.source_password,
-                            source_data_begin = u.source_data_begin
+                            source_data_begin = u.source_data_begin,
+                            is_hidden = u.is_hidden
                     FROM operate.sources s
                         INNER JOIN temp_source_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt, s.source_username, s.source_password, s.source_data_begin
+                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt, s.source_username, s.source_password, s.source_data_begin, s.is_hidden
                         EXCEPT
-                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt, u.source_username, u.source_password, u.source_data_begin
+                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt, u.source_username, u.source_password, u.source_data_begin, u.is_hidden
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin)
+                    INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin, is_hidden)
                     SELECT     
                         source_name, 
                         source_type, 
@@ -487,7 +488,8 @@ def put_sources(datastrings: list):
                         source_income_debt,
                         source_username,
                         source_password,
-                        source_data_begin
+                        source_data_begin,
+                        is_hidden
                     FROM temp_source_table_update
                     WHERE
                         id is NULL;
@@ -600,7 +602,7 @@ def put_hotels(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_hotels_table_update
-                                (id, hotel_name, bnovo_id, synonyms)
+                                (id, hotel_name, bnovo_id, synonyms, is_hidden)
                               VALUES """ + args_str)
             
 
@@ -613,16 +615,17 @@ def put_hotels(datastrings: list):
                     FROM operate.hotels s
                         INNER JOIN temp_hotels_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.hotel_name, s.bnovo_id, s.synonyms
+                        SELECT s.hotel_name, s.bnovo_id, s.synonyms, s.is_hidden
                         EXCEPT
-                        SELECT u.hotel_name, u.bnovo_id, u.synonyms
+                        SELECT u.hotel_name, u.bnovo_id, u.synonyms, u.is_hidden
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.hotels (hotel_name, bnovo_id, synonyms)
+                    INSERT INTO operate.hotels (hotel_name, bnovo_id, synonyms, is_hidden)
                     SELECT     
                         hotel_name,
                         bnovo_id,
-                        synonyms
+                        synonyms,
+                        is_hidden
                     FROM temp_hotels_table_update
                     WHERE
                         id is NULL;
@@ -756,7 +759,8 @@ def put_budget_items(datastrings: list):
                         # bi.item_name,
                         # bi.section,
                         # bi.subcategory,
-                        # bi.category 
+                        # bi.category
+                        # bi.is_hidden
 
               if (len(str(newrow[0])) == 0 
                   and len(str(newrow[1])) == 0
@@ -781,7 +785,7 @@ def put_budget_items(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_budget_items_table_update
-                                (id, perfix, item_name, section, subcategory, category)
+                                (id, perfix, item_name, section, subcategory, category, is_hidden)
                               VALUES """ + args_str)
             
 
@@ -792,22 +796,24 @@ def put_budget_items(datastrings: list):
                             item_name = u.item_name,
                             section = u.section,
                             subcategory = u.subcategory,
-                            category = u.category
+                            category = u.category,
+                            is_hidden = u.is_hidden
                     FROM operate.budget_items s
                         INNER JOIN temp_budget_items_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.perfix, s.item_name, s.section, s.subcategory, s.category
+                        SELECT s.perfix, s.item_name, s.section, s.subcategory, s.category, s.is_hidden
                         EXCEPT
-                        SELECT u.perfix, u.item_name, u.section, u.subcategory, u.category
+                        SELECT u.perfix, u.item_name, u.section, u.subcategory, u.category, u.is_hidden
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.budget_items (perfix, item_name, section, subcategory, category)
+                    INSERT INTO operate.budget_items (perfix, item_name, section, subcategory, category, is_hidden)
                     SELECT     
                         perfix, 
                         item_name, 
                         section, 
                         subcategory, 
-                        category
+                        category,
+                        is_hidden
                     FROM temp_budget_items_table_update
                     WHERE
                         id is NULL;
@@ -865,7 +871,7 @@ def put_contragents(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_contragents_table_update
-                                (id, contragent_name, inner_name, inn, account_number, income_budget_item_id, outcome_budget_item_id, hotel_id)
+                                (id, contragent_name, inner_name, inn, account_number, income_budget_item_id, outcome_budget_item_id, hotel_id, source_id, is_hidden)
                               VALUES """ + args_str)
             
 
@@ -878,16 +884,18 @@ def put_contragents(datastrings: list):
                             account_number = u.account_number,
                             income_budget_item_id = u.income_budget_item_id,
                             outcome_budget_item_id = u.outcome_budget_item_id,
-                            hotel_id = u.hotel_id
+                            hotel_id = u.hotel_id,
+                            source_id = u.source_id,
+                            is_hidden = u.is_hidden
                     FROM operate.contragents s
                         INNER JOIN temp_contragents_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.contragent_name, s.inner_name, s.inn, s.account_number, s.income_budget_item_id, s.outcome_budget_item_id, s.hotel_id
+                        SELECT s.contragent_name, s.inner_name, s.inn, s.account_number, s.income_budget_item_id, s.outcome_budget_item_id, s.hotel_id, s.source_id, s.is_hidden
                         EXCEPT
-                        SELECT u.contragent_name, u.inner_name, u.inn, u.account_number, u.income_budget_item_id, u.outcome_budget_item_id, u.hotel_id
+                        SELECT u.contragent_name, u.inner_name, u.inn, u.account_number, u.income_budget_item_id, u.outcome_budget_item_id, u.hotel_id, u.source_id, u.is_hidden
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.contragents (contragent_name, inner_name, inn, account_number, income_budget_item_id, outcome_budget_item_id, hotel_id)
+                    INSERT INTO operate.contragents (contragent_name, inner_name, inn, account_number, income_budget_item_id, outcome_budget_item_id, hotel_id, source_id, is_hidden)
                     SELECT     
                         contragent_name, 
                         inner_name, 
@@ -895,7 +903,9 @@ def put_contragents(datastrings: list):
                         account_number, 
                         income_budget_item_id, 
                         outcome_budget_item_id, 
-                        hotel_id
+                        hotel_id,
+                        source_id,
+                        is_hidden
                     FROM temp_contragents_table_update
                     WHERE
                         id is NULL;

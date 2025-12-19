@@ -26,7 +26,7 @@ module "lambda_function_bnovo_master_data_extract" {
 
   publish = true
 
-  timeout = 120
+  timeout = 600
 
   create_package         = false
   local_existing_package = "${var.buildpath}${var.extract_bnovo_data_zip}"

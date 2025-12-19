@@ -32,12 +32,15 @@ def get_session(cert_content, key_content, passcode):
     #     with open(CFG_FILE) as reader:
     #         return json.load(reader)
 
+    proxies = {'http': 'http://89.169.180.15:8888', 'https': 'http://89.169.180.15:8888'}
+
     session = requests.Session()
     adapter = SSLAdapter(cert_content, key_content, passcode)
 
     for host in secure_hosts:
         session.mount(host, adapter)
-
+    if proxies:
+        session.proxies.update(proxies)
     session.verify = False
     return session
 

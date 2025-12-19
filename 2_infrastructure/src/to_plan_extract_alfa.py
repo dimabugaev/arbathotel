@@ -39,8 +39,8 @@ def get_session(cert_content, key_content, passcode):
 
     for host in secure_hosts:
         session.mount(host, adapter)
-    if proxies:
-        session.proxies.update(proxies)
+    # if proxies:
+    #     session.proxies.update(proxies)
     session.verify = False
     return session
 

@@ -27,6 +27,12 @@ class SSLAdapter(HTTPAdapter):
         kwargs['ssl_context'] = context
         return super(self.__class__, self).init_poolmanager(*args, **kwargs)
 
+    def proxy_manager_for(self, proxy, **kwargs):
+        kwargs["cert_file"] = self.certfile
+        kwargs["key_file"] = self.keyfile
+        kwargs["key_password"] = self.password
+        return ProxyManager(proxy, **kwargs)
+
 def get_session(cert_content, key_content, passcode):
     # def get_config():
     #     with open(CFG_FILE) as reader:

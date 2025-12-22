@@ -6,6 +6,7 @@ import os
 
 import ssl
 from requests.adapters import HTTPAdapter
+from urllib3 import ProxyManager
 
 #CFG_FILE = '<path_to_cfg>'
 secure_hosts = [

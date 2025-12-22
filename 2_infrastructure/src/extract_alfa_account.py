@@ -17,31 +17,33 @@ class SSLAdapter(HTTPAdapter):
         self._certfile = certfile
         self._keyfile = keyfile
         self._password = password
-        return super(self.__class__, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
-        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        context.load_cert_chain(certfile=self._certfile,
-                                keyfile=self._keyfile,
-                                password=self._password)
-        kwargs['ssl_context'] = context
-        return super(self.__class__, self).init_poolmanager(*args, **kwargs)
+        kwargs["cert_file"] = self._certfile
+        kwargs["key_file"] = self._keyfile
+        kwargs["key_password"] = self._password
+        return super().init_poolmanager(*args, **kwargs)
 
-def get_session(cert_content, key_content, passcode):
-    # def get_config():
-    #     with open(CFG_FILE) as reader:
-    #         return json.load(reader)
+    def proxy_manager_for(self, proxy, **kwargs):
+        kwargs["cert_file"] = self._certfile
+        kwargs["key_file"] = self._keyfile
+        kwargs["key_password"] = self._password
+        return ProxyManager(proxy, **kwargs)
 
-    proxies = {'http': 'http://89.169.180.15:8888', 'https': 'http://89.169.180.15:8888'}
-
+def get_session(certfile, keyfile, password):
     session = requests.Session()
-    adapter = SSLAdapter(cert_content, key_content, passcode)
 
-    for host in secure_hosts:
-        session.mount(host, adapter)
-    # if proxies:
-    #     session.proxies.update(proxies)
-    session.verify = False
+    adapter = SSLAdapter(certfile, keyfile, password)
+    session.mount("https://", adapter)
+
+    session.proxies = {
+        "http": "http://89.169.180.15:8888",
+        "https": "http://89.169.180.15:8888",
+    }
+
+    session.verify = True  # или путь к CA банка
+
     return session
 
 def get_accounts(token):

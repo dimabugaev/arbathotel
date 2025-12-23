@@ -301,15 +301,12 @@ def get_report_items() -> list:
     cursor.execute("""select 
                         ri.id,
                         ri.item_name,
-                        ri.order_count, 
-                        ri.empl_id,
-                        em.name_in_db,
-                        ri.source_id,
-                        so.source_name 
+                        ri.contragent_id,
+                        ri.order_count
                       from 
                         operate.report_items ri
-                        left join operate.employees em on ri.empl_id = em.id
-                        left join operate.sources so on ri.source_id = so.id
+                        --left join operate.employees em on ri.empl_id = em.id
+                        --left join operate.sources so on ri.source_id = so.id
                       order by
                         ri.order_count""")
     
@@ -935,25 +932,19 @@ def put_report_items(datastrings: list):
               
                         # ri.id,
                         # ri.item_name,
-                        # ri.order_count, 
-                        # ri.empl_id,
-                        # em.name_in_db,
-                        # ri.source_id,
-                        # so.source_name 
+                        # ri.contragent_id,
+                        # ri.order_count
 
               if (len(str(newrow[0])) == 0 
                   and len(str(newrow[1])) == 0 
-                  and len(str(newrow[2])) == 0 
-                  and len(str(newrow[3])) == 0 
-                  and len(str(newrow[5])) == 0):
+                  and len(str(newrow[3])) == 0):
                   continue
               
-              list_of_args.append("({}, '{}', {}, {}, {})"
+              list_of_args.append("({}, '{}', {}, {})"
                   .format(my_utility.num_to_query_substr(newrow[0]), #id
                   newrow[1],                                         #item_name
-                  my_utility.num_to_query_substr(newrow[2]),         #order_count
-                  my_utility.num_to_query_substr(newrow[3]),         #empl_id
-                  my_utility.num_to_query_substr(newrow[5])))        #source_id
+                  my_utility.num_to_query_substr(newrow[2]),         #contragent_id
+                  my_utility.num_to_query_substr(newrow[3])))        #order_count
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_items_table_update""")
@@ -961,7 +952,7 @@ def put_report_items(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_items_table_update
-                                (id, item_name, order_count, empl_id, source_id)
+                                (id, item_name, contragent_id, order_count)
                               VALUES """ + args_str)
             
 
@@ -969,23 +960,21 @@ def put_report_items(datastrings: list):
                     
                     UPDATE operate.report_items t
                         SET item_name = u.item_name,
-                            order_count = u.order_count,
-                            empl_id = u.empl_id,
-                            source_id = u.source_id
+                            contragent_id = u.contragent_id,
+                            order_count = u.order_count
                     FROM operate.report_items s
                         INNER JOIN temp_items_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.item_name, s.order_count, s.empl_id, s.source_id
+                        SELECT s.item_name, s.contragent_id, s.order_count
                         EXCEPT
-                        SELECT u.item_name, u.order_count, u.empl_id, u.source_id
+                        SELECT u.item_name, u.contragent_id, u.order_count
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.report_items (item_name, order_count, empl_id, source_id)
+                    INSERT INTO operate.report_items (item_name, contragent_id, order_count)
                     SELECT     
                         item_name, 
-                        order_count, 
-                        empl_id, 
-                        source_id
+                        contragent_id, 
+                        order_count
                     FROM temp_items_table_update
                     WHERE
                         id is NULL;

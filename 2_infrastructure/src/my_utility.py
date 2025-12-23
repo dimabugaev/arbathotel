@@ -135,6 +135,11 @@ def num_to_query_substr(id: any, result_if_null = "NULL") -> str:
           result = id
     return result
 
+def bool_to_query_substr(value: bool, result_if_null = "NULL") -> str:
+    if value is None:
+        return result_if_null
+    return "true" if value else "false"
+
 def get_begin_month_by_date(date_period: date) -> date:
     return date(date_period.year, date_period.month, 1)
 

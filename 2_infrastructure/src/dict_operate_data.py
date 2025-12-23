@@ -449,7 +449,7 @@ def put_sources(datastrings: list):
                   newrow[5],                                         #source_username
                   newrow[6],                                         #source_password
                   get_date_from_string_to_query(newrow[7]),          #source_data_begin 
-                  newrow[8]))                                        #is_hidden                               
+                  my_utility.bool_to_query_substr(newrow[8])))       #is_hidden                               
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_source_table_update""")
@@ -593,7 +593,7 @@ def put_hotels(datastrings: list):
                   newrow[1],                                         #hotel_name
                   newrow[2],                                         #bnovo_id
                   newrow[3],                                         #synonyms
-                  newrow[4]))                                        #is_hidden
+                  my_utility.bool_to_query_substr(newrow[4])))       #is_hidden
                   
 
           if len(list_of_args) > 0:
@@ -611,7 +611,8 @@ def put_hotels(datastrings: list):
                         SET 
                            hotel_name = u.hotel_name,
                            bnovo_id = u.bnovo_id,
-                           synonyms = u.synonyms
+                           synonyms = u.synonyms,
+                           is_hidden = u.is_hidden
                     FROM operate.hotels s
                         INNER JOIN temp_hotels_table_update u ON u.id = s.id
                     WHERE EXISTS (
@@ -777,7 +778,7 @@ def put_budget_items(datastrings: list):
                   newrow[3],                                         #section
                   newrow[4],                                         #subcategory
                   newrow[5],                                         #category
-                  newrow[6]))                                        #is_hidden
+                  my_utility.bool_to_query_substr(newrow[6])))       #is_hidden
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_budget_items_table_update""")
@@ -863,7 +864,7 @@ def put_contragents(datastrings: list):
                   my_utility.num_to_query_substr(newrow[6]),         #outcome_budget_item_id
                   my_utility.num_to_query_substr(newrow[7]),         #hotel_id
                   my_utility.num_to_query_substr(newrow[8]),         #source_id
-                  newrow[9]))                                        #is_hidden
+                  my_utility.bool_to_query_substr(newrow[9])))       #is_hidden
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_contragents_table_update""")

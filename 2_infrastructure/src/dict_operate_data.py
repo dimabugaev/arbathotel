@@ -228,7 +228,8 @@ def get_sources() -> list:
                         s.source_username,
                         s.source_password,
                         s.source_data_begin,
-                        sca.contragent_id,
+                        --sca.contragent_id,
+                        s.is_card,
                         s.is_hidden
                       from 
                         operate.sources s left join sources_cards_assignments sca on s.id = sca.card_source_id
@@ -593,7 +594,8 @@ def put_hotels(datastrings: list):
                   newrow[1],                                         #hotel_name
                   newrow[2],                                         #bnovo_id
                   newrow[3],                                         #synonyms
-                  my_utility.bool_to_query_substr(newrow[4])))       #is_hidden
+                  my_utility.bool_to_query_substr(newrow[4]),    #is_card
+                  my_utility.bool_to_query_substr(newrow[5])))       #is_hidden
                   
 
           if len(list_of_args) > 0:
@@ -602,7 +604,7 @@ def put_hotels(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_hotels_table_update
-                                (id, hotel_name, bnovo_id, synonyms, is_hidden)
+                                (id, hotel_name, bnovo_id, synonyms, is_card, is_hidden)
                               VALUES """ + args_str)
             
 
@@ -612,20 +614,22 @@ def put_hotels(datastrings: list):
                            hotel_name = u.hotel_name,
                            bnovo_id = u.bnovo_id,
                            synonyms = u.synonyms,
+                           is_card = u.is_card,
                            is_hidden = u.is_hidden
                     FROM operate.hotels s
                         INNER JOIN temp_hotels_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.hotel_name, s.bnovo_id, s.synonyms, s.is_hidden
+                        SELECT s.hotel_name, s.bnovo_id, s.synonyms, s.is_card, s.is_hidden
                         EXCEPT
-                        SELECT u.hotel_name, u.bnovo_id, u.synonyms, u.is_hidden
+                        SELECT u.hotel_name, u.bnovo_id, u.synonyms, u.is_card, u.is_hidden
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.hotels (hotel_name, bnovo_id, synonyms, is_hidden)
+                    INSERT INTO operate.hotels (hotel_name, bnovo_id, synonyms, is_card, is_hidden)
                     SELECT     
                         hotel_name,
                         bnovo_id,
                         synonyms,
+                        is_card,
                         is_hidden
                     FROM temp_hotels_table_update
                     WHERE

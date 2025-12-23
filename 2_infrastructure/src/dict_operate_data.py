@@ -441,7 +441,7 @@ def put_sources(datastrings: list):
                   and len(str(newrow[7])) == 0):
                   continue
               
-              list_of_args.append("({}, '{}', {}, '{}', {}, '{}', '{}', {}, {})"
+              list_of_args.append("({}, '{}', {}, '{}', {}, '{}', '{}', {}, {}, {})"
                   .format(my_utility.num_to_query_substr(newrow[0]), #id
                   newrow[1],                                         #source_name
                   my_utility.num_to_query_substr(newrow[2]),         #source_type

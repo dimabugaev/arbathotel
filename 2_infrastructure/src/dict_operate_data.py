@@ -449,8 +449,9 @@ def put_sources(datastrings: list):
                   my_utility.num_to_query_substr(newrow[4]),         #source_income_debt
                   newrow[5],                                         #source_username
                   newrow[6],                                         #source_password
-                  get_date_from_string_to_query(newrow[7]),          #source_data_begin 
-                  my_utility.bool_to_query_substr(newrow[8])))       #is_hidden                               
+                  get_date_from_string_to_query(newrow[7]),          #source_data_begin
+                  my_utility.bool_to_query_substr(newrow[8]),        #is_card 
+                  my_utility.bool_to_query_substr(newrow[9])))       #is_hidden                               
 
           if len(list_of_args) > 0:
             cursor.execute("""DROP TABLE IF EXISTS temp_source_table_update""")
@@ -458,7 +459,7 @@ def put_sources(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_source_table_update
-                                (id, source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin, is_hidden)
+                                (id, source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin, is_card, is_hidden)
                               VALUES """ + args_str)
             
 
@@ -472,16 +473,17 @@ def put_sources(datastrings: list):
                             source_username = u.source_username,
                             source_password = u.source_password,
                             source_data_begin = u.source_data_begin,
+                            is_card = u.is_card,
                             is_hidden = u.is_hidden
                     FROM operate.sources s
                         INNER JOIN temp_source_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt, s.source_username, s.source_password, s.source_data_begin, s.is_hidden
+                        SELECT s.source_name, s.source_type, s.source_external_key, s.source_income_debt, s.source_username, s.source_password, s.source_data_begin, s.is_card, s.is_hidden
                         EXCEPT
-                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt, u.source_username, u.source_password, u.source_data_begin, u.is_hidden
+                        SELECT u.source_name, u.source_type, u.source_external_key, u.source_income_debt, u.source_username, u.source_password, u.source_data_begin, u.is_card, u.is_hidden
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin, is_hidden)
+                    INSERT INTO operate.sources (source_name, source_type, source_external_key, source_income_debt, source_username, source_password, source_data_begin, is_card, is_hidden)
                     SELECT     
                         source_name, 
                         source_type, 
@@ -490,6 +492,7 @@ def put_sources(datastrings: list):
                         source_username,
                         source_password,
                         source_data_begin,
+                        is_card,
                         is_hidden
                     FROM temp_source_table_update
                     WHERE
@@ -594,8 +597,7 @@ def put_hotels(datastrings: list):
                   newrow[1],                                         #hotel_name
                   newrow[2],                                         #bnovo_id
                   newrow[3],                                         #synonyms
-                  my_utility.bool_to_query_substr(newrow[4]),    #is_card
-                  my_utility.bool_to_query_substr(newrow[5])))       #is_hidden
+                  my_utility.bool_to_query_substr(newrow[4])))       #is_hidden
                   
 
           if len(list_of_args) > 0:
@@ -604,7 +606,7 @@ def put_hotels(datastrings: list):
 
             args_str = ','.join(list_of_args)
             cursor.execute("""INSERT INTO temp_hotels_table_update
-                                (id, hotel_name, bnovo_id, synonyms, is_card, is_hidden)
+                                (id, hotel_name, bnovo_id, synonyms, is_hidden)
                               VALUES """ + args_str)
             
 
@@ -614,22 +616,20 @@ def put_hotels(datastrings: list):
                            hotel_name = u.hotel_name,
                            bnovo_id = u.bnovo_id,
                            synonyms = u.synonyms,
-                           is_card = u.is_card,
                            is_hidden = u.is_hidden
                     FROM operate.hotels s
                         INNER JOIN temp_hotels_table_update u ON u.id = s.id
                     WHERE EXISTS (
-                        SELECT s.hotel_name, s.bnovo_id, s.synonyms, s.is_card, s.is_hidden
+                        SELECT s.hotel_name, s.bnovo_id, s.synonyms, s.is_hidden
                         EXCEPT
-                        SELECT u.hotel_name, u.bnovo_id, u.synonyms, u.is_card, u.is_hidden
+                        SELECT u.hotel_name, u.bnovo_id, u.synonyms, u.is_hidden
                         ) and t.id = s.id;
 
-                    INSERT INTO operate.hotels (hotel_name, bnovo_id, synonyms, is_card, is_hidden)
+                    INSERT INTO operate.hotels (hotel_name, bnovo_id, synonyms, is_hidden)
                     SELECT     
                         hotel_name,
                         bnovo_id,
                         synonyms,
-                        is_card,
                         is_hidden
                     FROM temp_hotels_table_update
                     WHERE

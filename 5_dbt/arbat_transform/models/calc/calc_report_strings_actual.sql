@@ -1,6 +1,57 @@
 {{
   config(
 	materialized = 'table',
+    post_hook=[
+      "
+      delete from operate.report_strings rs
+      where rs.outer_row_business_id is not null
+        and not exists (
+            select 1 from {{ this }} m
+            where m.source_id = rs.source_id
+              and m.outer_row_business_id = rs.outer_row_business_id
+        );
+      ",
+      "
+      merge into operate.report_strings rs
+        using {{ this }} m
+        on rs.source_id = m.source_id
+        and rs.outer_row_business_id = m.outer_row_business_id
+
+        when matched then update set
+            report_item_id = m.report_item_id,
+            report_date    = m.report_date,
+            sum_income     = m.sum_income,
+            sum_spend      = m.sum_spend,
+            string_comment = m.string_comment,
+            applyed        = m.applyed
+
+        when not matched then insert (
+            source_id,
+            report_item_id,
+            created,
+            applyed,
+            report_date,
+            hotel_id,
+            sum_income,
+            sum_spend,
+            string_comment,
+            parent_row_id,
+            outer_row_business_id
+        ) values (
+            m.source_id,
+            m.report_item_id,
+            m.created,
+            m.applyed,
+            m.report_date,
+            m.hotel_id,
+            m.sum_income,
+            m.sum_spend,
+            m.string_comment,
+            null,
+            m.outer_row_business_id
+        );
+      "
+    ]
 	)
 }}
 

@@ -18,6 +18,8 @@ sources:
         identifier: contragents
       - name: budget_items
         identifier: budget_items
+      - name: card_assignments
+        identifier: card_assignments
   
   
   - name: bnovo

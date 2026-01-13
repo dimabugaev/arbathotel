@@ -1,6 +1,12 @@
 {{
   config(
 	materialized = 'table',
+  indexes=[
+      {
+        'name': 'idx_ops_account_operation',
+        'columns': ['source_id', 'id']
+      }
+    ]
 	)
 }}
 

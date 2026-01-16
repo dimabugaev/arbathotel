@@ -106,7 +106,8 @@ def get_report_strings():
                         st.hotel_id,
                         st.created, 
                         st.applyed,
-                        st.parent_row_id
+                        st.parent_row_id,
+                        st.outer_row_business_id
                       FROM operate.report_strings st
                         left join operate.report_items ri on st.report_item_id = ri.id
                         left join operate.hotels h on st.hotel_id = h.id
@@ -126,13 +127,13 @@ def get_report_strings():
                             or st.applyed is NULL)))
                       window grow_total as (order by 
                         (case 
-                          when st.parent_row_id is not null and st.applyed is null then 2
+                          when (st.parent_row_id is not null or st.outer_row_business_id is not null) and st.applyed is null then 2
                           when st.applyed is null then 3
                           else 1
                         end), st.id)
                       order by 
                         (case 
-                          when st.parent_row_id is not null and st.applyed is null then 2
+                          when (st.parent_row_id is not null or st.outer_row_business_id is not null) and st.applyed is null then 2
                           when st.applyed is null then 3
                           else 1
                         end),
@@ -171,7 +172,7 @@ def put_operate_report_strings():
                         from operate.report_strings 
                       where
                         applyed is null
-                        and parent_row_id is null 
+                        and parent_row_id is null and outer_row_business_id is null 
                         and source_id = %(source_id)s""", {'source_id': found_source_id})          
 
 

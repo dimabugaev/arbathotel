@@ -295,24 +295,26 @@ declare
 	v_source_id INT;
 	v_item_id INT;
 begin
-	select ri.source_id into v_source_id
-	from 
+	select co.source_id into v_source_id
+	from
 		operate.report_items ri
-		left join operate.sources so on ri.source_id = so.id 
+		join operate.contragents co on ri.contragent_id = co.id
+		join operate.sources so on co.source_id = so.id
 	where
-		ri.source_id is not null
+	    co.source_id is not null
+		and ri.contragent_id is not null
 		and so.source_type = 1
 		and ri.id = new.report_item_id;
-		
+
 	-- exception when no_data_found then v_source_id := null;
-		
-	
+
+
 	if found AND new.parent_row_id is null then
-		select id into v_item_id
-		from 
-			operate.report_items
+		select ri.id into v_item_id
+		from
+			operate.report_items ri join operate.contragents co on ri.contragent_id = co.id
 		where
-			source_id = new.source_id;
+			co.source_id = new.source_id;
 	
 		if not found then
 			v_item_id := null;	
@@ -343,24 +345,25 @@ declare
 	v_source_id INT;
 	v_item_id INT;
 begin
-	select ri.source_id into v_source_id
-	from 
+		select co.source_id into v_source_id
+	from
 		operate.report_items ri
-		left join operate.sources so on ri.source_id = so.id 
+		join operate.contragents co on ri.contragent_id = co.id
+		left join operate.sources so on co.source_id = so.id
 	where
-		ri.source_id is not null
+		co.source_id is not null
 		and so.source_type = 1
 		and ri.id = new.report_item_id;
-		
+
 	-- exception when no_data_found then v_source_id := null;
-		
-	
+
+
 	if found AND new.parent_row_id is null then
-		select id into v_item_id
-		from 
-			operate.report_items
+		select ri.id into v_item_id
+		from
+			operate.report_items ri join operate.contragents co on ri.contragent_id = co.id
 		where
-			source_id = new.source_id;
+			co.source_id = new.source_id;
 	
 		if not found then
 			v_item_id := null;	

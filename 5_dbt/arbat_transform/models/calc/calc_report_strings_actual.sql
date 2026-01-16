@@ -80,8 +80,8 @@ with cards_info as
         bp.id outer_row_business_id,
         ci.report_item_id,
         bp.date_transaction report_date,
-        0 sum_income,
-        bp.out_summ sum_spend,
+        bp.out_summ sum_income,
+        0 sum_spend,
         '' string_comment
     from {{ ref('mart_bank_payments_aq') }} bp
     join cards_info ci on

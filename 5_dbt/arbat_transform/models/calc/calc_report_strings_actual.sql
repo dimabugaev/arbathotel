@@ -54,7 +54,9 @@
         left join operate.report_strings rs
             on rs.source_id = m.source_id
         and rs.outer_row_business_id = m.outer_row_business_id
-        where rs.id is null;
+        where rs.id is null
+        order by
+            m.report_date;
         "
         ]
 	)

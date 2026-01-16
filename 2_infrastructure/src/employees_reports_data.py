@@ -305,6 +305,7 @@ def current_string_to_histirical():
                             source_id = %(source_id)s
                             and applyed is null
                             and parent_row_id is null 
+                            and outer_row_business_id is null
                             and report_item_id is not null
                             and report_date is not null
                             and ((sum_income = 0 and sum_spend <> 0) 
